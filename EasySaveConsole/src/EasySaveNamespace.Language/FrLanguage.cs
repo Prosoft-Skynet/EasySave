@@ -14,6 +14,7 @@ public class FrLanguage : Language
             { "menu.restore", "5. Restaurer une sauvegarde" },
             { "menu.logs", "6. Voir les logs" },
             { "menu.state", "7. Voir l'état" },
+            { "menu.state.Contents", "Contenu de l'état" },
             { "menu.language", "8. EN" },
             { "menu.quit", "9. Quitter" },
             { "menu.choice", "Votre choix: " },

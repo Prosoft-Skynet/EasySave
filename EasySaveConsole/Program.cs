@@ -50,7 +50,7 @@ public class Program
                 case "6":
                     break;
                 case "7":
-                    Console.WriteLine("\n--- Contenu de l'état ---");
+                    Console.WriteLine(easySave.GetText("menu.state.Contents"));
                     string stateJson = File.ReadAllText(stateManager.GetStateFilePath());
                     Console.WriteLine(stateJson);
                     break;
