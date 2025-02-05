@@ -5,16 +5,14 @@ using EasySaveConsole.EasySaveNamespace.State;
 
 public class Program
 {
-    private EasySave easySave;
-    private StateManager stateManager;
+    private EasySave easySave = EasySave.GetInstance();
+    private StateManager stateManager = new StateManager();
 
     private Language currentLanguage = new EnLanguage();
     private BackupManager backupManager = new BackupManager();
 
     public void Start()
     {
-        easySave = EasySave.GetInstance();
-        stateManager = new StateManager(); 
         while (true)
         {
             Console.WriteLine("\n--- EasySave Menu ---");
@@ -75,11 +73,11 @@ public class Program
     {
         Console.Write(easySave.GetText("backup.name"));
         string name = Console.ReadLine()!;
-        
+
         if (backupManager.GetBackupJobs().Exists(job => job.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
         {
-            Console.WriteLine(easySave.GetText("name already in use"));
-            return; 
+            Console.WriteLine(easySave.GetText("backup.name_use"));
+            return;
         }
 
         if (backupManager.GetBackupJobs().Count >= 5)
@@ -94,8 +92,11 @@ public class Program
         Console.Write(easySave.GetText("backup.destination"));
         string target = Console.ReadLine()!;
 
-        Console.Write(easySave.GetText("backup.type"));
-        int type = int.Parse(Console.ReadLine()!);
+        int type;
+        do
+        {
+            Console.Write(easySave.GetText("backup.type"));
+        } while (!int.TryParse(Console.ReadLine(), out type) || (type != 1 && type != 2));
 
         IBackupTypeStrategy strategy;
         if (type == 1)
@@ -114,11 +115,16 @@ public class Program
 
     private void SupprimerSauvegarde()
     {
+        if (backupManager.GetBackupJobs().Count == 0)
+        {
+            Console.WriteLine(easySave.GetText("list.none"));
+            return;
+        }
         ListerSauvegardes();
-        Console.Write(easySave.GetText("delete.index"));
+        Console.Write(easySave.GetText("delete.name"));
         string name = Console.ReadLine()!;
 
-        var job = backupManager.GetBackupJobs().FirstOrDefault(j => j.Name == name);
+        var job = backupManager.GetBackupJobs().FirstOrDefault(j => j.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
         if (job != null)
         {
@@ -127,25 +133,27 @@ public class Program
         }
         else
         {
-            Console.WriteLine(easySave.GetText("index.invalid"));
+            Console.WriteLine(easySave.GetText("name.invalid"));
         }
     }
 
     private void ListerSauvegardes()
     {
-        Console.WriteLine(easySave.GetText("list.list"));
-        var jobs = backupManager.GetBackupJobs();
-        if (jobs.Count == 0)
+
+        if (backupManager.GetBackupJobs().Count == 0)
         {
             Console.WriteLine(easySave.GetText("list.none"));
+            return;
         }
         else
         {
+            Console.WriteLine(easySave.GetText("list.list"));
+            var jobs = backupManager.GetBackupJobs();
             for (int i = 0; i < jobs.Count; i++)
             {
                 var job = jobs[i];
                 Console.WriteLine($"ID: {job.Id}");
-                Console.WriteLine($"{easySave.GetText("list.none")}{job.Name}");
+                Console.WriteLine($"{easySave.GetText("list.name")}{job.Name}");
                 Console.WriteLine($"Source : {job.Source}");
                 Console.WriteLine($"{easySave.GetText("list.target")}{job.Target}");
                 Console.WriteLine($"Type : {(job.IsFullBackup ? easySave.GetText("list.complete") : easySave.GetText("list.differential"))}");
@@ -156,12 +164,17 @@ public class Program
 
     private void ExecuterSauvegarde()
     {
+        if (backupManager.GetBackupJobs().Count == 0)
+        {
+            Console.WriteLine(easySave.GetText("list.none"));
+            return;
+        }
         ListerSauvegardes();
-        Console.Write(easySave.GetText("exec.index"));
+        Console.Write(easySave.GetText("exec.name"));
         string name = Console.ReadLine()!;
 
-
-        var job = backupManager.GetBackupJobs().FirstOrDefault(j => j.Name == name);
+        var jobs = backupManager.GetBackupJobs();
+        var job = backupManager.GetBackupJobs().FirstOrDefault(j => j.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
         if (job != null)
         {
@@ -171,26 +184,33 @@ public class Program
         }
         else
         {
-            Console.WriteLine(easySave.GetText("index.invalid"));
+            Console.WriteLine(easySave.GetText("name.invalid"));
         }
     }
 
     private void RestaurerSauvegarde()
     {
+        if (backupManager.GetBackupJobs().Count == 0)
+        {
+            Console.WriteLine(easySave.GetText("list.none"));
+            return;
+        }
         ListerSauvegardes();
-        Console.Write(easySave.GetText("restore.index"));
-        int index = int.Parse(Console.ReadLine()!);
+        Console.Write(easySave.GetText("restore.name"));
+        string name = Console.ReadLine()!;
 
         var jobs = backupManager.GetBackupJobs();
-        if (index >= 0 && index < jobs.Count)
+        var job = jobs.FirstOrDefault(j => j.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+        if (job != null)
         {
-            Console.WriteLine($"{easySave.GetText("restore.restore")}{jobs[index].Name}...");
-            backupManager.RestoreJob(jobs[index].Id);
+            Console.WriteLine($"{easySave.GetText("restore.restore")}{job.Name}...");
+            backupManager.RestoreJob(job.Id);
             Console.WriteLine(easySave.GetText("restore.finish"));
         }
         else
         {
-            Console.WriteLine(easySave.GetText("index.invalid"));
+            Console.WriteLine(easySave.GetText("name.invalid"));
         }
     }
 

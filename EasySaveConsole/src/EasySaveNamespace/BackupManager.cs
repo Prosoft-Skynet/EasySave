@@ -26,9 +26,9 @@ public class BackupManager
         var job = backupJobs.FirstOrDefault(j => j.Id == jobId);
         if (job != null)
         {
-            stateManager.UpdateState(job, "Actif", 0, 0, 0, 0, 0, job.Source, job.Target);
+            stateManager.UpdateState(job, "In progress", 0, 0, 0, 0, 0, job.Source, job.Target);
             job.Execute();
-            stateManager.UpdateState(job, "Terminé", 100, 100, 1.0f, 0, 0, "", "");
+            stateManager.UpdateState(job, "Finish", 100, 100, 1.0f, 0, 0, "", "");
         }
     }
 
