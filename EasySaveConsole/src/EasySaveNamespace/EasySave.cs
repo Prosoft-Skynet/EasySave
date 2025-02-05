@@ -26,11 +26,19 @@ public class EasySave
         return instance;
     }
 
+    /// <summary>
+    /// Exécute un travail de sauvegarde spécifié par son identifiant.
+    /// </summary>
+    /// <param name="jobId">Identifiant du travail de sauvegarde.</param>
     public void Run(Guid jobId)
     {
         backupManager.ExecuteJob(jobId);
     }
 
+    /// <summary>
+    /// Liste tous les travaux de sauvegarde disponibles.
+    /// </summary>
+    /// <returns>Liste des travaux de sauvegarde.</returns>
     public List<BackupJob> ListBackup()
     {
         return backupManager.GetBackupJobs();
