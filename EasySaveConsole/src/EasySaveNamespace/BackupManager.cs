@@ -8,11 +8,20 @@ public class BackupManager
     private List<BackupJob> backupJobs = new List<BackupJob>();
     private StateManager stateManager = new StateManager();
 
+    /// <summary>
+    /// Ajoute un nouveau travail de sauvegarde.
+    /// </summary>
+    /// <param name="job">Travail de sauvegarde à ajouter.</param>
     public void AddBackup(BackupJob job)
     {
         backupJobs.Add(job);
     }
-   public void ExecuteJob(Guid jobId)
+
+    /// <summary>
+    /// Exécute un travail de sauvegarde spécifié par son identifiant.
+    /// </summary>
+    /// <param name="jobId">Identifiant du travail de sauvegarde.</param>
+    public void ExecuteJob(Guid jobId)
     {
         var job = backupJobs.FirstOrDefault(j => j.Id == jobId);
         if (job != null)
@@ -23,6 +32,10 @@ public class BackupManager
         }
     }
 
+    /// <summary>
+    /// Exécute séquentiellement une liste de travaux de sauvegarde.
+    /// </summary>
+    /// <param name="jobIds">Liste des identifiants des travaux de sauvegarde.</param>
     public void ExecuteJobsSequentially(List<Guid> jobIds)
     {
         foreach (var jobId in jobIds)
@@ -31,6 +44,10 @@ public class BackupManager
         }
     }
 
+    /// <summary>
+    /// Restaure un travail de sauvegarde spécifié par son identifiant.
+    /// </summary>
+    /// <param name="jobId">Identifiant du travail de sauvegarde.</param>
     public void RestoreJob(Guid jobId)
     {
         var job = backupJobs.FirstOrDefault(j => j.Id == jobId);
@@ -40,6 +57,10 @@ public class BackupManager
         }
     }
 
+    /// <summary>
+    /// Récupère la liste des travaux de sauvegarde.
+    /// </summary>
+    /// <returns>Liste des travaux de sauvegarde.</returns>
     public List<BackupJob> GetBackupJobs()
     {
         return backupJobs;

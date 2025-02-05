@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 public class BackupJobFactory
 {
+    /// <summary>
+    /// Crée et exécute des travaux de sauvegarde en parallèle.
+    /// </summary>
+    /// <param name="jobs">Liste des travaux de sauvegarde à exécuter.</param>
     public void CreateBackupJobsInParallel(List<BackupJob> jobs)
     {
         List<Task> tasks = new List<Task>();

@@ -1,9 +1,12 @@
 namespace EasySaveConsole.EasySaveNamespace.Backup;
 
-using System.IO;
-
 public class BackupService
 {
+    /// <summary>
+    /// Transfère les fichiers et répertoires du répertoire source vers le répertoire cible.
+    /// </summary>
+    /// <param name="source">Répertoire source.</param>
+    /// <param name="target">Répertoire cible.</param>
     public void TransferFiles(string source, string target)
     {
         var sourceDirectory = new DirectoryInfo(source);
@@ -25,6 +28,10 @@ public class BackupService
         }
     }
 
+    /// <summary>
+    /// Crée les répertoires nécessaires.
+    /// </summary>
+    /// <param name="path">Chemin du répertoire à créer.</param>
     public void CreateDirectories(string path)
     {
         if (!Directory.Exists(path))
