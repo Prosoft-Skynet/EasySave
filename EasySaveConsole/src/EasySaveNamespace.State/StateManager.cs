@@ -15,23 +15,36 @@ public class StateManager
     /// Initialise le gestionnaire d'état avec un chemin pour le fichier d'état.
     /// Le fichier sera créé dans le dossier 'temp' du projet.
     /// </summary>
-    /// <param name="path">Chemin du fichier d'état. Par défaut, il sera situé dans le dossier 'temp'.</param>
-    public StateManager(string path = null)
-{
-    if (string.IsNullOrEmpty(path))
+    /// <param name="path">Chemin du fichier d'état. Par défaut, il sera situé dans le dossier 'State'.</param>
+    public StateManager(string path = null!)
     {
-        string projectDirectory = AppDomain.CurrentDomain.BaseDirectory; 
-        stateFilePath = Path.Combine(projectDirectory, "temp", "state.json"); 
-    }
-    else
-    {
-        stateFilePath = path;
-    }
-    
-    currentState = new Dictionary<Guid, StateEntry>();
-    LoadState();
-}
+        if (string.IsNullOrEmpty(path))
+        {
+            string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string directoryPath = Path.Combine(projectDirectory, "State");
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+            stateFilePath = Path.Combine(directoryPath, "state.json");
+        }
+        else
+        {
+            stateFilePath = path;
+        }
 
+        currentState = new Dictionary<Guid, StateEntry>();
+        EnsureStateFileExists();
+        LoadState();
+    }
+
+    private void EnsureStateFileExists()
+    {
+        if (!File.Exists(stateFilePath))
+        {
+            File.WriteAllText(stateFilePath, "{}");
+        }
+    }
 
     /// <summary>
     /// Met à jour l'état d'un job de sauvegarde.
@@ -52,8 +65,8 @@ public class StateManager
             CurrentTarget = currentTarget
         };
 
-            currentState[job.Id] = entry;
-            SaveState();
+        currentState[job.Id] = entry;
+        SaveState();
     }
 
     /// <summary>
@@ -69,7 +82,7 @@ public class StateManager
     /// </summary>
     public StateEntry GetCurrentState(Guid jobId)
     {
-        return currentState.ContainsKey(jobId) ? currentState[jobId] : null;
+        return currentState.ContainsKey(jobId) ? currentState[jobId] : null!;
     }
 
     /// <summary>
@@ -77,7 +90,7 @@ public class StateManager
     /// </summary>
     private void SaveState()
     {
-        string directory = Path.GetDirectoryName(stateFilePath);
+        string directory = Path.GetDirectoryName(stateFilePath)!;
         if (!Directory.Exists(directory))
         {
             Directory.CreateDirectory(directory);
@@ -91,16 +104,16 @@ public class StateManager
     /// Charge l'état depuis le fichier d'état, si disponible.
     /// </summary>
     private void LoadState()
+    {
+        if (File.Exists(stateFilePath))
         {
-            if (File.Exists(stateFilePath))
-            {
-                var json = File.ReadAllText(stateFilePath);
-                currentState = JsonSerializer.Deserialize<Dictionary<Guid, StateEntry>>(json) ?? new Dictionary<Guid, StateEntry>();
-            }
+            var json = File.ReadAllText(stateFilePath);
+            currentState = JsonSerializer.Deserialize<Dictionary<Guid, StateEntry>>(json) ?? new Dictionary<Guid, StateEntry>();
+        }
     }
     public string GetStateFilePath()
-{
-    return stateFilePath;
-}
+    {
+        return stateFilePath;
+    }
 
 }

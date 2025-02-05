@@ -48,7 +48,7 @@ public class EasySave
     /// Définit la langue actuelle de l'application en utilisant le LanguageManager.
     /// </summary>
     /// <param name="language">Instance de la langue à appliquer.</param>
-    public void SetLanguage(Language.Language language) 
+    public void SetLanguage(Language.Language language)
     {
         languageManager.SetLanguage(language);
     }

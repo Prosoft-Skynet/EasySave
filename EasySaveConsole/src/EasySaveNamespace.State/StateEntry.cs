@@ -64,6 +64,9 @@ public class StateEntry
     /// </summary>
     public StateEntry()
     {
+        JobName = string.Empty;
+        CurrentSource = string.Empty;
+        CurrentTarget = string.Empty;
         Timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         Status = "Non Actif";
     }
