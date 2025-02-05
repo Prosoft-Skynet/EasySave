@@ -43,11 +43,24 @@ public class EasySave
     {
         return backupManager.GetBackupJobs();
     }
+
+    /// <summary>
+    /// Définit la langue actuelle de l'application en utilisant le LanguageManager.
+    /// </summary>
+    /// <param name="language">Instance de la langue à appliquer.</param>
     public void SetLanguage(Language.Language language) 
     {
         languageManager.SetLanguage(language);
     }
 
+    /// <summary>
+    /// Récupère la traduction d'une clé spécifique en utilisant le LanguageManager.
+    /// </summary>
+    /// <param name="key">Clé de la traduction recherchée.</param>
+    /// <returns>
+    /// La traduction associée à la clé si elle existe.
+    /// Retourne "Clé introuvable: {key}" si la clé n'existe pas.
+    /// </returns>
     public string GetText(string key)
     {
         return languageManager.GetText(key);
