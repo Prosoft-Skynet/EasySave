@@ -98,4 +98,9 @@ public class StateManager
                 currentState = JsonSerializer.Deserialize<Dictionary<Guid, StateEntry>>(json) ?? new Dictionary<Guid, StateEntry>();
             }
     }
+    public string GetStateFilePath()
+{
+    return stateFilePath;
+}
+
 }

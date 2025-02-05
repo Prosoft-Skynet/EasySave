@@ -20,6 +20,7 @@ public class EnLanguage : Language
             { "menu.restore", "5. Restore a backup" },
             { "menu.logs", "6. View logs" },
             { "menu.state", "7. View state" },
+            { "menu.state.Contents", "Contents of the state" },
             { "menu.language", "8. FR" },
             { "menu.quit", "9. Quit" },
             { "menu.choice", "Your choice: " },
