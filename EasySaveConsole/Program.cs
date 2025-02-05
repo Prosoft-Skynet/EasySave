@@ -1,25 +1,29 @@
 ﻿using EasySaveConsole.EasySaveNamespace;
 using EasySaveConsole.EasySaveNamespace.Backup;
+using EasySaveConsole.EasySaveNamespace.Language;
 
 public class Program
 {
-
+    private EasySave easySave;
+    private Language currentLanguage = new EnLanguage();
     private BackupManager backupManager = new BackupManager();
 
     public void Start()
     {
+        easySave = EasySave.GetInstance();
         while (true)
         {
             Console.WriteLine("\n--- EasySave Menu ---");
-            Console.WriteLine("1. Ajouter une sauvegarde");
-            Console.WriteLine("2. Supprimer une sauvegarde");
-            Console.WriteLine("3. Lister les sauvegardes");
-            Console.WriteLine("4. Exécuter une sauvegarde");
-            Console.WriteLine("5. Restaurer une sauvegarde");
-            Console.WriteLine("6. Voir les logs");
-            Console.WriteLine("7. Quitter");
-
-            Console.Write("Choix : ");
+            Console.WriteLine(easySave.GetText("menu.add"));
+            Console.WriteLine(easySave.GetText("menu.delete"));
+            Console.WriteLine(easySave.GetText("menu.list"));
+            Console.WriteLine(easySave.GetText("menu.execute"));
+            Console.WriteLine(easySave.GetText("menu.restore"));
+            Console.WriteLine(easySave.GetText("menu.logs"));
+            Console.WriteLine(easySave.GetText("menu.state"));
+            Console.WriteLine(easySave.GetText("menu.language"));
+            Console.WriteLine(easySave.GetText("menu.quit"));
+            Console.Write(easySave.GetText("menu.choice"));
             string choice = Console.ReadLine()!;
 
             switch (choice)
@@ -42,6 +46,19 @@ public class Program
                 case "6":
                     break;
                 case "7":
+                    break;
+                case "8":
+                    if (currentLanguage is FrLanguage)
+                    {
+                        currentLanguage = new EnLanguage();
+                    }
+                    else
+                    {
+                        currentLanguage = new FrLanguage();
+                    }
+                    easySave.SetLanguage(currentLanguage);
+                    break;
+                case "9":
                     return;
             }
         }
@@ -51,19 +68,19 @@ public class Program
     {
         if (backupManager.GetBackupJobs().Count >= 5)
         {
-            Console.WriteLine("Impossible d'ajouter plus de 5 travaux de sauvegarde.");
+            Console.WriteLine(easySave.GetText("backup.error_5"));
             return;
         }
-        Console.Write("Nom de la sauvegarde : ");
+        Console.Write(easySave.GetText("backup.name"));
         string name = Console.ReadLine()!;
 
-        Console.Write("Répertoire source : ");
+        Console.Write(easySave.GetText("backup.source"));
         string source = Console.ReadLine()!;
 
-        Console.Write("Répertoire cible : ");
+        Console.Write(easySave.GetText("backup.destination"));
         string target = Console.ReadLine()!;
 
-        Console.Write("Type de sauvegarde (1: complète, 2: différentielle) : ");
+        Console.Write(easySave.GetText("backup.type"));
         int type = int.Parse(Console.ReadLine()!);
 
         IBackupTypeStrategy strategy;
@@ -78,33 +95,33 @@ public class Program
 
         BackupJob job = new BackupJob(name, source, target, type == 1, strategy);
         backupManager.AddBackup(job);
-        Console.WriteLine("Sauvegarde ajoutée !");
+        Console.WriteLine(easySave.GetText("backup.add"));
     }
 
     private void SupprimerSauvegarde()
     {
         ListerSauvegardes();
-        Console.Write("Entrez l'index de la sauvegarde à supprimer : ");
+        Console.Write(easySave.GetText("delete.index"));
         int index = int.Parse(Console.ReadLine()!);
 
         if (index >= 0 && index < backupManager.GetBackupJobs().Count)
         {
             backupManager.GetBackupJobs().RemoveAt(index);
-            Console.WriteLine("Sauvegarde supprimée !");
+            Console.WriteLine(easySave.GetText("delete.delete"));
         }
         else
         {
-            Console.WriteLine("Index invalide.");
+            Console.WriteLine(easySave.GetText("index.invalid"));
         }
     }
 
     private void ListerSauvegardes()
     {
-        Console.WriteLine("\nListe des sauvegardes :");
+        Console.WriteLine(easySave.GetText("list.list"));
         var jobs = backupManager.GetBackupJobs();
         if (jobs.Count == 0)
         {
-            Console.WriteLine("Aucune sauvegarde trouvée.");
+            Console.WriteLine(easySave.GetText("list.none"));
         }
         else
         {
@@ -112,10 +129,10 @@ public class Program
             {
                 var job = jobs[i];
                 Console.WriteLine($"ID: {job.Id}");
-                Console.WriteLine($"Nom : {job.Name}");
+                Console.WriteLine($"{easySave.GetText("list.none")}{job.Name}");
                 Console.WriteLine($"Source : {job.Source}");
-                Console.WriteLine($"Cible : {job.Target}");
-                Console.WriteLine($"Type : {(job.IsFullBackup ? "Complète" : "Différentielle")}");
+                Console.WriteLine($"{easySave.GetText("list.target")}{job.Target}");
+                Console.WriteLine($"Type : {(job.IsFullBackup ? easySave.GetText("list.complete") : easySave.GetText("list.differential"))}");
                 Console.WriteLine(new string('-', 40));
             }
         }
@@ -124,38 +141,38 @@ public class Program
     private void ExecuterSauvegarde()
     {
         ListerSauvegardes();
-        Console.Write("Entrez l'index de la sauvegarde à exécuter : ");
+        Console.Write(easySave.GetText("exec.index"));
         int index = int.Parse(Console.ReadLine()!);
 
         var jobs = backupManager.GetBackupJobs();
         if (index >= 0 && index < jobs.Count)
         {
-            Console.WriteLine($"Lancement de la sauvegarde {jobs[index].Name}...");
+            Console.WriteLine($"{easySave.GetText("exec.launch")}{jobs[index].Name}...");
             backupManager.ExecuteJob(jobs[index].Id);
-            Console.WriteLine("Sauvegarde terminée !");
+            Console.WriteLine(easySave.GetText("exec.finish"));
         }
         else
         {
-            Console.WriteLine("Index invalide.");
+            Console.WriteLine(easySave.GetText("index.invalid"));
         }
     }
 
     private void RestaurerSauvegarde()
     {
         ListerSauvegardes();
-        Console.Write("Entrez l'index de la sauvegarde à restaurer : ");
+        Console.Write(easySave.GetText("restore.index"));
         int index = int.Parse(Console.ReadLine()!);
 
         var jobs = backupManager.GetBackupJobs();
         if (index >= 0 && index < jobs.Count)
         {
-            Console.WriteLine($"Restauration de la sauvegarde {jobs[index].Name}...");
+            Console.WriteLine($"{easySave.GetText("restore.restore")}{jobs[index].Name}...");
             backupManager.RestoreJob(jobs[index].Id);
-            Console.WriteLine("Restauration terminée !");
+            Console.WriteLine(easySave.GetText("restore.finish"));
         }
         else
         {
-            Console.WriteLine("Index invalide.");
+            Console.WriteLine(easySave.GetText("index.invalid"));
         }
     }
 
