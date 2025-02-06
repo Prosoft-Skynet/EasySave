@@ -12,28 +12,14 @@ public class StateManager
     ///Initializes the state manager with a path for the state file.
     /// The file will be created in the project's 'temp' folder.
     /// </summary>
-    /// <param name="path">Path of the state file. By default, it will be located in the 'State' folder.</param>
-    public StateManager(string path = null!)
-    {
-        if (string.IsNullOrEmpty(path))
-        {
-            string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string directoryPath = Path.Combine(projectDirectory, "State");
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
-            stateFilePath = Path.Combine(directoryPath, "state.json");
-        }
-        else
-        {
-            stateFilePath = path;
-        }
+    /// <param name="path">Chemin du fichier d'état. Par défaut, il sera situé dans le dossier 'temp'.</param>
+    public StateManager(string path = null)
+{
+    ConfigureStatePath(path);
 
-        currentState = new Dictionary<Guid, StateEntry>();
-        EnsureStateFileExists();
-        LoadState();
-    }
+    currentState = new Dictionary<Guid, StateEntry>();
+    LoadState();
+}
 
     /// <summary>
     /// Ensure that the state file exists.
@@ -83,9 +69,17 @@ public class StateManager
     /// Configure the state file path.
     /// </summary>
     /// <param name="path">Path of the state file</param>
-    public void ConfigureStatePath(string path)
+    public void ConfigureStatePath(string? path)
     {
-        stateFilePath = path;
+        if (string.IsNullOrEmpty(path))
+        {
+            string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            stateFilePath = Path.Combine(projectDirectory, "temp", "state.json");
+        }
+        else
+        {
+            stateFilePath = path;
+        }
     }
 
     /// <summary>

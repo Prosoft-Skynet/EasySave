@@ -45,7 +45,9 @@ public class EnLanguage : Language
             { "exec.finish", "Backup complete !" },
             { "restore.name", "Enter the name of the backup you wish to restore : " },
             { "restore.restore", "Restoring the backup " },
-            { "restore.finish", "Restoration complete !" }
+            { "restore.finish", "Restoration complete !" },
+            { "logs.chose", "chose the log to execute" },
+            { "logs.none", "there is no log for the moment" }
         };
     }
 }

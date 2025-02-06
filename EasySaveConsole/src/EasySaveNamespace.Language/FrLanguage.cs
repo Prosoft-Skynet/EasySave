@@ -45,7 +45,9 @@ public class FrLanguage : Language
             { "exec.finish", "Sauvegarde terminée !" },
             { "restore.name", "Entrez le nom de la sauvegarde à restaurer : " },
             { "restore.restore", "Restauration de la sauvegarde " },
-            { "restore.finish", "Restauration terminée !" }
+            { "restore.finish", "Restauration terminée !" },
+            { "logs.chose", "choisis le log à exécuter" },
+            { "logs.none", "il n'y a aucun log pour le moment" }
         };
     }
 }

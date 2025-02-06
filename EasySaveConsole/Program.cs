@@ -1,8 +1,11 @@
-﻿using EasySaveConsole.EasySaveNamespace;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
+using EasySaveConsole.EasySaveNamespace;
 using EasySaveConsole.EasySaveNamespace.Backup;
 using EasySaveConsole.EasySaveNamespace.CLI;
 using EasySaveConsole.EasySaveNamespace.Language;
 using EasySaveConsole.EasySaveNamespace.State;
+using EasySaveLogger;
 
 /// <summary>
 /// Represents the main program of EasySave.
@@ -13,6 +16,7 @@ public class Program
     private EasySave easySave = EasySave.GetInstance();
     private static StateManager stateManager = new StateManager();
 
+    private Logger logger = new Logger();
     private Language currentLanguage = new EnLanguage();
     private static BackupManager backupManager = new BackupManager();
     private CLI cli = new CLI(backupManager, stateManager);
@@ -39,6 +43,7 @@ public class Program
 
             if (choice.StartsWith("execute") || choice.StartsWith("delete") || choice.StartsWith("restore"))
             {
+
                 cli.ParseCommand(choice);
             }
             else
@@ -61,6 +66,7 @@ public class Program
                         RestaurerSauvegarde();
                         break;
                     case "6":
+                        ReadLogs();
                         break;
                     case "7":
                         cli.DisplayState();
@@ -175,7 +181,7 @@ public class Program
             for (int i = 0; i < jobs.Count; i++)
             {
                 var job = jobs[i];
-                Console.WriteLine($"ID: {job.Id}");
+
                 Console.WriteLine($"{easySave.GetText("list.name")}{job.Name}");
                 Console.WriteLine($"Source : {job.Source}");
                 Console.WriteLine($"{easySave.GetText("list.target")}{job.Target}");
@@ -190,6 +196,8 @@ public class Program
     /// </summary>
     private void ExecuterSauvegarde()
     {
+        var debutTime = DateTime.Now;
+
         if (backupManager.GetBackupJobs().Count == 0)
         {
             Console.WriteLine(easySave.GetText("list.none"));
@@ -207,11 +215,17 @@ public class Program
             Console.WriteLine($"{easySave.GetText("exec.launch")}{job.Name}...");
             backupManager.ExecuteJob(job.Id);
             Console.WriteLine(easySave.GetText("exec.finish"));
+
+            long savingTime = DateTime.Now.Millisecond - debutTime.Millisecond;
+
+            this.logger.Log(job.Name, job.Source, job.Target, savingTime);
         }
         else
         {
             Console.WriteLine(easySave.GetText("name.invalid"));
         }
+
+        
     }
 
     /// <summary>
@@ -241,6 +255,71 @@ public class Program
         {
             Console.WriteLine(easySave.GetText("name.invalid"));
         }
+    }
+
+    private void ReadLogs()
+    {
+        var logsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+        var files = Directory.GetFiles(logsPath)
+                     .Select(Path.GetFileName)
+                     .ToList();
+        var filesName = Directory.GetFiles(logsPath)
+                     .Select(Path.GetFileNameWithoutExtension)
+                     .ToList();
+        if (files.Count > 0)
+        {
+            var fileToOpen = "";
+            var chosenFile = "";
+            while (!filesName.Contains(chosenFile))
+            {
+                Console.WriteLine(easySave.GetText("logs.chose"));
+                foreach (var file in filesName)
+                {
+                    Console.WriteLine(file);
+                }
+                chosenFile = Console.ReadLine();
+
+                for (int i = 0; i < filesName.Count; i++)
+                {
+                    if(chosenFile == filesName[i])
+                    {
+                        fileToOpen = files[i];
+                    }
+                }
+
+            }
+
+
+            var filePath = Path.Combine(logsPath, fileToOpen);
+
+
+
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Process.Start("notepad.exe", filePath); // Windows : Ouvre avec le Bloc-notes
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                Process.Start("gedit", filePath); // Linux : Ouvre avec Gedit (Bloc-notes par défaut sur GNOME)
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Process.Start("open", "-a TextEdit " + filePath); // macOS : Ouvre avec TextEdit
+            }
+            else
+            {
+                Console.WriteLine("Système d'exploitation non supporté.");
+            }
+
+
+        }
+        else
+        {
+            Console.WriteLine(easySave.GetText("logs.none"));
+        }
+
+
     }
 
     /// <summary>
