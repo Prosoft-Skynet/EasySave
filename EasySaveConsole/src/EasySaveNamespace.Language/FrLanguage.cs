@@ -1,14 +1,14 @@
 ﻿namespace EasySaveConsole.EasySaveNamespace.Language;
 
 /// <summary>
-/// Implémentation de la classe Language pour la langue française.
+/// Implementation of the Language class for the French language.
 /// </summary>
 public class FrLanguage : Language
 {
     /// <summary>
-    /// Retourne un dictionnaire contenant les traductions en français.
+    /// Returns a dictionary containing French translations.
     /// </summary>
-    /// <returns>Dictionnaire des clés de traduction avec leur texte en français.</returns>
+    /// <returns>Dictionary of translation keys with their French text.</returns>
     public override Dictionary<string, string> GetTranslations()
     {
         return new Dictionary<string, string>
@@ -26,23 +26,24 @@ public class FrLanguage : Language
             { "menu.choice", "Votre choix: " },
             { "backup.error_5", "Impossible d'ajouter plus de 5 travaux de sauvegarde." },
             { "backup.name", "Nom de la sauvegarde : " },
+            { "backup.name_use", "Nom déjà utilisé" },
             { "backup.source", "Répertoire source : " },
             { "backup.destination", "Répertoire cible : " },
             { "backup.type", "Type de sauvegarde (1: complète, 2: différentielle) : " },
             { "backup.add", "Sauvegarde ajoutée !" },
-            { "delete.index", "Entrez l'index de la sauvegarde à supprimer : " },
+            { "delete.name", "Entrez le nom de la sauvegarde à supprimer : " },
             { "delete.delete", "Sauvegarde supprimée !" },
-            { "index.invalid", "Index invalide." },
+            { "name.invalid", "Nom invalide." },
             { "list.list", "\nListe des sauvegardes :" },
             { "list.none", "Aucune sauvegarde trouvée." },
             { "list.name", "Nom : " },
             { "list.target", "Cible : " },
             { "list.complete", "Complète" },
             { "list.differential", "Différentielle" },
-            { "exec.index", "Entrez l'index de la sauvegarde à exécuter : " },
+            { "exec.name", "Entrez le nom de la sauvegarde à exécuter : " },
             { "exec.launch", "Lancement de la sauvegarde " },
             { "exec.finish", "Sauvegarde terminée !" },
-            { "restore.index", "Entrez l'index de la sauvegarde à restaurer : " },
+            { "restore.name", "Entrez le nom de la sauvegarde à restaurer : " },
             { "restore.restore", "Restauration de la sauvegarde " },
             { "restore.finish", "Restauration terminée !" },
             { "logs.chose", "choisis le log à exécuter" },

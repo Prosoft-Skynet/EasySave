@@ -3,13 +3,13 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// Classe représentant une langue et ses traductions.
+/// Class representing a language and its translations.
 /// </summary>
 public abstract class Language
 {
     /// <summary>
-    /// Méthode permettant d'obtenir les traductions sous forme d'un dictionnaire.
+    /// Method for obtaining translations in dictionary form.
     /// </summary>
-    /// <returns>Un dictionnaire contenant les clés de traduction et leurs valeurs associées.</returns>
+    /// <returns>A dictionary containing the translation keys and their associated values.</returns>
     public abstract Dictionary<string, string> GetTranslations();
 }

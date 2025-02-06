@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
+namespace EasySaveConsole.EasySaveNamespace.State;
+
 using System.Text.Json;
 using EasySaveConsole.EasySaveNamespace.Backup;
-
-namespace EasySaveConsole.EasySaveNamespace.State;
 
 public class StateManager
 {
@@ -12,8 +9,8 @@ public class StateManager
     private Dictionary<Guid, StateEntry> currentState;
 
     /// <summary>
-    /// Initialise le gestionnaire d'état avec un chemin pour le fichier d'état.
-    /// Le fichier sera créé dans le dossier 'temp' du projet.
+    ///Initializes the state manager with a path for the state file.
+    /// The file will be created in the project's 'temp' folder.
     /// </summary>
     /// <param name="path">Chemin du fichier d'état. Par défaut, il sera situé dans le dossier 'temp'.</param>
     public StateManager(string path = null)
@@ -25,9 +22,35 @@ public class StateManager
 }
 
 
+        currentState = new Dictionary<Guid, StateEntry>();
+        EnsureStateFileExists();
+        LoadState();
+    }
+
     /// <summary>
-    /// Met à jour l'état d'un job de sauvegarde.
+    /// Ensure that the state file exists.
+    /// If it does not exist, create an empty file.
     /// </summary>
+    private void EnsureStateFileExists()
+    {
+        if (!File.Exists(stateFilePath))
+        {
+            File.WriteAllText(stateFilePath, "{}");
+        }
+    }
+
+    /// <summary>
+    /// Update the state of a backup job
+    /// </summary>
+    /// <param name="job">Backup job to update</param>
+    /// <param name="status">Current status of the job</param>
+    /// <param name="filesTotal">Total number of files to be backed up</param>
+    /// <param name="sizeTotal">Total size of the files to be backed up (in bytes)</param>
+    /// <param name="progress">Job progress, between 0 (no progress) and 1 (fully completed)</param>
+    /// <param name="remainingFiles">Number of remaining files to be processed</param>
+    /// <param name="remainingSize">Size of the remaining files to be processed (in bytes)</param>
+    /// <param name="currentSource">Current source of the backup job (source directory or file)</param>
+    /// <param name="currentTarget">Current destination of the backup (target directory)</param>
     public void UpdateState(BackupJob job, string status, int filesTotal, int sizeTotal, float progress, int remainingFiles, int remainingSize, string currentSource, string currentTarget)
     {
         var entry = new StateEntry
@@ -44,13 +67,14 @@ public class StateManager
             CurrentTarget = currentTarget
         };
 
-            currentState[job.Id] = entry;
-            SaveState();
+        currentState[job.Id] = entry;
+        SaveState();
     }
 
     /// <summary>
-    /// Configure le chemin du fichier d'état.
+    /// Configure the state file path.
     /// </summary>
+    /// <param name="path">Path of the state file</param>
     public void ConfigureStatePath(string? path)
     {
         if (string.IsNullOrEmpty(path))
@@ -65,19 +89,20 @@ public class StateManager
     }
 
     /// <summary>
-    /// Récupère l'état actuel d'un job donné.
+    /// Retrieve the current state of a given job.
     /// </summary>
+    /// <param name="jobId">Identifier of the job</param>
     public StateEntry GetCurrentState(Guid jobId)
     {
-        return currentState.ContainsKey(jobId) ? currentState[jobId] : null;
+        return currentState.ContainsKey(jobId) ? currentState[jobId] : null!;
     }
 
     /// <summary>
-    /// Sauvegarde l'état actuel dans le fichier d'état.
+    /// Save the current state to the state file.
     /// </summary>
     private void SaveState()
     {
-        string directory = Path.GetDirectoryName(stateFilePath);
+        string directory = Path.GetDirectoryName(stateFilePath)!;
         if (!Directory.Exists(directory))
         {
             Directory.CreateDirectory(directory);
@@ -88,19 +113,23 @@ public class StateManager
     }
 
     /// <summary>
-    /// Charge l'état depuis le fichier d'état, si disponible.
+    /// Load the current state from the state file.
     /// </summary>
     private void LoadState()
+    {
+        if (File.Exists(stateFilePath))
         {
-            if (File.Exists(stateFilePath))
-            {
-                var json = File.ReadAllText(stateFilePath);
-                currentState = JsonSerializer.Deserialize<Dictionary<Guid, StateEntry>>(json) ?? new Dictionary<Guid, StateEntry>();
-            }
+            var json = File.ReadAllText(stateFilePath);
+            currentState = JsonSerializer.Deserialize<Dictionary<Guid, StateEntry>>(json) ?? new Dictionary<Guid, StateEntry>();
+        }
     }
+
+    /// <summary>
+    /// Retrieve the path of the state file.
+    /// </summary>
     public string GetStateFilePath()
-{
-    return stateFilePath;
-}
+    {
+        return stateFilePath;
+    }
 
 }

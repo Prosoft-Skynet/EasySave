@@ -2,6 +2,9 @@ namespace EasySaveConsole.EasySaveNamespace.Backup;
 
 using System;
 
+/// <summary>
+/// Represents a backup job with details such as name, source, target, and backup type.
+/// </summary>
 public class BackupJob
 {
     public Guid Id { get; private set; }
@@ -12,13 +15,13 @@ public class BackupJob
     private IBackupTypeStrategy backupStrategy;
 
     /// <summary>
-    /// Initialise une nouvelle instance de la classe BackupJob.
+    /// Initializes a new instance of the BackupJob class.
     /// </summary>
-    /// <param name="name">Nom du travail de sauvegarde.</param>
-    /// <param name="source">Répertoire source.</param>
-    /// <param name="target">Répertoire cible.</param>
-    /// <param name="isFullBackup">Indique si la sauvegarde est complète.</param>
-    /// <param name="strategy">Stratégie de sauvegarde à utiliser.</param>
+    /// <param name="name">The name of the backup job.</param>
+    /// <param name="source">The source directory.</param>
+    /// <param name="target">The target directory.</param>
+    /// <param name="isFullBackup">Indicates whether the backup is a full backup.</param>
+    /// <param name="strategy">The backup strategy to use.</param>
     public BackupJob(string name, string source, string target, bool isFullBackup, IBackupTypeStrategy strategy)
     {
         Id = Guid.NewGuid();
@@ -30,7 +33,7 @@ public class BackupJob
     }
 
     /// <summary>
-    /// Exécute le travail de sauvegarde.
+    /// Executes the backup job.
     /// </summary>
     public void Execute()
     {
@@ -38,7 +41,7 @@ public class BackupJob
     }
 
     /// <summary>
-    /// Restaure les fichiers sauvegardés.
+    /// Restores the backed-up files.
     /// </summary>
     public void Restore()
     {

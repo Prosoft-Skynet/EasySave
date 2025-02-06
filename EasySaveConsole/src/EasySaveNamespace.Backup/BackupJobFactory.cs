@@ -3,12 +3,15 @@ namespace EasySaveConsole.EasySaveNamespace.Backup;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+/// <summary>
+/// Factory class responsible for creating and executing backup jobs in parallel.
+/// </summary>
 public class BackupJobFactory
 {
     /// <summary>
-    /// Crée et exécute des travaux de sauvegarde en parallèle.
+    /// Creates and executes backup jobs in parallel.
     /// </summary>
-    /// <param name="jobs">Liste des travaux de sauvegarde à exécuter.</param>
+    /// <param name="jobs">List of backup jobs to execute.</param>
     public void CreateBackupJobsInParallel(List<BackupJob> jobs)
     {
         List<Task> tasks = new List<Task>();
