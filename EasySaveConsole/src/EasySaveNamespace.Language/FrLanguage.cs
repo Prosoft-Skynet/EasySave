@@ -43,7 +43,7 @@ public class FrLanguage : Language
             { "exec.name", "Entrez le nom de la sauvegarde à exécuter : " },
             { "exec.launch", "Lancement de la sauvegarde " },
             { "exec.finish", "Sauvegarde terminée !" },
-            { "restore.index", "Entrez le nom de la sauvegarde à restaurer : " },
+            { "restore.name", "Entrez le nom de la sauvegarde à restaurer : " },
             { "restore.restore", "Restauration de la sauvegarde " },
             { "restore.finish", "Restauration terminée !" }
         };
