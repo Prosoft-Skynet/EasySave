@@ -5,18 +5,28 @@ using System.Collections.Generic;
 using EasySaveConsole.EasySaveNamespace.Backup;
 using EasySaveConsole.EasySaveNamespace.Language;
 
+/// <summary>
+/// Singleton class that manages backup jobs and language settings.
+/// </summary>
 public class EasySave
 {
     private static EasySave? instance;
     private BackupManager backupManager;
     private LanguageManager languageManager;
 
+    /// <summary>
+    /// Private constructor to initialize the BackupManager and LanguageManager.
+    /// </summary>
     private EasySave()
     {
         backupManager = new BackupManager();
         languageManager = new LanguageManager(new EnLanguage());
     }
 
+    /// <summary>
+    /// Gets the singleton instance of EasySave.
+    /// </summary>
+    /// <returns>The singleton instance of EasySave.</returns>
     public static EasySave GetInstance()
     {
         if (instance == null)
@@ -27,43 +37,42 @@ public class EasySave
     }
 
     /// <summary>
-    /// Exécute un travail de sauvegarde spécifié par son identifiant.
+    /// Executes a backup job specified by its identifier.
     /// </summary>
-    /// <param name="jobId">Identifiant du travail de sauvegarde.</param>
+    /// <param name="jobId">The identifier of the backup job.</param>
     public void Run(Guid jobId)
     {
         backupManager.ExecuteJob(jobId);
     }
 
     /// <summary>
-    /// Liste tous les travaux de sauvegarde disponibles.
+    /// Lists all available backup jobs.
     /// </summary>
-    /// <returns>Liste des travaux de sauvegarde.</returns>
+    /// <returns>A list of backup jobs.</returns>
     public List<BackupJob> ListBackup()
     {
         return backupManager.GetBackupJobs();
     }
 
     /// <summary>
-    /// Définit la langue actuelle de l'application en utilisant le LanguageManager.
+    /// Sets the current language of the application using the LanguageManager.
     /// </summary>
-    /// <param name="language">Instance de la langue à appliquer.</param>
+    /// <param name="language">The language instance to apply.</param>
     public void SetLanguage(Language.Language language)
     {
         languageManager.SetLanguage(language);
     }
 
     /// <summary>
-    /// Récupère la traduction d'une clé spécifique en utilisant le LanguageManager.
+    /// Retrieves the translation for a specific key using the LanguageManager.
     /// </summary>
-    /// <param name="key">Clé de la traduction recherchée.</param>
+    /// <param name="key">The key for the desired translation.</param>
     /// <returns>
-    /// La traduction associée à la clé si elle existe.
-    /// Retourne "Clé introuvable: {key}" si la clé n'existe pas.
+    /// The translation associated with the key if it exists.
+    /// Returns "Key not found: {key}" if the key does not exist.
     /// </returns>
     public string GetText(string key)
     {
         return languageManager.GetText(key);
     }
-
 }

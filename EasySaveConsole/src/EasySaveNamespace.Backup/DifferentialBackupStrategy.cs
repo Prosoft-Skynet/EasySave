@@ -1,12 +1,15 @@
 namespace EasySaveConsole.EasySaveNamespace.Backup;
 
+/// <summary>
+/// Implements the differential backup strategy.
+/// </summary>
 public class DifferentialBackupStrategy : IBackupTypeStrategy
 {
     /// <summary>
-    /// Exécute une sauvegarde différentielle.
+    /// Executes a differential backup.
     /// </summary>
-    /// <param name="source">Répertoire source.</param>
-    /// <param name="target">Répertoire cible.</param>
+    /// <param name="source">The source directory.</param>
+    /// <param name="target">The target directory.</param>
     public void ExecuteBackupStrategy(string source, string target)
     {
         var sourceDirectory = new DirectoryInfo(source);
