@@ -1,64 +1,64 @@
 namespace EasySaveConsole.EasySaveNamespace.State;
 
 /// <summary>
-/// Représente l'état d'un travail de sauvegarde.
-/// Contient des informations sur le job telles que le nom, le statut, la progression, la taille et les fichiers restants.
+/// Represents the state of a backup job.
+/// Contains information about the job such as name, status, progress, size, and remaining files.
 /// </summary>
 public class StateEntry
 {
     /// <summary>
-    /// Nom du job de sauvegarde.
+    /// Name of the backup job.
     /// </summary>
     public string JobName { get; set; }
 
     /// <summary>
-    /// Horodatage indiquant quand l'état du job a été enregistré.
+    /// Timestamp indicating when the job state was recorded.
     /// </summary>
     public string Timestamp { get; set; }
 
     /// <summary>
-    /// Statut actuel du job (ex : "Actif", "Terminé", etc.).
+    /// Current status of the job (e.g., "Active", "Completed", etc.).
     /// </summary>
     public string Status { get; set; }
 
     /// <summary>
-    /// Nombre total de fichiers à sauvegarder.
+    /// Total number of files to be backed up.
     /// </summary>
     public int FilesTotal { get; set; }
 
     /// <summary>
-    /// Taille totale des fichiers à sauvegarder (en octets).
+    /// Total size of the files to be backed up (in bytes).
     /// </summary>
     public int SizeTotal { get; set; }
 
     /// <summary>
-    /// Progression du job, entre 0 (aucune progression) et 1 (complètement terminé).
+    /// Job progress, between 0 (no progress) and 1 (fully completed).
     /// </summary>
     public float Progress { get; set; }
 
     /// <summary>
-    /// Nombre de fichiers restants à traiter.
+    /// Number of remaining files to be processed.
     /// </summary>
     public int RemainingFiles { get; set; }
 
     /// <summary>
-    /// Taille des fichiers restants à traiter (en octets).
+    /// Size of the remaining files to be processed (in bytes).
     /// </summary>
     public int RemainingSize { get; set; }
 
     /// <summary>
-    /// Source actuelle du travail de sauvegarde (répertoire ou fichier source).
+    /// Current source of the backup job (source directory or file).
     /// </summary>
     public string CurrentSource { get; set; }
 
     /// <summary>
-    /// Destination actuelle de la sauvegarde (répertoire cible).
+    /// Current destination of the backup (target directory).
     /// </summary>
     public string CurrentTarget { get; set; }
 
     /// <summary>
-    /// Initialise une nouvelle instance de la classe <see cref="StateEntry"/>.
-    /// Le statut par défaut est "Non Actif" et l'horodatage est défini à la date et l'heure actuelles.
+    /// Initializes a new instance of the <see cref="StateEntry"/> class.
+    /// The default status is "Inactive" and the timestamp is set to the current date and time.
     /// </summary>
     public StateEntry()
     {
