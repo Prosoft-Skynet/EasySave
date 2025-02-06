@@ -21,12 +21,6 @@ public class StateManager
     LoadState();
 }
 
-
-        currentState = new Dictionary<Guid, StateEntry>();
-        EnsureStateFileExists();
-        LoadState();
-    }
-
     /// <summary>
     /// Ensure that the state file exists.
     /// If it does not exist, create an empty file.
