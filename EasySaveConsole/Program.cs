@@ -4,8 +4,12 @@ using EasySaveConsole.EasySaveNamespace.CLI;
 using EasySaveConsole.EasySaveNamespace.Language;
 using EasySaveConsole.EasySaveNamespace.State;
 
+/// <summary>
+/// Represents the main program of EasySave.
+/// </summary>
 public class Program
 {
+
     private EasySave easySave = EasySave.GetInstance();
     private static StateManager stateManager = new StateManager();
 
@@ -13,6 +17,9 @@ public class Program
     private static BackupManager backupManager = new BackupManager();
     private CLI cli = new CLI(backupManager, stateManager);
 
+    /// <summary>
+    /// Starts the EasySave console interface.
+    /// </summary>
     public void Start()
     {
         while (true)
@@ -76,6 +83,9 @@ public class Program
         }
     }
 
+    /// <summary>
+    /// Adds a new backup job to the list of backup jobs.
+    /// </summary>
     private void AjouterSauvegarde()
     {
         Console.Write(easySave.GetText("backup.name"));
@@ -120,6 +130,9 @@ public class Program
         Console.WriteLine(easySave.GetText("backup.add"));
     }
 
+    /// <summary>
+    /// Deletes a backup job from the list of backup jobs.
+    /// </summary>
     private void SupprimerSauvegarde()
     {
         if (backupManager.GetBackupJobs().Count == 0)
@@ -144,6 +157,9 @@ public class Program
         }
     }
 
+    /// <summary>
+    /// Lists all backup jobs.    
+    /// </summary>
     private void ListerSauvegardes()
     {
 
@@ -169,6 +185,9 @@ public class Program
         }
     }
 
+    /// <summary>
+    /// Executes a backup job.
+    /// </summary>
     private void ExecuterSauvegarde()
     {
         if (backupManager.GetBackupJobs().Count == 0)
@@ -195,6 +214,9 @@ public class Program
         }
     }
 
+    /// <summary>
+    /// Restores a backup job.
+    /// </summary>
     private void RestaurerSauvegarde()
     {
         if (backupManager.GetBackupJobs().Count == 0)
@@ -221,6 +243,9 @@ public class Program
         }
     }
 
+    /// <summary>
+    /// Main entry point of the program.
+    /// </summary>
     static void Main()
     {
         Program Interface = new Program();
