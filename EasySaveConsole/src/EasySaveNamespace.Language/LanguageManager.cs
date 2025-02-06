@@ -1,33 +1,33 @@
 ﻿namespace EasySaveConsole.EasySaveNamespace.Language;
 
 /// <summary>
-/// Gère la langue actuelle et les traductions associées.
+/// Manages the current language and associated translations.
 /// </summary>
 public class LanguageManager
 {
     /// <summary>
-    /// Langue actuellement sélectionnée.
+    /// Language currently selected.
     /// </summary>
     private Language currentLanguage = null!;
 
     /// <summary>
-    /// Dictionnaire contenant les traductions sous forme clé/valeur.
+    /// Dictionary containing translations in key/value form.
     /// </summary>
     private Dictionary<string, string> translations = new Dictionary<string, string>();
 
     /// <summary>
-    /// Initialise un nouvel objet LanguageManager avec une langue donnée.
+    /// Initializes a new LanguageManager object with a given language.
     /// </summary>
-    /// <param name="language">Langue à utiliser.</param>
+    /// <param name="language">Language to be used.</param>
     public LanguageManager(Language language)
     {
         SetLanguage(language);
     }
 
     /// <summary>
-    /// Définit la langue active et charge ses traductions.
+    /// Defines the active language and loads its translations.
     /// </summary>
-    /// <param name="language">Nouvelle langue à appliquer.</param>
+    /// <param name="language">New language to apply.</param>
     public void SetLanguage(Language language)
     {
         currentLanguage = language;
@@ -35,10 +35,10 @@ public class LanguageManager
     }
 
     /// <summary>
-    /// Récupère la traduction associée à une clé donnée.
+    /// Retrieves the translation associated with a given key.
     /// </summary>
-    /// <param name="key">Clé de la traduction recherchée.</param>
-    /// <returns>La traduction correspondante si elle existe, sinon un message d'erreur.</returns>
+    /// <param name="key">Key to the desired translation.</param>
+    /// <returns>The corresponding translation if available, otherwise an error message.</returns>
     public string GetText(string key)
     {
         return translations.ContainsKey(key) ? translations[key] : $"Clé introuvable: {key}";

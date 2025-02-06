@@ -1,14 +1,14 @@
 ﻿namespace EasySaveConsole.EasySaveNamespace.Language;
 
 /// <summary>
-/// Implémentation de la classe Language pour la langue française.
+/// Implementation of the Language class for the French language.
 /// </summary>
 public class FrLanguage : Language
 {
     /// <summary>
-    /// Retourne un dictionnaire contenant les traductions en français.
+    /// Returns a dictionary containing French translations.
     /// </summary>
-    /// <returns>Dictionnaire des clés de traduction avec leur texte en français.</returns>
+    /// <returns>Dictionary of translation keys with their French text.</returns>
     public override Dictionary<string, string> GetTranslations()
     {
         return new Dictionary<string, string>

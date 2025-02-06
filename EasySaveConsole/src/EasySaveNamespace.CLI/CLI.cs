@@ -3,7 +3,7 @@ namespace EasySaveConsole.EasySaveNamespace.CLI;
 using EasySaveConsole.EasySaveNamespace.State;
 
 /// <summary>
-/// Classe responsable de l'interface en ligne de commande.
+/// Class responsible for the command line interface.
 /// </summary>
 public class CLI
 {
@@ -13,10 +13,10 @@ public class CLI
     private EasySave easySave = EasySave.GetInstance();
 
     /// <summary>
-    /// Initialise une nouvelle instance de la classe CLI.
+    /// Initializes a new instance of the CLI class.
     /// </summary>
-    /// <param name="backupManager">Instance de BackupManager pour gérer les sauvegardes.</param>
-    /// <param name="stateManager">Instance de StateManager pour gérer l'état des sauvegardes.</param>
+    /// <param name="backupManager">Instance of BackupManager to manage backups.</param>
+    /// <param name="stateManager">StateManager instance for managing the state of backups.</param>
     public CLI(BackupManager backupManager, StateManager stateManager)
     {
         this.backupManager = backupManager;
@@ -24,9 +24,9 @@ public class CLI
     }
 
     /// <summary>
-    /// Analyse et exécute une commande.
+    /// Analyses and executes a command.
     /// </summary>
-    /// <param name="command">Commande à analyser et exécuter.</param>
+    /// <param name="command">Order to be analysed and executed.</param>
     public void ParseCommand(string command)
     {
         var parts = command.Split(' ', 2);
@@ -50,6 +50,13 @@ public class CLI
         }
     }
 
+    /// <summary>
+    /// Parses a command string containing job positions or ranges and executes the corresponding jobs.
+    /// </summary>
+    /// <param name="parameters">
+    /// A string containing job positions separated by ';'. 
+    /// It can include individual numbers ("1;3;5") and ranges ("2-4").
+    /// </param>
     private void ExecuteCommand(string parameters)
     {
         var commands = parameters.Split(';');
@@ -88,6 +95,9 @@ public class CLI
         }
     }
 
+    /// <summary>
+    /// Parses a command string to extract job positions and deletes the corresponding jobs.
+    /// </summary>
     private void DeleteCommand(string parameters)
     {
         var positions = ParsePositions(parameters);
@@ -97,6 +107,9 @@ public class CLI
         }
     }
 
+    /// <summary>
+    /// Parses a command string to extract job positions and restores the corresponding jobs.
+    /// </summary>
     private void RestoreCommand(string parameters)
     {
         var positions = ParsePositions(parameters);
@@ -106,6 +119,16 @@ public class CLI
         }
     }
 
+    /// <summary>
+    /// Parses a command string to extract job positions from individual numbers or ranges.
+    /// </summary>
+    /// <param name="parameters">
+    /// A string containing job positions separated by ';'.
+    /// It can include individual numbers (e.g., "1;3;5") and ranges (e.g., "2-4").
+    /// </param>
+    /// <returns>
+    /// A list of integers representing the parsed job positions.
+    /// </returns>
     private List<int> ParsePositions(string parameters)
     {
         var commands = parameters.Split(';');
@@ -141,6 +164,12 @@ public class CLI
         return positions;
     }
 
+    /// <summary>
+    /// Executes backup jobs based on their positions in the job list.
+    /// </summary>
+    /// <param name="positions">
+    /// A list of integers representing the positions of the backup jobs to execute.
+    /// </param>
     private void ExecuteJobsByPosition(List<int> positions)
     {
         var jobs = backupManager.GetBackupJobs();
@@ -161,6 +190,12 @@ public class CLI
         }
     }
 
+    /// <summary>
+    /// Deletes backup jobs based on their positions in the job list.
+    /// </summary>
+    /// <param name="positions">
+    /// A list of integers representing the positions of the backup jobs to delete.
+    /// </param>
     private void DeleteJobsByPosition(List<int> positions)
     {
         var jobs = backupManager.GetBackupJobs();
@@ -180,6 +215,12 @@ public class CLI
         }
     }
 
+    /// <summary>
+    /// Restores backup jobs based on their positions in the job list.
+    /// </summary>
+    /// <param name="positions">
+    /// A list of integers representing the positions of the backup jobs to restore.
+    /// </param>
     private void RestoreJobsByPosition(List<int> positions)
     {
         var jobs = backupManager.GetBackupJobs();
@@ -201,7 +242,7 @@ public class CLI
     }
 
     /// <summary>
-    /// Affiche l'état actuel des sauvegardes.
+    /// Displays the current status of backups.
     /// </summary>
     public void DisplayState()
     {
@@ -210,9 +251,9 @@ public class CLI
     }
 
     /// <summary>
-    /// Affiche un message d'erreur.
+    /// Displays an error message.
     /// </summary>
-    /// <param name="message">Message d'erreur à afficher.</param>
+    /// <param name="message">Error message to be displayed.</param>
     public void DisplayError(string message)
     {
         Console.WriteLine($"Error: {message}");

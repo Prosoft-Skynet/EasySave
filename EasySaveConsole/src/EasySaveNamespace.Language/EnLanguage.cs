@@ -1,14 +1,14 @@
 ﻿namespace EasySaveConsole.EasySaveNamespace.Language;
 
 /// <summary>
-/// Implémentation de la classe Language pour la langue anglaise.
+/// Implementation of the Language class for the English language.
 /// </summary>
 public class EnLanguage : Language
 {
     /// <summary>
-    /// Retourne un dictionnaire contenant les traductions en anglais.
+    /// Returns a dictionary containing English translations.
     /// </summary>
-    /// <returns>Dictionnaire des clés de traduction avec leur texte en anglais.</returns>
+    /// <returns>Dictionary of translation keys with their English text.</returns>
     public override Dictionary<string, string> GetTranslations()
     {
         return new Dictionary<string, string>
