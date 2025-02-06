@@ -12,8 +12,7 @@ namespace EasySaveNamespace.Language
         private List<Word>? translations;
 
 
-        //C:\\Users\\thoma\\Desktop\\CESI_3A\\Genie_logiciel\\projet_final\\EasySaveConsole\\bin\\Debug\\Assets\\JSONs\\words.json
-        //C:\\Users\\thoma\\Desktop\\CESI_3A\\Genie_logiciel\\projet_final\\EasySaveConsole\\bin\\Assets\\JSONs\\words.json
+
         public void GetJsonWord()
         {
             string projectDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.Parent!.Parent!.Parent!.FullName;

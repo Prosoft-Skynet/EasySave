@@ -11,4 +11,13 @@
     <Folder Include="Assets\JSONs\" />
   </ItemGroup>
 
+  <ItemGroup>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="EasySaveLogger">
+      <HintPath>..\EasySaveLogger\bin\Release\net8.0\EasySaveLogger.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

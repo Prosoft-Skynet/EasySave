@@ -18,16 +18,8 @@ public class StateManager
     /// <param name="path">Chemin du fichier d'état. Par défaut, il sera situé dans le dossier 'temp'.</param>
     public StateManager(string path = null)
 {
-    if (string.IsNullOrEmpty(path))
-    {
-        string projectDirectory = AppDomain.CurrentDomain.BaseDirectory; 
-        stateFilePath = Path.Combine(projectDirectory, "temp", "state.json"); 
-    }
-    else
-    {
-        stateFilePath = path;
-    }
-    
+    ConfigureStatePath(path);
+
     currentState = new Dictionary<Guid, StateEntry>();
     LoadState();
 }
@@ -59,9 +51,17 @@ public class StateManager
     /// <summary>
     /// Configure le chemin du fichier d'état.
     /// </summary>
-    public void ConfigureStatePath(string path)
+    public void ConfigureStatePath(string? path)
     {
-        stateFilePath = path;
+        if (string.IsNullOrEmpty(path))
+        {
+            string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            stateFilePath = Path.Combine(projectDirectory, "temp", "state.json");
+        }
+        else
+        {
+            stateFilePath = path;
+        }
     }
 
     /// <summary>
