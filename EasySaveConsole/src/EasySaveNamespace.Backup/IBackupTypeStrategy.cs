@@ -1,11 +1,14 @@
 namespace EasySaveConsole.EasySaveNamespace.Backup;
 
+/// <summary>
+/// Defines the backup strategy interface.
+/// </summary>
 public interface IBackupTypeStrategy
 {
     /// <summary>
-    /// Exécute la stratégie de sauvegarde.
+    /// Executes the backup strategy.
     /// </summary>
-    /// <param name="source">Répertoire source.</param>
-    /// <param name="target">Répertoire cible.</param>
-    public void ExecuteBackupStrategy(string source, string target);
+    /// <param name="source">The source directory.</param>
+    /// <param name="target">The target directory.</param>
+    void ExecuteBackupStrategy(string source, string target);
 }

@@ -1,5 +1,3 @@
-using System;
-
 namespace EasySaveConsole.EasySaveNamespace.State;
 
 /// <summary>
