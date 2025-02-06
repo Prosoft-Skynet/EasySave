@@ -1,15 +1,17 @@
 ﻿using EasySaveConsole.EasySaveNamespace;
 using EasySaveConsole.EasySaveNamespace.Backup;
+using EasySaveConsole.EasySaveNamespace.CLI;
 using EasySaveConsole.EasySaveNamespace.Language;
 using EasySaveConsole.EasySaveNamespace.State;
 
 public class Program
 {
     private EasySave easySave = EasySave.GetInstance();
-    private StateManager stateManager = new StateManager();
+    private static StateManager stateManager = new StateManager();
 
     private Language currentLanguage = new EnLanguage();
-    private BackupManager backupManager = new BackupManager();
+    private static BackupManager backupManager = new BackupManager();
+    private CLI cli = new CLI(backupManager, stateManager);
 
     public void Start()
     {
@@ -28,43 +30,48 @@ public class Program
             Console.Write(easySave.GetText("menu.choice"));
             string choice = Console.ReadLine()!;
 
-            switch (choice)
+            if (choice.StartsWith("execute") || choice.StartsWith("delete") || choice.StartsWith("restore"))
             {
-                case "1":
-                    AjouterSauvegarde();
-                    break;
-                case "2":
-                    SupprimerSauvegarde();
-                    break;
-                case "3":
-                    ListerSauvegardes();
-                    break;
-                case "4":
-                    ExecuterSauvegarde();
-                    break;
-                case "5":
-                    RestaurerSauvegarde();
-                    break;
-                case "6":
-                    break;
-                case "7":
-                    Console.WriteLine(easySave.GetText("menu.state.Contents"));
-                    string stateJson = File.ReadAllText(stateManager.GetStateFilePath());
-                    Console.WriteLine(stateJson);
-                    break;
-                case "8":
-                    if (currentLanguage is FrLanguage)
-                    {
-                        currentLanguage = new EnLanguage();
-                    }
-                    else
-                    {
-                        currentLanguage = new FrLanguage();
-                    }
-                    easySave.SetLanguage(currentLanguage);
-                    break;
-                case "9":
-                    return;
+                cli.ParseCommand(choice);
+            }
+            else
+            {
+                switch (choice)
+                {
+                    case "1":
+                        AjouterSauvegarde();
+                        break;
+                    case "2":
+                        SupprimerSauvegarde();
+                        break;
+                    case "3":
+                        ListerSauvegardes();
+                        break;
+                    case "4":
+                        ExecuterSauvegarde();
+                        break;
+                    case "5":
+                        RestaurerSauvegarde();
+                        break;
+                    case "6":
+                        break;
+                    case "7":
+                        cli.DisplayState();
+                        break;
+                    case "8":
+                        if (currentLanguage is FrLanguage)
+                        {
+                            currentLanguage = new EnLanguage();
+                        }
+                        else
+                        {
+                            currentLanguage = new FrLanguage();
+                        }
+                        easySave.SetLanguage(currentLanguage);
+                        break;
+                    case "9":
+                        return;
+                }
             }
         }
     }
