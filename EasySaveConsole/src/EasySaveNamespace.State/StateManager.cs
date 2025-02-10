@@ -5,7 +5,7 @@ using EasySaveConsole.EasySaveNamespace.Backup;
 
 public class StateManager
 {
-    private string stateFilePath;
+    private string stateFilePath = string.Empty;
     private Dictionary<Guid, StateEntry> currentState;
 
     /// <summary>
@@ -13,24 +13,12 @@ public class StateManager
     /// The file will be created in the project's 'temp' folder.
     /// </summary>
     /// <param name="path">Chemin du fichier d'état. Par défaut, il sera situé dans le dossier 'temp'.</param>
-    public StateManager(string path = null)
-{
-    ConfigureStatePath(path);
-
-    currentState = new Dictionary<Guid, StateEntry>();
-    LoadState();
-}
-
-    /// <summary>
-    /// Ensure that the state file exists.
-    /// If it does not exist, create an empty file.
-    /// </summary>
-    private void EnsureStateFileExists()
+    public StateManager(string path = null!)
     {
-        if (!File.Exists(stateFilePath))
-        {
-            File.WriteAllText(stateFilePath, "{}");
-        }
+        ConfigureStatePath(path);
+
+        currentState = new Dictionary<Guid, StateEntry>();
+        LoadState();
     }
 
     /// <summary>
@@ -74,7 +62,7 @@ public class StateManager
         if (string.IsNullOrEmpty(path))
         {
             string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            stateFilePath = Path.Combine(projectDirectory, "temp", "state.json");
+            stateFilePath = Path.Combine(projectDirectory, "State", "state.json");
         }
         else
         {

@@ -21,8 +21,9 @@ public class EnLanguage : Language
             { "menu.logs", "6. View logs" },
             { "menu.state", "7. View state" },
             { "menu.state.Contents", "Contents of the state" },
-            { "menu.language", "8. FR" },
-            { "menu.quit", "9. Quit" },
+            { "menu.logs_format", "8. Change logs format" },
+            { "menu.language", "9. FR" },
+            { "menu.quit", "10. Quit" },
             { "menu.choice", "Your choice: " },
             { "backup.error_5", "Impossible to add more than 5 backup jobs." },
             { "backup.name", "Backup name : " },
@@ -47,6 +48,9 @@ public class EnLanguage : Language
             { "restore.restore", "Restoring the backup " },
             { "restore.finish", "Restoration complete !" },
             { "logs.chose", "chose the log to execute" },
+            { "logs.select_format", "Select the log format:" },
+            { "logs.JSON_format", "Converting existing logs to JSON..." },
+            { "logs.XML_format", "Converting existing logs to XML..." },
             { "logs.none", "there is no log for the moment" }
         };
     }
