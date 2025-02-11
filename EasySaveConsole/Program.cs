@@ -5,7 +5,7 @@ using EasySaveConsole.EasySaveNamespace.Backup;
 using EasySaveConsole.EasySaveNamespace.CLI;
 using EasySaveConsole.EasySaveNamespace.Language;
 using EasySaveConsole.EasySaveNamespace.State;
-using EasySaveLogger;
+using EasySaveLogger.EasySaveNamespace.Logger;
 
 /// <summary>
 /// Represents the main program of EasySave.
@@ -16,10 +16,17 @@ public class Program
     private EasySave easySave = EasySave.GetInstance();
     private static StateManager stateManager = new StateManager();
 
-    private Logger logger = new Logger();
     private Language currentLanguage = new EnLanguage();
     private static BackupManager backupManager = new BackupManager();
     private CLI cli = new CLI(backupManager, stateManager);
+
+    private Logger logger;
+
+    public Program()
+    {
+        logger = new Logger(new JsonLogFormatter());
+        logger.SetLogFormatter(new JsonLogFormatter());
+    }
 
     /// <summary>
     /// Starts the EasySave console interface.
@@ -36,6 +43,10 @@ public class Program
             Console.WriteLine(easySave.GetText("menu.restore"));
             Console.WriteLine(easySave.GetText("menu.logs"));
             Console.WriteLine(easySave.GetText("menu.state"));
+            if (logger.GetLogFormatter() is JsonLogFormatter)
+                Console.WriteLine(easySave.GetText("menu.logs_format_XML"));
+            else
+                Console.WriteLine(easySave.GetText("menu.logs_format_JSON"));
             Console.WriteLine(easySave.GetText("menu.language"));
             Console.WriteLine(easySave.GetText("menu.quit"));
             Console.Write(easySave.GetText("menu.choice"));
@@ -43,7 +54,6 @@ public class Program
 
             if (choice.StartsWith("execute") || choice.StartsWith("delete") || choice.StartsWith("restore"))
             {
-
                 cli.ParseCommand(choice);
             }
             else
@@ -72,6 +82,9 @@ public class Program
                         cli.DisplayState();
                         break;
                     case "8":
+                        ChangerFormatLog();
+                        break;
+                    case "9":
                         if (currentLanguage is FrLanguage)
                         {
                             currentLanguage = new EnLanguage();
@@ -82,7 +95,7 @@ public class Program
                         }
                         easySave.SetLanguage(currentLanguage);
                         break;
-                    case "9":
+                    case "10":
                         return;
                 }
             }
@@ -168,7 +181,6 @@ public class Program
     /// </summary>
     private void ListerSauvegardes()
     {
-
         if (backupManager.GetBackupJobs().Count == 0)
         {
             Console.WriteLine(easySave.GetText("list.none"));
@@ -196,7 +208,7 @@ public class Program
     /// </summary>
     private void ExecuterSauvegarde()
     {
-        var debutTime = DateTime.Now;
+        var debutTime = DateTime.Now.Millisecond;
 
         if (backupManager.GetBackupJobs().Count == 0)
         {
@@ -216,16 +228,14 @@ public class Program
             backupManager.ExecuteJob(job.Id);
             Console.WriteLine(easySave.GetText("exec.finish"));
 
-            long savingTime = DateTime.Now.Millisecond - debutTime.Millisecond;
+            long savingTime = DateTime.Now.Millisecond - debutTime;
 
-            this.logger.Log(job.Name, job.Source, job.Target, savingTime);
+            logger.Log(job.Name, job.Source, job.Target, savingTime);
         }
         else
         {
             Console.WriteLine(easySave.GetText("name.invalid"));
         }
-
-        
     }
 
     /// <summary>
@@ -257,9 +267,43 @@ public class Program
         }
     }
 
+    /// <summary>
+    /// Changes the format of the log files between JSON and XML.
+    /// </summary>
+    private void ChangerFormatLog()
+    {
+        ILogFormatter currentFormatter = logger.GetLogFormatter();
+        ILogFormatter newFormatter;
+
+        if (currentFormatter is JsonLogFormatter)
+        {
+            newFormatter = new XmlLogFormatter();
+            Console.WriteLine(easySave.GetText("logs.XML_format"));
+        }
+        else
+        {
+            newFormatter = new JsonLogFormatter();
+            Console.WriteLine(easySave.GetText("logs.JSON_format"));
+        }
+
+        logger.SetLogFormatter(newFormatter);
+    }
+
+    /// <summary>
+    /// Reads the logs from the log files.
+    /// </summary>
     private void ReadLogs()
     {
-        var logsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+        string logsPath;
+        if (logger.GetLogFormatter() is JsonLogFormatter)
+        {
+            logsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "JSON");
+        }
+        else
+        {
+            logsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "XML");
+        }
+
         var files = Directory.GetFiles(logsPath)
                      .Select(Path.GetFileName)
                      .ToList();
@@ -277,23 +321,20 @@ public class Program
                 {
                     Console.WriteLine(file);
                 }
-                chosenFile = Console.ReadLine();
+                chosenFile = Console.ReadLine()!;
 
                 for (int i = 0; i < filesName.Count; i++)
                 {
-                    if(chosenFile == filesName[i])
+                    if (chosenFile == filesName[i])
                     {
                         fileToOpen = files[i];
                     }
                 }
-
             }
 
+            var filePath = Path.Combine(logsPath, fileToOpen!);
 
-            var filePath = Path.Combine(logsPath, fileToOpen);
-
-
-
+            Thread.Sleep(100);
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -311,15 +352,11 @@ public class Program
             {
                 Console.WriteLine("Système d'exploitation non supporté.");
             }
-
-
         }
         else
         {
             Console.WriteLine(easySave.GetText("logs.none"));
         }
-
-
     }
 
     /// <summary>

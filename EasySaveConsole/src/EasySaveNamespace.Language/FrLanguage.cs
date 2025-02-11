@@ -21,8 +21,10 @@ public class FrLanguage : Language
             { "menu.logs", "6. Voir les logs" },
             { "menu.state", "7. Voir l'état" },
             { "menu.state.Contents", "Contenu de l'état" },
-            { "menu.language", "8. EN" },
-            { "menu.quit", "9. Quitter" },
+            { "menu.logs_format_JSON", "8. JSON" },
+            { "menu.logs_format_XML", "8. XML" },
+            { "menu.language", "9. EN" },
+            { "menu.quit", "10. Quitter" },
             { "menu.choice", "Votre choix: " },
             { "backup.error_5", "Impossible d'ajouter plus de 5 travaux de sauvegarde." },
             { "backup.name", "Nom de la sauvegarde : " },
@@ -47,6 +49,8 @@ public class FrLanguage : Language
             { "restore.restore", "Restauration de la sauvegarde " },
             { "restore.finish", "Restauration terminée !" },
             { "logs.chose", "choisis le log à exécuter" },
+            { "logs.JSON_format", "Affichage des logs en JSON" },
+            { "logs.XML_format", "Affichage des logs en XML" },
             { "logs.none", "il n'y a aucun log pour le moment" }
         };
     }
