@@ -8,29 +8,39 @@ using System.Xml.Serialization;
 /// </summary>
 public class Logger
 {
-    private readonly string _logDirectory;
+    private readonly string _jsonLogDirectory;
+    private readonly string _xmlLogDirectory;
     private ILogFormatter _logFormatter;
 
     /// <summary>
     /// Initializes the logger with the specified log formatter.
-    /// Creates the log directory if it does not exist.
+    /// Creates the log directories if they do not exist.
     /// </summary>
     /// <param name="logFormatter">The formatter to use for writing logs (JSON or XML).</param>
     public Logger(ILogFormatter logFormatter)
     {
-        _logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
-        Directory.CreateDirectory(_logDirectory);
+        _jsonLogDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "JSON");
+        _xmlLogDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "XML");
+        Directory.CreateDirectory(_jsonLogDirectory);
+        Directory.CreateDirectory(_xmlLogDirectory);
         _logFormatter = logFormatter;
     }
 
     /// <summary>
-    /// Updates the log formatter and converts existing logs to the new format.
+    /// Updates the log formatter.
     /// </summary>
     /// <param name="newFormatter">The new formatter to use (JSON or XML).</param>
     public void SetLogFormatter(ILogFormatter newFormatter)
     {
-        ConvertExistingLogs(newFormatter);
         _logFormatter = newFormatter;
+    }
+
+    /// <summary>
+    /// Give the log formatter.
+    /// </summary>
+    public ILogFormatter GetLogFormatter()
+    {
+        return _logFormatter;
     }
 
     /// <summary>
@@ -57,9 +67,12 @@ public class Logger
             JobName = backupName,
             SourcePath = sourcePath,
             TargetPath = destinationPath,
-            FileSize = fileSize
+            FileSize = fileSize,
+            TransferTime = transferTimeMs
         });
-        _logFormatter.WriteLog(_logDirectory, logs);
+
+        // Write logs in both JSON and XML formats
+        WriteLogInBothFormats(logs);
     }
 
     /// <summary>
@@ -69,15 +82,15 @@ public class Logger
     private List<LogEntry> LoadExistingLogs()
     {
         string date = DateTime.Now.ToString("yyyy-MM-dd");
-        string jsonPath = Path.Combine(_logDirectory, $"{date}.json");
-        string xmlPath = Path.Combine(_logDirectory, $"{date}.xml");
+        string jsonPath = Path.Combine(_jsonLogDirectory, $"{date}.json");
+        string xmlPath = Path.Combine(_xmlLogDirectory, $"{date}.xml");
 
-        if (File.Exists(jsonPath))
+        if (_logFormatter is JsonLogFormatter && File.Exists(jsonPath))
         {
             string jsonContent = File.ReadAllText(jsonPath);
             return JsonSerializer.Deserialize<List<LogEntry>>(jsonContent) ?? new List<LogEntry>();
         }
-        else if (File.Exists(xmlPath))
+        else if (_logFormatter is XmlLogFormatter && File.Exists(xmlPath))
         {
             XmlSerializer serializer = new XmlSerializer(typeof(List<LogEntry>));
             using FileStream fileStream = new FileStream(xmlPath, FileMode.Open);
@@ -88,28 +101,15 @@ public class Logger
     }
 
     /// <summary>
-    /// Converts existing logs from one format to another and deletes the old log file.
+    /// Writes logs in both JSON and XML formats.
     /// </summary>
-    /// <param name="newFormatter">The new formatter to use (JSON or XML).</param>
-    private void ConvertExistingLogs(ILogFormatter newFormatter)
+    /// <param name="logs">The list of log entries to write.</param>
+    private void WriteLogInBothFormats(List<LogEntry> logs)
     {
-        string date = DateTime.Now.ToString("yyyy-MM-dd");
-        string jsonPath = Path.Combine(_logDirectory, $"{date}.json");
-        string xmlPath = Path.Combine(_logDirectory, $"{date}.xml");
+        ILogFormatter jsonFormatter = new JsonLogFormatter();
+        ILogFormatter xmlFormatter = new XmlLogFormatter();
 
-        List<LogEntry> existingLogs = LoadExistingLogs();
-        if (existingLogs.Count > 0)
-        {
-            newFormatter.WriteLog(_logDirectory, existingLogs);
-Console.WriteLine("Logs converted to new format.");
-            if (newFormatter is XmlLogFormatter && File.Exists(jsonPath))
-            {
-                File.Delete(jsonPath);
-            }
-            else if (newFormatter is JsonLogFormatter && File.Exists(xmlPath))
-            {
-                File.Delete(xmlPath);
-            }
-        }
+        jsonFormatter.WriteLog(_jsonLogDirectory, logs);
+        xmlFormatter.WriteLog(_xmlLogDirectory, logs);
     }
 }

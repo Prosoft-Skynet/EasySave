@@ -21,7 +21,8 @@ public class FrLanguage : Language
             { "menu.logs", "6. Voir les logs" },
             { "menu.state", "7. Voir l'état" },
             { "menu.state.Contents", "Contenu de l'état" },
-            { "menu.logs_format", "8. Changer le format des logs" },
+            { "menu.logs_format_JSON", "8. JSON" },
+            { "menu.logs_format_XML", "8. XML" },
             { "menu.language", "9. EN" },
             { "menu.quit", "10. Quitter" },
             { "menu.choice", "Votre choix: " },
@@ -48,9 +49,8 @@ public class FrLanguage : Language
             { "restore.restore", "Restauration de la sauvegarde " },
             { "restore.finish", "Restauration terminée !" },
             { "logs.chose", "choisis le log à exécuter" },
-            { "logs.select_format", "Selectionner le format de log:" },
-            { "logs.JSON_format", "Convertir les logs existantes en JSON..." },
-            { "logs.XML_format", "Convertir les logs existantes en XML..." },
+            { "logs.JSON_format", "Affichage des logs en JSON" },
+            { "logs.XML_format", "Affichage des logs en XML" },
             { "logs.none", "il n'y a aucun log pour le moment" }
         };
     }
