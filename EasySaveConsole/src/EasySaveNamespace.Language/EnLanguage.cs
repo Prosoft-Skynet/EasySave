@@ -21,7 +21,8 @@ public class EnLanguage : Language
             { "menu.logs", "6. View logs" },
             { "menu.state", "7. View state" },
             { "menu.state.Contents", "Contents of the state" },
-            { "menu.logs_format", "8. Change logs format" },
+            { "menu.logs_format_JSON", "8. JSON" },
+            { "menu.logs_format_XML", "8. XML" },
             { "menu.language", "9. FR" },
             { "menu.quit", "10. Quit" },
             { "menu.choice", "Your choice: " },
@@ -48,9 +49,8 @@ public class EnLanguage : Language
             { "restore.restore", "Restoring the backup " },
             { "restore.finish", "Restoration complete !" },
             { "logs.chose", "chose the log to execute" },
-            { "logs.select_format", "Select the log format:" },
-            { "logs.JSON_format", "Converting existing logs to JSON..." },
-            { "logs.XML_format", "Converting existing logs to XML..." },
+            { "logs.JSON_format", "Displaying logs in JSON" },
+            { "logs.XML_format", "Displaying logs in XML" },
             { "logs.none", "there is no log for the moment" }
         };
     }

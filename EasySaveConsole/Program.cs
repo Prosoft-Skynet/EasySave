@@ -43,7 +43,10 @@ public class Program
             Console.WriteLine(easySave.GetText("menu.restore"));
             Console.WriteLine(easySave.GetText("menu.logs"));
             Console.WriteLine(easySave.GetText("menu.state"));
-            Console.WriteLine(easySave.GetText("menu.logs_format"));
+            if (logger.GetLogFormatter() is JsonLogFormatter)
+                Console.WriteLine(easySave.GetText("menu.logs_format_XML"));
+            else
+                Console.WriteLine(easySave.GetText("menu.logs_format_JSON"));
             Console.WriteLine(easySave.GetText("menu.language"));
             Console.WriteLine(easySave.GetText("menu.quit"));
             Console.Write(easySave.GetText("menu.choice"));
@@ -205,7 +208,7 @@ public class Program
     /// </summary>
     private void ExecuterSauvegarde()
     {
-        var debutTime = DateTime.Now;
+        var debutTime = DateTime.Now.Millisecond;
 
         if (backupManager.GetBackupJobs().Count == 0)
         {
@@ -225,7 +228,7 @@ public class Program
             backupManager.ExecuteJob(job.Id);
             Console.WriteLine(easySave.GetText("exec.finish"));
 
-            long savingTime = DateTime.Now.Millisecond - debutTime.Millisecond;
+            long savingTime = DateTime.Now.Millisecond - debutTime;
 
             logger.Log(job.Name, job.Source, job.Target, savingTime);
         }
@@ -269,33 +272,38 @@ public class Program
     /// </summary>
     private void ChangerFormatLog()
     {
-        Console.WriteLine(easySave.GetText("logs.select_format"));
-        Console.WriteLine("1. JSON");
-        Console.WriteLine("2. XML");
+        ILogFormatter currentFormatter = logger.GetLogFormatter();
+        ILogFormatter newFormatter;
 
-        string choice = Console.ReadLine()!;
-        ILogFormatter formatter;
-
-        if (choice == "2")
+        if (currentFormatter is JsonLogFormatter)
         {
-            formatter = new XmlLogFormatter();
+            newFormatter = new XmlLogFormatter();
             Console.WriteLine(easySave.GetText("logs.XML_format"));
         }
         else
         {
-            formatter = new JsonLogFormatter();
+            newFormatter = new JsonLogFormatter();
             Console.WriteLine(easySave.GetText("logs.JSON_format"));
         }
 
-        logger.SetLogFormatter(formatter);
+        logger.SetLogFormatter(newFormatter);
     }
 
     /// <summary>
-    /// Display logs file.
+    /// Reads the logs from the log files.
     /// </summary>
     private void ReadLogs()
     {
-        var logsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+        string logsPath;
+        if (logger.GetLogFormatter() is JsonLogFormatter)
+        {
+            logsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "JSON");
+        }
+        else
+        {
+            logsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "XML");
+        }
+
         var files = Directory.GetFiles(logsPath)
                      .Select(Path.GetFileName)
                      .ToList();
@@ -325,6 +333,8 @@ public class Program
             }
 
             var filePath = Path.Combine(logsPath, fileToOpen!);
+
+            Thread.Sleep(100);
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {

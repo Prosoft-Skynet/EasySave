@@ -35,6 +35,8 @@ public class LogEntry
         JobName = string.Empty;
         SourcePath = string.Empty;
         TargetPath = string.Empty;
+        FileSize = 0;
+        TransferTime = 0;
     }
 
     /// <summary>
