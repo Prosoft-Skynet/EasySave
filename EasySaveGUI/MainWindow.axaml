@@ -1,23 +1,37 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:EasySaveGUI.ViewModels"
         x:Class="EasySaveGUI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
         Title="EasySave"
-        Width="600" Height="400">
+        Width="900" Height="600"
+        Background="#252525">
 
-	<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-		<TextBlock Text="--- Menu EasySave ---" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+    <Grid>
+        <!-- Définition des colonnes -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-		<Button Content="Ajouter une sauvegarde" Margin="10"/>
-		<Button Content="Supprimer une sauvegarde" Margin="10"/>
-		<Button Content="Lister les sauvegardes" Margin="10"/>
-		<Button Content="Exécuter une sauvegarde" Margin="10"/>
-		<Button Content="Restaurer une sauvegarde" Margin="10"/>
-		<Button Content="Voir les logs" Margin="10"/>
-		<Button Content="Voir l'état" Margin="10"/>
+        <!-- Barre latérale -->
+        <StackPanel Grid.Column="0" Background="#333333" Width="250" Margin="10" Spacing="10">
+            <TextBlock Text="EasySave" FontSize="24" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+            <Button Content="Ajouter une sauvegarde" Command="{Binding AddBackupCommand}" Background="#007ACC" Foreground="White" Padding="10"/>
+            <Button Content="Supprimer une sauvegarde" Command="{Binding DeleteBackupCommand}" Background="#D32F2F" Foreground="White" Padding="10"/>
+            <Button Content="Exécuter une sauvegarde" Command="{Binding RunBackupCommand}" Background="#4CAF50" Foreground="White" Padding="10"/>
+            <Button Content="Restaurer une sauvegarde" Command="{Binding RestoreBackupCommand}" Background="#FF9800" Foreground="White" Padding="10"/>
+            <Button Content="Voir les logs" Command="{Binding ViewLogsCommand}" Background="#9C27B0" Foreground="White" Padding="10"/>
+            <Button Content="Voir l'état" Command="{Binding ViewStateCommand}" Background="#03A9F4" Foreground="White" Padding="10"/>
+            <Separator/>
+            <Button Content="EN/FR" Command="{Binding ToggleLanguageCommand}" Background="#8BC34A" Foreground="White" Padding="10"/>
+            <Button Content="Quitter" Command="{Binding ExitCommand}" Background="Red" Foreground="White" Padding="10"/>
+        </StackPanel>
 
-		<!-- Bouton de changement de langue -->
-		<Button Content="EN/FR" Margin="10"/>
-
-		<Button Content="Quitter" Margin="10"/>
-	</StackPanel>
+        <!-- Contenu principal -->
+        <StackPanel Grid.Column="1" Margin="20">
+            <TextBlock Text="Sauvegardes Disponibles" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
+            <ListBox ItemsSource="{Binding Backups}" Height="350" Background="White" BorderBrush="Gray" BorderThickness="1"/>
+        </StackPanel>
+    </Grid>
 </Window>

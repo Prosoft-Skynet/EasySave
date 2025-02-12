@@ -1,24 +1,30 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using EasySaveGUI.Views;
 using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
+using EasySaveGUI.ViewModels;
+using EasySaveGUI.Views;
 
-namespace EasySaveGUI;
-
-public partial class App : Application
+namespace EasySaveGUI
 {
-    public override void Initialize()
+    public class App : Application
     {
-        AvaloniaXamlLoader.Load(this);
-    }
-
-    public override void OnFrameworkInitializationCompleted()
-    {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        public override void Initialize()
         {
-            desktop.MainWindow = new MainWindow();
+            AvaloniaXamlLoader.Load(this);
         }
 
-        base.OnFrameworkInitializationCompleted();
+        public override void OnFrameworkInitializationCompleted()
+        {
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.MainWindow = new MainWindow
+                {
+                    DataContext = new MainWindowViewModel()
+                };
+            }
+
+            base.OnFrameworkInitializationCompleted();
+        }
     }
 }
