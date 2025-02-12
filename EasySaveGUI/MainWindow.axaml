@@ -1,9 +1,23 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="EasySaveGUI.MainWindow"
-        Title="EasySaveGUI">
-    Welcome to Avalonia!
+        x:Class="EasySaveGUI.Views.MainWindow"
+        Title="EasySave"
+        Width="600" Height="400">
+
+	<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+		<TextBlock Text="--- Menu EasySave ---" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+
+		<Button Content="Ajouter une sauvegarde" Margin="10"/>
+		<Button Content="Supprimer une sauvegarde" Margin="10"/>
+		<Button Content="Lister les sauvegardes" Margin="10"/>
+		<Button Content="Exécuter une sauvegarde" Margin="10"/>
+		<Button Content="Restaurer une sauvegarde" Margin="10"/>
+		<Button Content="Voir les logs" Margin="10"/>
+		<Button Content="Voir l'état" Margin="10"/>
+
+		<!-- Bouton de changement de langue -->
+		<Button Content="EN/FR" Margin="10"/>
+
+		<Button Content="Quitter" Margin="10"/>
+	</StackPanel>
 </Window>

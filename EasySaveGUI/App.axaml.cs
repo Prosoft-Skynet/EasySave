@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using EasySaveGUI.Views;
 using Avalonia.Markup.Xaml;
 
 namespace EasySaveGUI;
