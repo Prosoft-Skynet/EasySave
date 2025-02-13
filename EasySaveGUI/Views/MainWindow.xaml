@@ -7,109 +7,181 @@
         Height="600"
         Background="#60AFFF">
 
-        <Window.DataContext>
-                <vm:MainViewModel/>
-        </Window.DataContext>
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
 
-        <Grid>
-                <!-- Définition des colonnes -->
-                <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="300"/>
-                        <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+    <Grid>
+        <!-- Définition des colonnes -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-                <!-- Barre latérale -->
-                <Border Grid.Column="0"
-                        Background="#1E3888"
-                        Width="250"
+        <!-- Barre latérale -->
+        <Border Grid.Column="0"
+                Background="#1E3888"
+                Width="250"
+                Margin="10"
+                CornerRadius="15">
+            <StackPanel Width="200"
                         Margin="10"
-                        CornerRadius="15">
-                        <StackPanel Width="200"
-                                    Margin="10"
-                                    Orientation="Vertical">
-                                <TextBlock Text="EasySave"
-                                           FontSize="24"
-                                           FontWeight="Bold"
-                                           Foreground="White"
-                                           HorizontalAlignment="Center"/>
+                        Orientation="Vertical">
+                <TextBlock Text="EasySave"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           HorizontalAlignment="Center"/>
 
-                                <Button Content="Ajouter une sauvegarde"
-                                        Command="{Binding AddBackupCommand}"
-                                        Background="#60AFFF"
-                                        Foreground="White"
-                                        Padding="10"
-                                        Width="200"
-                                        HorizontalAlignment="Center"/>
-                                <Button Content="Supprimer une sauvegarde"
-                                        Command="{Binding DeleteBackupCommand}"
-                                        Background="#60AFFF"
-                                        Foreground="White"
-                                        Padding="10"
-                                        Width="200"
-                                        HorizontalAlignment="Center"/>
-                                <Button Content="Exécuter une sauvegarde"
-                                        Command="{Binding RunBackupCommand}"
-                                        Background="#60AFFF"
-                                        Foreground="White"
-                                        Padding="10"
-                                        Width="200"
-                                        HorizontalAlignment="Center"/>
-                                <Button Content="Restaurer une sauvegarde"
-                                        Command="{Binding RestoreBackupCommand}"
-                                        Background="#60AFFF"
-                                        Foreground="White"
-                                        Padding="10"
-                                        Width="200"
-                                        HorizontalAlignment="Center"/>
-                                <Button Content="Voir les logs"
-                                        Command="{Binding ViewLogsCommand}"
-                                        Background="#60AFFF"
-                                        Foreground="White"
-                                        Padding="10"
-                                        Width="200"
-                                        HorizontalAlignment="Center"/>
-                                <Button Content="Voir l'état"
-                                        Command="{Binding ViewStateCommand}"
-                                        Background="#60AFFF"
-                                        Foreground="White"
-                                        Padding="10"
-                                        Width="200"
-                                        HorizontalAlignment="Center"/>
+                <Button Content="Ajouter une sauvegarde"
+                        Command="{Binding AddBackupCommand}"
+                        Background="#60AFFF"
+                        Foreground="White"
+                        Padding="10"
+                        Width="200"
+                        HorizontalAlignment="Center"
+                        IsEnabled="{Binding CanAddBackup}"/>
 
-                                <Separator/>
+                <Button Content="Supprimer une sauvegarde"
+                        Command="{Binding DeleteBackupCommand}"
+                        Background="#60AFFF"
+                        Foreground="White"
+                        Padding="10"
+                        Width="200"
+                        HorizontalAlignment="Center"/>
 
-                                <Button Content="EN/FR"
-                                        Command="{Binding ToggleLanguageCommand}"
-                                        Background="#8BC34A"
-                                        Foreground="White"
-                                        Padding="10"
-                                        Width="200"
-                                        HorizontalAlignment="Center"/>
-                                <Button Content="Quitter"
-                                        Command="{Binding ExitCommand}"
-                                        Background="Red"
-                                        Foreground="White"
-                                        Padding="10"
-                                        Width="200"
-                                        HorizontalAlignment="Center"/>
-                        </StackPanel>
-                </Border>
+                <Button Content="Exécuter une sauvegarde"
+                        Command="{Binding RunBackupCommand}"
+                        Background="#60AFFF"
+                        Foreground="White"
+                        Padding="10"
+                        Width="200"
+                        HorizontalAlignment="Center"
+                        IsEnabled="{Binding CanExecuteOrRestore}"/>
 
-                <!-- Contenu principal -->
-                <StackPanel Grid.Column="1"
-                            Margin="20">
-                        <ListBox ItemsSource="{Binding Backups}"
-                                 Height="350"
-                                 Background="White"
-                                 BorderBrush="Gray"
-                                 BorderThickness="1"/>
-                        <TextBlock Text="{Binding StatusMessage}"
-                                   FontSize="16"
-                                   FontWeight="Bold"
-                                   Foreground="White"
-                                   HorizontalAlignment="Center"
-                                   Margin="10"/>
+                <Button Content="Restaurer une sauvegarde"
+                        Command="{Binding RestoreBackupCommand}"
+                        Background="#60AFFF"
+                        Foreground="White"
+                        Padding="10"
+                        Width="200"
+                        HorizontalAlignment="Center"
+                        IsEnabled="{Binding CanExecuteOrRestore}"/>
+
+                <Button Content="Voir les logs"
+                        Command="{Binding ViewLogsCommand}"
+                        Background="#60AFFF"
+                        Foreground="White"
+                        Padding="10"
+                        Width="200"
+                        HorizontalAlignment="Center"/>
+                <Button Content="Voir l'état"
+                        Command="{Binding ViewStateCommand}"
+                        Background="#60AFFF"
+                        Foreground="White"
+                        Padding="10"
+                        Width="200"
+                        HorizontalAlignment="Center"/>
+
+                <Separator/>
+
+                <Button Content="EN/FR"
+                        Command="{Binding ToggleLanguageCommand}"
+                        Background="#8BC34A"
+                        Foreground="White"
+                        Padding="10"
+                        Width="200"
+                        HorizontalAlignment="Center"/>
+                <Button Content="Quitter"
+                        Command="{Binding ExitCommand}"
+                        Background="Red"
+                        Foreground="White"
+                        Padding="10"
+                        Width="200"
+                        HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Contenu principal -->
+        <Border Grid.Column="1"
+                Background="#E0F7FA"
+                Padding="10"
+                Margin="10"
+                CornerRadius="10">
+            <StackPanel>
+                <TextBlock Text="Créer une nouvelle sauvegarde"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Foreground="Black"
+                           Margin="0,0,0,10"/>
+
+                <TextBlock Text="Nom de la sauvegarde :"
+                           Foreground="Black"
+                           Margin="10,0,0,0"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Text="{Binding BackupName, UpdateSourceTrigger=PropertyChanged}"
+                             Width="250"/>
+                </StackPanel>
+                <TextBlock Text="Dossier source :"
+                           Foreground="Black"
+                           Margin="10,0,0,0"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Text="{Binding SourcePath, UpdateSourceTrigger=PropertyChanged}"
+                             Width="250"
+                             IsReadOnly="True"/>
+                    <Button Content="..."
+                            Command="{Binding SelectSourceCommand}"
+                            Width="30"/>
                 </StackPanel>
 
-        </Grid>
+                <TextBlock Text="Dossier cible :"
+                           Foreground="Black"
+                           Margin="10,0,0,0"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Text="{Binding DestinationPath, UpdateSourceTrigger=PropertyChanged}"
+                             Width="250"
+                             IsReadOnly="True"/>
+                    <Button Content="..."
+                            Command="{Binding SelectDestinationCommand}"
+                            Width="30"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical"
+                            Margin="10,0,0,0">
+                    <TextBlock Text="Type de sauvegarde :"
+                               Foreground="Black"/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton Content="Complète"
+                                     IsChecked="{Binding IsFullBackup}"
+                                     GroupName="BackupType"
+                                     Foreground="Black"
+                                     Margin="5,0,10,0"/>
+                        <RadioButton Content="Différentielle"
+                                     IsChecked="{Binding IsDifferentialBackup}"
+                                     GroupName="BackupType"
+                                     Foreground="Black"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <Separator Margin="10"/>
+
+                <TextBlock Text="Liste des sauvegardes :"
+                           Foreground="Black"/>
+                <ListBox ItemsSource="{Binding Backups}"
+                         SelectedItem="{Binding SelectedBackup}"
+                         DisplayMemberPath="Name"
+                         Height="200"
+                         Background="White"
+                         BorderBrush="Gray"
+                         BorderThickness="1"/>
+
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            Margin="10">
+
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+    </Grid>
 </Window>

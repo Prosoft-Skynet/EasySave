@@ -1,13 +1,11 @@
-﻿using System.Windows;
-using EasySaveGUI.ViewModels;
+﻿namespace EasySaveGUI.Views;
 
-namespace EasySaveGUI.Views
+using System.Windows;
+
+public partial class MainWindow : Window
 {
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

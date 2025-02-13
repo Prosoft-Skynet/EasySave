@@ -1,87 +1,216 @@
-﻿using System;
+﻿namespace EasySaveGUI.ViewModels;
+
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using EasySaveCore.Backup;
+using EasySaveCore.Controller;
 using EasySaveGUI.Helpers;
 
-namespace EasySaveGUI.ViewModels
+public class MainViewModel : ViewModelBase
 {
-    public class MainViewModel : INotifyPropertyChanged
+    private readonly BackupManager _backupManager;
+
+    private string _backupName = string.Empty;
+    private string _sourcePath = string.Empty;
+    private string _destinationPath = string.Empty;
+    private bool _isFullBackup = true;
+
+    public ObservableCollection<BackupJob> Backups { get; }
+
+    private BackupJob? _selectedBackup;
+    public BackupJob? SelectedBackup
     {
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        private bool isFrench = true;
-        private string _statusMessage = "Prêt"; // Initialisation correcte
-
-        public ObservableCollection<string> Backups { get; } = new ObservableCollection<string>();
-
-        public ICommand AddBackupCommand { get; }
-        public ICommand DeleteBackupCommand { get; }
-        public ICommand RunBackupCommand { get; }
-        public ICommand RestoreBackupCommand { get; }
-        public ICommand ViewLogsCommand { get; }
-        public ICommand ViewStateCommand { get; }
-        public ICommand ToggleLanguageCommand { get; }
-        public ICommand ExitCommand { get; }
-
-        public string StatusMessage
+        get => _selectedBackup;
+        set
         {
-            get => _statusMessage;
-            set
-            {
-                if (_statusMessage != value)
-                {
-                    _statusMessage = value;
-                    OnPropertyChanged();
-                }
-            }
+            _selectedBackup = value;
+            OnPropertyChanged();
+
+            // Mise à jour de l'état des boutons
+            OnPropertyChanged(nameof(CanExecuteOrRestoreOrDelete));
+            OnPropertyChanged(nameof(CanAddBackup));
+        }
+    }
+
+    // Propriété pour activer/désactiver les boutons "Exécuter" et "Restaurer"
+    public bool CanExecuteOrRestoreOrDelete => SelectedBackup != null;
+
+    // Propriété pour activer/désactiver le bouton "Ajouter"
+    public bool CanAddBackup => SelectedBackup == null;
+
+
+    public string BackupName
+    {
+        get => _backupName;
+        set { _backupName = value; OnPropertyChanged(); }
+    }
+
+    public string SourcePath
+    {
+        get => _sourcePath;
+        set { _sourcePath = value; OnPropertyChanged(); }
+    }
+
+    public string DestinationPath
+    {
+        get => _destinationPath;
+        set { _destinationPath = value; OnPropertyChanged(); }
+    }
+
+    public bool IsFullBackup
+    {
+        get => _isFullBackup;
+        set { _isFullBackup = value; OnPropertyChanged(); }
+    }
+
+    public ICommand AddBackupCommand { get; }
+    public ICommand DeleteBackupCommand { get; }
+
+    public ICommand RunBackupCommand { get; }
+
+    public ICommand RestoreBackupCommand { get; }
+
+    public ICommand SelectSourceCommand { get; }
+    public ICommand SelectDestinationCommand { get; }
+
+    public ICommand ExitCommand { get; }
+
+    public MainViewModel()
+    {
+        _backupManager = new BackupManager();
+        Backups = new ObservableCollection<BackupJob>(_backupManager.GetBackupJobs());
+
+        AddBackupCommand = new RelayCommand(AddBackup, () => CanAddBackup);
+        DeleteBackupCommand = new RelayCommand(DeleteBackup, () => CanExecuteOrRestoreOrDelete);
+        RunBackupCommand = new RelayCommand(RunBackup, () => CanExecuteOrRestoreOrDelete);
+        RestoreBackupCommand = new RelayCommand(RestoreBackup, () => CanExecuteOrRestoreOrDelete);
+        SelectSourceCommand = new RelayCommand(SelectSource);
+        SelectDestinationCommand = new RelayCommand(SelectDestination);
+        ExitCommand = new RelayCommand(ExitApplication);
+    }
+
+    private void AddBackup()
+    {
+        if (string.IsNullOrWhiteSpace(BackupName) || string.IsNullOrWhiteSpace(SourcePath) || string.IsNullOrWhiteSpace(DestinationPath))
+        {
+            MessageBox.Show("Veuillez remplir tous les champs.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
         }
 
-        public MainViewModel()
+        if (Backups.Any(b => b.Name == BackupName))
         {
-            AddBackupCommand = new RelayCommand(AddBackup);
-            DeleteBackupCommand = new RelayCommand<string>(DeleteBackup, CanDeleteBackup);
-            RunBackupCommand = new RelayCommand(RunBackup);
-            RestoreBackupCommand = new RelayCommand(RestoreBackup);
-            ViewLogsCommand = new RelayCommand(ViewLogs);
-            ViewStateCommand = new RelayCommand(ViewState);
-            ToggleLanguageCommand = new RelayCommand(ToggleLanguage);
-            ExitCommand = new RelayCommand(ExitApplication);
+            MessageBox.Show("Une sauvegarde avec ce nom existe déjà.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
         }
 
-        private void AddBackup()
+        try
         {
-            string backupName = $"Sauvegarde {Backups.Count + 1}";
-            Backups.Add(backupName);
-            StatusMessage = $"Ajouté : {backupName}";
+            IBackupTypeStrategy strategy = IsFullBackup ? new CompleteBackupStrategy() : new DifferentialBackupStrategy();
+            var job = new BackupJob(BackupName, SourcePath, DestinationPath, IsFullBackup, strategy);
+
+            _backupManager.AddBackup(job);
+            Backups.Add(job);
+
+            MessageBox.Show($"La sauvegarde {BackupName} a été créée avec succès !");
+
+            BackupName = string.Empty;
+            SourcePath = string.Empty;
+            DestinationPath = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Erreur : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private bool CanDeleteBackup()
+    {
+        return SelectedBackup != null;
+    }
+
+    private void DeleteBackup()
+    {
+        if (SelectedBackup == null)
+        {
+            MessageBox.Show("Sélectionnez une sauvegarde à supprimer.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
         }
 
-        private bool CanDeleteBackup(string? backup) => backup != null && Backups.Contains(backup);
+        string backupName = SelectedBackup.Name;
 
-        private void DeleteBackup(string backup)
+        var jobToRemove = _backupManager.GetBackupJobs().FirstOrDefault(b => b.Id == SelectedBackup.Id);
+        if (jobToRemove != null)
         {
-            Backups.Remove(backup);
-            StatusMessage = $"Supprimé : {backup}";
+            _backupManager.GetBackupJobs().Remove(jobToRemove);
         }
 
-        private void RunBackup() => StatusMessage = "Exécution d'une sauvegarde...";
-        private void RestoreBackup() => StatusMessage = "Restauration d'une sauvegarde...";
-        private void ViewLogs() => StatusMessage = "Affichage des logs...";
-        private void ViewState() => StatusMessage = "Affichage de l'état...";
+        Backups.Remove(SelectedBackup);
 
-        private void ToggleLanguage()
+        SelectedBackup = null;
+
+        MessageBox.Show($"Sauvegarde {backupName} supprimée avec succès !");
+    }
+
+    private void RunBackup()
+    {
+        if (SelectedBackup == null)
         {
-            isFrench = !isFrench;
-            StatusMessage = isFrench ? "Langue : Français" : "Language: English";
+            MessageBox.Show("Veuillez sélectionner une sauvegarde à exécuter.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
         }
 
-        private void ExitApplication() => Application.Current.Shutdown();
+        _backupManager.ExecuteJob(SelectedBackup.Id);
+        MessageBox.Show($"Sauvegarde {SelectedBackup.Name} exécutée !");
+    }
 
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void RestoreBackup()
+    {
+        if (SelectedBackup == null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            MessageBox.Show("Veuillez sélectionner une sauvegarde à restaurer.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
         }
+
+        _backupManager.RestoreJob(SelectedBackup.Id);
+        MessageBox.Show($"Sauvegarde {SelectedBackup.Name} restaurée !");
+    }
+
+    private void SelectSource()
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            CheckFileExists = false,
+            CheckPathExists = true,
+            FileName = "Sélectionnez un dossier",
+            ValidateNames = false
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            SourcePath = System.IO.Path.GetDirectoryName(dialog.FileName) ?? string.Empty;
+        }
+    }
+
+    private void SelectDestination()
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            CheckFileExists = false,
+            CheckPathExists = true,
+            FileName = "Sélectionnez un dossier",
+            ValidateNames = false
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            DestinationPath = System.IO.Path.GetDirectoryName(dialog.FileName) ?? string.Empty;
+        }
+    }
+
+    private void ExitApplication()
+    {
+        Application.Current.Shutdown();
     }
 }
