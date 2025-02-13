@@ -1,4 +1,4 @@
-﻿namespace EasySaveConsole.EasySaveNamespace.Language;
+﻿namespace EasySaveCore.Language;
 
 using System.Collections.Generic;
 

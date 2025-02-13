@@ -1,7 +1,7 @@
-namespace EasySaveConsole.EasySaveNamespace;
+namespace EasySaveCore.Controller;
 
-using EasySaveConsole.EasySaveNamespace.Backup;
-using EasySaveConsole.EasySaveNamespace.State;
+using EasySaveCore.Backup;
+using EasySaveCore.State;
 
 /// <summary>
 /// Manages backup jobs, including adding, executing, and restoring backups.

@@ -1,9 +1,9 @@
-namespace EasySaveConsole.EasySaveNamespace;
+namespace EasySaveCore.Controller;
 
 using System;
 using System.Collections.Generic;
-using EasySaveConsole.EasySaveNamespace.Backup;
-using EasySaveConsole.EasySaveNamespace.Language;
+using EasySaveCore.Backup;
+using EasySaveCore.Language;
 
 /// <summary>
 /// Singleton class that manages backup jobs and language settings.
@@ -58,7 +58,7 @@ public class EasySave
     /// Sets the current language of the application using the LanguageManager.
     /// </summary>
     /// <param name="language">The language instance to apply.</param>
-    public void SetLanguage(Language.Language language)
+    public void SetLanguage(Language language)
     {
         languageManager.SetLanguage(language);
     }

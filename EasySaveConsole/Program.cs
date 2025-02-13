@@ -1,11 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using EasySaveConsole.EasySaveNamespace;
-using EasySaveConsole.EasySaveNamespace.Backup;
-using EasySaveConsole.EasySaveNamespace.CLI;
-using EasySaveConsole.EasySaveNamespace.Language;
-using EasySaveConsole.EasySaveNamespace.State;
-using EasySaveLogger.EasySaveNamespace.Logger;
+using EasySaveCore.Controller;
+using EasySaveCore.Backup;
+using EasySaveCore.Language;
+using EasySaveCore.State;
+using EasySaveLogger.Logger;
 
 /// <summary>
 /// Represents the main program of EasySave.

@@ -1,4 +1,4 @@
-namespace EasySaveLogger.EasySaveNamespace.Logger;
+namespace EasySaveLogger.Logger;
 
 /// <summary>
 /// Interface for defining custom log formatters (e.g., JSON, XML).

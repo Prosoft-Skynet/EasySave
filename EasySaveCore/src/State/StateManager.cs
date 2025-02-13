@@ -1,7 +1,7 @@
-namespace EasySaveConsole.EasySaveNamespace.State;
+namespace EasySaveCore.State;
 
 using System.Text.Json;
-using EasySaveConsole.EasySaveNamespace.Backup;
+using EasySaveCore.Backup;
 
 public class StateManager
 {

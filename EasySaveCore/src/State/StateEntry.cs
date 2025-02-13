@@ -1,4 +1,4 @@
-namespace EasySaveConsole.EasySaveNamespace.State;
+namespace EasySaveCore.State;
 
 /// <summary>
 /// Represents the state of a backup job.

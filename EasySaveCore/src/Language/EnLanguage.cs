@@ -1,4 +1,4 @@
-﻿namespace EasySaveConsole.EasySaveNamespace.Language;
+﻿namespace EasySaveCore.Language;
 
 /// <summary>
 /// Implementation of the Language class for the English language.

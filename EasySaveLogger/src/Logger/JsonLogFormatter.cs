@@ -1,4 +1,4 @@
-namespace EasySaveLogger.EasySaveNamespace.Logger;
+namespace EasySaveLogger.Logger;
 
 using System.Text.Json;
 using System.IO;

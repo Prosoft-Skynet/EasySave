@@ -1,6 +1,6 @@
-namespace EasySaveConsole.EasySaveNamespace.CLI;
+using EasySaveCore.State;
+using EasySaveCore.Controller;
 
-using EasySaveConsole.EasySaveNamespace.State;
 
 /// <summary>
 /// Class responsible for the command line interface.

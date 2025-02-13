@@ -1,4 +1,4 @@
-﻿namespace EasySaveConsole.EasySaveNamespace.Language;
+﻿namespace EasySaveCore.Language;
 
 /// <summary>
 /// Manages the current language and associated translations.
