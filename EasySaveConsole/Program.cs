@@ -115,13 +115,7 @@ public class Program
             Console.WriteLine(easySave.GetText("backup.name_use"));
             return;
         }
-
-        if (backupManager.GetBackupJobs().Count >= 5)
-        {
-            Console.WriteLine(easySave.GetText("backup.error_5"));
-            return;
-        }
-
+        
         Console.Write(easySave.GetText("backup.source"));
         string source = Console.ReadLine()!;
 
