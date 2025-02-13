@@ -26,7 +26,6 @@ public class FrLanguage : Language
             { "menu.language", "9. EN" },
             { "menu.quit", "10. Quitter" },
             { "menu.choice", "Votre choix: " },
-            { "backup.error_5", "Impossible d'ajouter plus de 5 travaux de sauvegarde." },
             { "backup.name", "Nom de la sauvegarde : " },
             { "backup.name_use", "Nom déjà utilisé" },
             { "backup.source", "Répertoire source : " },

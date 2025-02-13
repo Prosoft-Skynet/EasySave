@@ -26,7 +26,6 @@ public class EnLanguage : Language
             { "menu.language", "9. FR" },
             { "menu.quit", "10. Quit" },
             { "menu.choice", "Your choice: " },
-            { "backup.error_5", "Impossible to add more than 5 backup jobs." },
             { "backup.name", "Backup name : " },
             { "backup.name_use", "Name already in use" },
             { "backup.source", "Source directory : " },
