@@ -196,23 +196,55 @@ public class MainViewModel : ViewModelBase
             MessageBox.Show(easySave.GetText("box.execute"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-         Func<string, string> getEncryptionKeyCallback = (fileName) =>
+        var encryptionStartTime = DateTime.Now;
+        var startTime = DateTime.Now;
+
+
+        Func<string, string> getEncryptionKeyCallback = (fileName) =>
         {
             return Microsoft.VisualBasic.Interaction.InputBox($"Entrez la clé de cryptage pour le fichier : {fileName}", "Cryptage du fichier", "", -1, -1);
         };
 
-        var startTime = DateTime.Now;
-        _backupManager.ExecuteJobinterface(SelectedBackup.Id, getEncryptionKeyCallback);
         var endTime = DateTime.Now;
+
+
+        long encryptionTimeMs = 0; 
+
+        try
+        {
+
+            _backupManager.ExecuteJobinterface(SelectedBackup.Id, getEncryptionKeyCallback);
+            var encryptionEndTime = DateTime.Now;
+
+            encryptionTimeMs = (long)(encryptionEndTime - encryptionStartTime).TotalMilliseconds; 
+        }
+        catch (Exception ex)
+        {
+            encryptionTimeMs = -1000; 
+        }
+
         long durationMs = (long)(endTime - startTime).TotalMilliseconds;
 
-        _logger.Log(SelectedBackup.Name, SelectedBackup.Source, SelectedBackup.Target, durationMs);
-        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")} {durationMs} ms !", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
+        _logger.Log(
+            SelectedBackup.Name,
+            SelectedBackup.Source,
+            SelectedBackup.Target,
+            durationMs,
+            encryptionTimeMs 
+        );
+
+        string encryptionMessage = encryptionTimeMs >= 0
+            ? $"Temps de cryptage : {encryptionTimeMs} ms"
+            : "Aucun cryptage effectué ou erreur lors du cryptage.";
+
+        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")} {durationMs} ms !\n{encryptionMessage}", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
 
         LoadLogs();
     }
-   
-    
+
+
+
+
     private void RestoreBackup()
     {
         if (SelectedBackup == null)
@@ -220,8 +252,12 @@ public class MainViewModel : ViewModelBase
             MessageBox.Show(easySave.GetText("box.restore"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
+        Func<string, string> getEncryptionKeyCallback = (fileName) =>
+        {
+            return Microsoft.VisualBasic.Interaction.InputBox($"Entrez la clé de cryptage pour le fichier : {fileName}", "Cryptage du fichier", "", -1, -1);
+        };
 
-        _backupManager.RestoreJob(SelectedBackup.Id);
+        _backupManager.RestoreJob(SelectedBackup.Id, getEncryptionKeyCallback);
         MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.restore_success")}");
     }
 

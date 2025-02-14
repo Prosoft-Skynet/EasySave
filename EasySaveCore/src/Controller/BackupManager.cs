@@ -86,11 +86,13 @@ public class BackupManager
     /// Restores a backup job specified by its identifier.
     /// </summary>
     /// <param name="jobId">The identifier of the backup job.</param>
-    public void RestoreJob(Guid jobId)
+    public void RestoreJob(Guid jobId, Func<string, string> getEncryptionKeyCallback)
     {
+
         var job = backupJobs.FirstOrDefault(j => j.Id == jobId);
         if (job != null)
         {
+            EncryptFilesInDirectory(job.Target, getEncryptionKeyCallback);
             job.Restore();
         }
     }

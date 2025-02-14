@@ -25,6 +25,9 @@ public class LogEntry
 
     [JsonPropertyName("transferTimeMs")]
     public long TransferTime { get; set; }
+    
+    [JsonPropertyName("encryptionTimeMs")]
+    public long EncryptionTime { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LogEntry"/> class with default values.
@@ -37,6 +40,8 @@ public class LogEntry
         TargetPath = string.Empty;
         FileSize = 0;
         TransferTime = 0;
+        EncryptionTime = 0;
+
     }
 
     /// <summary>
@@ -48,7 +53,7 @@ public class LogEntry
     /// <param name="targetPath">The target directory path of the backup operation.</param>
     /// <param name="fileSize">The total size of the files backed up, in bytes.</param>
     /// <param name="transferTime">The time taken to complete the backup, in milliseconds.</param>
-    public LogEntry(string timestamp, string jobName, string sourcePath, string targetPath, long fileSize, long transferTime)
+    public LogEntry(string timestamp, string jobName, string sourcePath, string targetPath, long fileSize, long transferTime, long encryptionTime)
     {
         this.Timestamp = timestamp;
         this.JobName = jobName;
@@ -56,5 +61,7 @@ public class LogEntry
         this.TargetPath = targetPath;
         this.FileSize = fileSize;
         this.TransferTime = transferTime;
+        this.EncryptionTime = encryptionTime;
+
     }
 }

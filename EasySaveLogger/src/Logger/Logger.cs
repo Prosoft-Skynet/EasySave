@@ -50,7 +50,7 @@ public class Logger
     /// <param name="sourcePath">The source directory path of the backup.</param>
     /// <param name="destinationPath">The target directory path of the backup.</param>
     /// <param name="transferTimeMs">The time taken to complete the backup, in milliseconds.</param>
-    public void Log(string backupName, string sourcePath, string destinationPath, long transferTimeMs)
+    public void Log(string backupName, string sourcePath, string destinationPath, long transferTimeMs, long encryptionTime)
     {
         List<LogEntry> logs = LoadExistingLogs();
 
@@ -68,7 +68,9 @@ public class Logger
             SourcePath = sourcePath,
             TargetPath = destinationPath,
             FileSize = fileSize,
-            TransferTime = transferTimeMs
+            TransferTime = transferTimeMs,
+            EncryptionTime = encryptionTime
+
         });
 
         // Write logs in both JSON and XML formats
