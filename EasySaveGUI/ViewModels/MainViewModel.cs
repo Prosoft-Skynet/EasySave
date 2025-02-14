@@ -1,16 +1,22 @@
 ﻿namespace EasySaveGUI.ViewModels;
 
+using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using EasySaveCore.Backup;
 using EasySaveCore.Controller;
 using EasySaveGUI.Helpers;
+using EasySaveLogger.Logger;
+using System.Runtime.InteropServices;
 
 public class MainViewModel : ViewModelBase
 {
     private readonly BackupManager _backupManager;
+    private readonly Logger _logger;
 
     private string _backupName = string.Empty;
     private string _sourcePath = string.Empty;
@@ -18,6 +24,7 @@ public class MainViewModel : ViewModelBase
     private bool _isFullBackup = true;
 
     public ObservableCollection<BackupJob> Backups { get; }
+    public ObservableCollection<string> Logs { get; } 
 
     private BackupJob? _selectedBackup;
     public BackupJob? SelectedBackup
@@ -27,19 +34,27 @@ public class MainViewModel : ViewModelBase
         {
             _selectedBackup = value;
             OnPropertyChanged();
-
-            // Mise à jour de l'état des boutons
             OnPropertyChanged(nameof(CanExecuteOrRestoreOrDelete));
             OnPropertyChanged(nameof(CanAddBackup));
         }
     }
 
-    // Propriété pour activer/désactiver les boutons "Exécuter" et "Restaurer"
+    private string? _selectedLog;
+    public string? SelectedLog
+    {
+        get => _selectedLog;
+        set
+        {
+            _selectedLog = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CanViewLog));
+        }
+    }
+
     public bool CanExecuteOrRestoreOrDelete => SelectedBackup != null;
+    public bool CanAddBackup => SelectedBackup == null && SelectedLog == null;
 
-    // Propriété pour activer/désactiver le bouton "Ajouter"
-    public bool CanAddBackup => SelectedBackup == null;
-
+    public bool CanViewLog => !string.IsNullOrEmpty(SelectedLog);
 
     public string BackupName
     {
@@ -67,20 +82,23 @@ public class MainViewModel : ViewModelBase
 
     public ICommand AddBackupCommand { get; }
     public ICommand DeleteBackupCommand { get; }
-
     public ICommand RunBackupCommand { get; }
-
     public ICommand RestoreBackupCommand { get; }
-
     public ICommand SelectSourceCommand { get; }
     public ICommand SelectDestinationCommand { get; }
-
+    public ICommand OpenLogCommand { get; }
+    public ICommand ToggleLogFormatCommand { get; }
     public ICommand ExitCommand { get; }
 
     public MainViewModel()
     {
         _backupManager = new BackupManager();
+        _logger = new Logger(new JsonLogFormatter());
+
         Backups = new ObservableCollection<BackupJob>(_backupManager.GetBackupJobs());
+        Logs = new ObservableCollection<string>();
+
+        LoadLogs();
 
         AddBackupCommand = new RelayCommand(AddBackup, () => CanAddBackup);
         DeleteBackupCommand = new RelayCommand(DeleteBackup, () => CanExecuteOrRestoreOrDelete);
@@ -88,6 +106,8 @@ public class MainViewModel : ViewModelBase
         RestoreBackupCommand = new RelayCommand(RestoreBackup, () => CanExecuteOrRestoreOrDelete);
         SelectSourceCommand = new RelayCommand(SelectSource);
         SelectDestinationCommand = new RelayCommand(SelectDestination);
+        OpenLogCommand = new RelayCommand(OpenLog, () => CanViewLog);
+        ToggleLogFormatCommand = new RelayCommand(ToggleLogFormat);
         ExitCommand = new RelayCommand(ExitApplication);
     }
 
@@ -153,18 +173,6 @@ public class MainViewModel : ViewModelBase
         MessageBox.Show($"Sauvegarde {backupName} supprimée avec succès !");
     }
 
-    private void RunBackup()
-    {
-        if (SelectedBackup == null)
-        {
-            MessageBox.Show("Veuillez sélectionner une sauvegarde à exécuter.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
-        _backupManager.ExecuteJob(SelectedBackup.Id);
-        MessageBox.Show($"Sauvegarde {SelectedBackup.Name} exécutée !");
-    }
-
     private void RestoreBackup()
     {
         if (SelectedBackup == null)
@@ -207,6 +215,110 @@ public class MainViewModel : ViewModelBase
         {
             DestinationPath = System.IO.Path.GetDirectoryName(dialog.FileName) ?? string.Empty;
         }
+    }
+
+    private void LoadLogs()
+    {
+        Logs.Clear();
+
+        string logsPath = _logger.GetLogFormatter() is JsonLogFormatter
+            ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "JSON")
+            : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "XML");
+
+        if (!Directory.Exists(logsPath))
+            return;
+
+        var logFiles = Directory.GetFiles(logsPath)
+            .Select(Path.GetFileNameWithoutExtension)
+            .Where(log => log != null)
+            .Select(log => log!)
+            .OrderByDescending(name => name)
+            .ToList();
+
+        foreach (var log in logFiles)
+        {
+            Logs.Add(log);
+        }
+    }
+
+
+    private void RunBackup()
+    {
+        if (SelectedBackup == null)
+        {
+            MessageBox.Show("Veuillez sélectionner une sauvegarde à exécuter.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var startTime = DateTime.Now;
+        _backupManager.ExecuteJob(SelectedBackup.Id);
+        var endTime = DateTime.Now;
+        long durationMs = (long)(endTime - startTime).TotalMilliseconds;
+
+        _logger.Log(SelectedBackup.Name, SelectedBackup.Source, SelectedBackup.Target, durationMs);
+
+        MessageBox.Show($"Sauvegarde {SelectedBackup.Name} exécutée en {durationMs} ms !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+
+        LoadLogs();
+    }
+
+    private void OpenLog()
+    {
+        if (SelectedLog == null)
+        {
+            MessageBox.Show("Veuillez sélectionner un log à ouvrir.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        string logsPath = _logger.GetLogFormatter() is JsonLogFormatter
+            ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "JSON")
+            : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "XML");
+
+        string filePath = Path.Combine(logsPath, SelectedLog + (_logger.GetLogFormatter() is JsonLogFormatter ? ".json" : ".xml"));
+
+        if (!File.Exists(filePath))
+        {
+            MessageBox.Show("Le fichier log n'existe pas.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        try
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                Process.Start("xdg-open", filePath); 
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Process.Start("open", filePath); 
+            }
+            else
+            {
+                MessageBox.Show("Système d'exploitation non supporté.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Erreur lors de l'ouverture du fichier : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+
+    private void ToggleLogFormat()
+    {
+        bool isCurrentlyJson = _logger.GetLogFormatter() is JsonLogFormatter;
+
+        _logger.SetLogFormatter(isCurrentlyJson ? new XmlLogFormatter() : new JsonLogFormatter());
+
+        string newFormat = isCurrentlyJson ? "XML" : "JSON";
+        MessageBox.Show($"Format des logs changé en {newFormat} !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+
+
+        LoadLogs();
     }
 
     private void ExitApplication()
