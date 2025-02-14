@@ -164,10 +164,7 @@ public class MainViewModel : ViewModelBase
             MessageBox.Show($"{easySave.GetText("box.error")} : {ex.Message}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
-    private bool CanDeleteBackup()
-    {
-        return SelectedBackup != null;
-    }
+
 
     private void DeleteBackup()
     {
@@ -189,10 +186,10 @@ public class MainViewModel : ViewModelBase
 
         SelectedBackup = null;
 
-        MessageBox.Show($"Sauvegarde {backupName} supprimée avec succès !");
+        MessageBox.Show($"{easySave.GetText("box.backup")} {backupName} {easySave.GetText("box.delete_success")}");
     }
-    
-      private void RunBackup()
+
+    private void RunBackup()
     {
         if (SelectedBackup == null)
         {
