@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using EasySaveCore.Backup;
 using EasySaveCore.Controller;
+using EasySaveCore.Language;
 using EasySaveGUI.Helpers;
 using EasySaveLogger.Logger;
 using System.Runtime.InteropServices;
@@ -24,7 +25,9 @@ public class MainViewModel : ViewModelBase
     private bool _isFullBackup = true;
 
     public ObservableCollection<BackupJob> Backups { get; }
-    public ObservableCollection<string> Logs { get; } 
+    public ObservableCollection<string> Logs { get; }
+
+    private EasySave easySave = EasySave.GetInstance();
 
     private BackupJob? _selectedBackup;
     public BackupJob? SelectedBackup
@@ -85,9 +88,13 @@ public class MainViewModel : ViewModelBase
     public ICommand RunBackupCommand { get; }
     public ICommand RestoreBackupCommand { get; }
     public ICommand SelectSourceCommand { get; }
+
     public ICommand SelectDestinationCommand { get; }
     public ICommand OpenLogCommand { get; }
     public ICommand ToggleLogFormatCommand { get; }
+
+    public ICommand ToggleLanguageCommand { get; }
+
     public ICommand ExitCommand { get; }
 
     public MainViewModel()
@@ -108,6 +115,7 @@ public class MainViewModel : ViewModelBase
         SelectDestinationCommand = new RelayCommand(SelectDestination);
         OpenLogCommand = new RelayCommand(OpenLog, () => CanViewLog);
         ToggleLogFormatCommand = new RelayCommand(ToggleLogFormat);
+        ToggleLanguageCommand = new RelayCommand(ToggleLanguage);
         ExitCommand = new RelayCommand(ExitApplication);
     }
 
@@ -115,13 +123,13 @@ public class MainViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(BackupName) || string.IsNullOrWhiteSpace(SourcePath) || string.IsNullOrWhiteSpace(DestinationPath))
         {
-            MessageBox.Show("Veuillez remplir tous les champs.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(easySave.GetText("box.fill"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
         if (Backups.Any(b => b.Name == BackupName))
         {
-            MessageBox.Show("Une sauvegarde avec ce nom existe déjà.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(easySave.GetText("box.name"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -133,7 +141,7 @@ public class MainViewModel : ViewModelBase
             _backupManager.AddBackup(job);
             Backups.Add(job);
 
-            MessageBox.Show($"La sauvegarde {BackupName} a été créée avec succès !");
+            MessageBox.Show($"{easySave.GetText("box.backup")} {BackupName} {easySave.GetText("box.create_success")}");
 
             BackupName = string.Empty;
             SourcePath = string.Empty;
@@ -141,20 +149,15 @@ public class MainViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Erreur : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"{easySave.GetText("box.error")} : {ex.Message}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
-    }
-
-    private bool CanDeleteBackup()
-    {
-        return SelectedBackup != null;
     }
 
     private void DeleteBackup()
     {
         if (SelectedBackup == null)
         {
-            MessageBox.Show("Sélectionnez une sauvegarde à supprimer.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(easySave.GetText("box.delete"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -170,19 +173,19 @@ public class MainViewModel : ViewModelBase
 
         SelectedBackup = null;
 
-        MessageBox.Show($"Sauvegarde {backupName} supprimée avec succès !");
+        MessageBox.Show($"{easySave.GetText("box.backup")} {backupName} {easySave.GetText("box.delete_success")}");
     }
 
     private void RestoreBackup()
     {
         if (SelectedBackup == null)
         {
-            MessageBox.Show("Veuillez sélectionner une sauvegarde à restaurer.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(easySave.GetText("box.restore"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
         _backupManager.RestoreJob(SelectedBackup.Id);
-        MessageBox.Show($"Sauvegarde {SelectedBackup.Name} restaurée !");
+        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.restore_success")}");
     }
 
     private void SelectSource()
@@ -191,7 +194,7 @@ public class MainViewModel : ViewModelBase
         {
             CheckFileExists = false,
             CheckPathExists = true,
-            FileName = "Sélectionnez un dossier",
+            FileName = easySave.GetText("box.files"),
             ValidateNames = false
         };
 
@@ -207,7 +210,7 @@ public class MainViewModel : ViewModelBase
         {
             CheckFileExists = false,
             CheckPathExists = true,
-            FileName = "Sélectionnez un dossier",
+            FileName = easySave.GetText("box.files"),
             ValidateNames = false
         };
 
@@ -246,7 +249,7 @@ public class MainViewModel : ViewModelBase
     {
         if (SelectedBackup == null)
         {
-            MessageBox.Show("Veuillez sélectionner une sauvegarde à exécuter.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(easySave.GetText("box.execute"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -256,7 +259,7 @@ public class MainViewModel : ViewModelBase
         long durationMs = (long)(endTime - startTime).TotalMilliseconds;
 
         _logger.Log(SelectedBackup.Name, SelectedBackup.Source, SelectedBackup.Target, durationMs);
-
+        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")}");
         MessageBox.Show($"Sauvegarde {SelectedBackup.Name} exécutée en {durationMs} ms !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
 
         LoadLogs();
@@ -290,11 +293,11 @@ public class MainViewModel : ViewModelBase
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                Process.Start("xdg-open", filePath); 
+                Process.Start("xdg-open", filePath);
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                Process.Start("open", filePath); 
+                Process.Start("open", filePath);
             }
             else
             {
@@ -319,6 +322,21 @@ public class MainViewModel : ViewModelBase
 
 
         LoadLogs();
+    }
+
+    private Language currentLanguage = new EnLanguage();
+    public string this[string key] => easySave.GetText(key);
+
+    private void ToggleLanguage()
+    {
+        currentLanguage = currentLanguage is FrLanguage ? new EnLanguage() : new FrLanguage();
+        easySave.SetLanguage(currentLanguage);
+        UpdateLanguage();
+    }
+
+    private void UpdateLanguage()
+    {
+        OnPropertyChanged("");
     }
 
     private void ExitApplication()
