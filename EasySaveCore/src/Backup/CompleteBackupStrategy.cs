@@ -1,3 +1,7 @@
+using System;
+using System.IO;
+using System.Linq;
+
 namespace EasySaveCore.Backup;
 
 /// <summary>
@@ -12,6 +16,27 @@ public class CompleteBackupStrategy : IBackupTypeStrategy
     /// <param name="target">The target directory.</param>
     public void ExecuteBackupStrategy(string source, string target)
     {
+        if (!Directory.Exists(source))
+        {
+            throw new DirectoryNotFoundException($"Le répertoire source {source} n'existe pas.");
+        }
+
+        if (!Directory.Exists(target))
+        {
+            Directory.CreateDirectory(target);
+        }
+
+        var sourceFiles = Directory.GetFiles(source).Select(Path.GetFileName).ToHashSet();
+
+        foreach (var file in Directory.GetFiles(target))
+        {
+            var fileName = Path.GetFileName(file);
+            if (!sourceFiles.Contains(fileName))
+            {
+                File.Delete(file);
+            }
+        }
+
         var backupService = new BackupService();
         backupService.TransferFiles(source, target);
     }
