@@ -14,9 +14,15 @@ public class DifferentialBackupStrategy : IBackupTypeStrategy
     {
         var sourceDirectory = new DirectoryInfo(source);
 
+        if (!Directory.Exists(target))
+        {
+            Directory.CreateDirectory(target);
+        }
+
         foreach (var file in sourceDirectory.GetFiles())
         {
             var targetFilePath = Path.Combine(target, file.Name);
+
             if (!File.Exists(targetFilePath) || File.GetLastWriteTime(targetFilePath) < file.LastWriteTime)
             {
                 file.CopyTo(targetFilePath, true);
@@ -26,7 +32,9 @@ public class DifferentialBackupStrategy : IBackupTypeStrategy
         foreach (var directory in sourceDirectory.GetDirectories())
         {
             var targetSubDirPath = Path.Combine(target, directory.Name);
+
             ExecuteBackupStrategy(directory.FullName, targetSubDirPath);
         }
     }
+
 }

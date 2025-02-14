@@ -1,6 +1,8 @@
 ﻿namespace EasySaveGUI.ViewModels;
 
+using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
@@ -9,11 +11,15 @@ using System.Windows.Input;
 using EasySaveCore.Backup;
 using EasySaveCore.Controller;
 using EasySaveCore.CryptoSoft;
+using EasySaveCore.Language;
 using EasySaveGUI.Helpers;
+using EasySaveLogger.Logger;
+using System.Runtime.InteropServices;
 
 public class MainViewModel : ViewModelBase
 {
     private readonly BackupManager _backupManager;
+    private readonly Logger _logger;
 
 
     private string _backupName = string.Empty;
@@ -22,6 +28,9 @@ public class MainViewModel : ViewModelBase
     private bool _isFullBackup = true;
 
     public ObservableCollection<BackupJob> Backups { get; }
+    public ObservableCollection<string> Logs { get; }
+
+    private EasySave easySave = EasySave.GetInstance();
 
     private BackupJob? _selectedBackup;
     public BackupJob? SelectedBackup
@@ -31,19 +40,25 @@ public class MainViewModel : ViewModelBase
         {
             _selectedBackup = value;
             OnPropertyChanged();
-
-            // Mise à jour de l'état des boutons
             OnPropertyChanged(nameof(CanExecuteOrRestoreOrDelete));
             OnPropertyChanged(nameof(CanAddBackup));
         }
     }
 
-    // Propriété pour activer/désactiver les boutons "Exécuter" et "Restaurer"
+    private string? _selectedLog;
+    public string? SelectedLog
+    {
+        get => _selectedLog;
+        set
+        {
+            _selectedLog = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CanViewLog));
+        }
+    }
+
     public bool CanExecuteOrRestoreOrDelete => SelectedBackup != null;
-
-    // Propriété pour activer/désactiver le bouton "Ajouter"
-    public bool CanAddBackup => SelectedBackup == null;
-
+    public bool CanAddBackup => SelectedBackup == null && SelectedLog == null;
     private string _encryptionKey = string.Empty;
     public string EncryptionKey
     {
@@ -51,6 +66,7 @@ public class MainViewModel : ViewModelBase
         set { _encryptionKey = value; OnPropertyChanged(); }
     }
 
+    public bool CanViewLog => !string.IsNullOrEmpty(SelectedLog);
 
     public string BackupName
     {
@@ -78,20 +94,27 @@ public class MainViewModel : ViewModelBase
 
     public ICommand AddBackupCommand { get; }
     public ICommand DeleteBackupCommand { get; }
-
     public ICommand RunBackupCommand { get; }
-
     public ICommand RestoreBackupCommand { get; }
-
     public ICommand SelectSourceCommand { get; }
+
     public ICommand SelectDestinationCommand { get; }
+    public ICommand OpenLogCommand { get; }
+    public ICommand ToggleLogFormatCommand { get; }
+
+    public ICommand ToggleLanguageCommand { get; }
 
     public ICommand ExitCommand { get; }
 
     public MainViewModel()
     {
         _backupManager = new BackupManager();
+        _logger = new Logger(new JsonLogFormatter());
+
         Backups = new ObservableCollection<BackupJob>(_backupManager.GetBackupJobs());
+        Logs = new ObservableCollection<string>();
+
+        LoadLogs();
 
         AddBackupCommand = new RelayCommand(AddBackup, () => CanAddBackup);
         DeleteBackupCommand = new RelayCommand(DeleteBackup, () => CanExecuteOrRestoreOrDelete);
@@ -99,6 +122,9 @@ public class MainViewModel : ViewModelBase
         RestoreBackupCommand = new RelayCommand(RestoreBackup, () => CanExecuteOrRestoreOrDelete);
         SelectSourceCommand = new RelayCommand(SelectSource);
         SelectDestinationCommand = new RelayCommand(SelectDestination);
+        OpenLogCommand = new RelayCommand(OpenLog, () => CanViewLog);
+        ToggleLogFormatCommand = new RelayCommand(ToggleLogFormat);
+        ToggleLanguageCommand = new RelayCommand(ToggleLanguage);
         ExitCommand = new RelayCommand(ExitApplication);
     }
 
@@ -107,13 +133,13 @@ public class MainViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(BackupName) || string.IsNullOrWhiteSpace(SourcePath) || string.IsNullOrWhiteSpace(DestinationPath))
         {
-            MessageBox.Show("Veuillez remplir tous les champs.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(easySave.GetText("box.fill"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
         if (Backups.Any(b => b.Name == BackupName))
         {
-            MessageBox.Show("Une sauvegarde avec ce nom existe déjà.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(easySave.GetText("box.name"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -127,7 +153,7 @@ public class MainViewModel : ViewModelBase
             _backupManager.AddBackup(job);
 
             Backups.Add(job);
-            MessageBox.Show($"La sauvegarde {BackupName} a été créée avec succès !");
+            MessageBox.Show($"{easySave.GetText("box.backup")} {BackupName} {easySave.GetText("box.create_success")}");
 
             BackupName = string.Empty;
             SourcePath = string.Empty;
@@ -135,12 +161,9 @@ public class MainViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Erreur : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"{easySave.GetText("box.error")} : {ex.Message}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
-
-
-
     private bool CanDeleteBackup()
     {
         return SelectedBackup != null;
@@ -150,7 +173,7 @@ public class MainViewModel : ViewModelBase
     {
         if (SelectedBackup == null)
         {
-            MessageBox.Show("Sélectionnez une sauvegarde à supprimer.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(easySave.GetText("box.delete"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -168,33 +191,41 @@ public class MainViewModel : ViewModelBase
 
         MessageBox.Show($"Sauvegarde {backupName} supprimée avec succès !");
     }
-
-    private void RunBackup()
+    
+      private void RunBackup()
     {
         if (SelectedBackup == null)
         {
-            MessageBox.Show("Veuillez sélectionner une sauvegarde à exécuter.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(easySave.GetText("box.execute"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-
-        Func<string, string> getEncryptionKeyCallback = (fileName) =>
+         Func<string, string> getEncryptionKeyCallback = (fileName) =>
         {
             return Microsoft.VisualBasic.Interaction.InputBox($"Entrez la clé de cryptage pour le fichier : {fileName}", "Cryptage du fichier", "", -1, -1);
         };
 
+        var startTime = DateTime.Now;
         _backupManager.ExecuteJobinterface(SelectedBackup.Id, getEncryptionKeyCallback);
-        MessageBox.Show($"Sauvegarde {SelectedBackup.Name} exécutée !");
+        var endTime = DateTime.Now;
+        long durationMs = (long)(endTime - startTime).TotalMilliseconds;
+
+        _logger.Log(SelectedBackup.Name, SelectedBackup.Source, SelectedBackup.Target, durationMs);
+        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")} {durationMs} ms !", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
+
+        LoadLogs();
     }
+   
+    
     private void RestoreBackup()
     {
         if (SelectedBackup == null)
         {
-            MessageBox.Show("Veuillez sélectionner une sauvegarde à restaurer.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(easySave.GetText("box.restore"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
         _backupManager.RestoreJob(SelectedBackup.Id);
-        MessageBox.Show($"Sauvegarde {SelectedBackup.Name} restaurée !");
+        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.restore_success")}");
     }
 
     private void SelectSource()
@@ -203,7 +234,7 @@ public class MainViewModel : ViewModelBase
         {
             CheckFileExists = false,
             CheckPathExists = true,
-            FileName = "Sélectionnez un dossier",
+            FileName = easySave.GetText("box.files"),
             ValidateNames = false
         };
 
@@ -219,7 +250,7 @@ public class MainViewModel : ViewModelBase
         {
             CheckFileExists = false,
             CheckPathExists = true,
-            FileName = "Sélectionnez un dossier",
+            FileName = easySave.GetText("box.files"),
             ValidateNames = false
         };
 
@@ -227,6 +258,124 @@ public class MainViewModel : ViewModelBase
         {
             DestinationPath = System.IO.Path.GetDirectoryName(dialog.FileName) ?? string.Empty;
         }
+    }
+
+    private void LoadLogs()
+    {
+        Logs.Clear();
+
+        string logsPath = _logger.GetLogFormatter() is JsonLogFormatter
+            ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "JSON")
+            : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "XML");
+
+        if (!Directory.Exists(logsPath))
+            return;
+
+        var logFiles = Directory.GetFiles(logsPath)
+            .Select(Path.GetFileNameWithoutExtension)
+            .Where(log => log != null)
+            .Select(log => log!)
+            .OrderByDescending(name => name)
+            .ToList();
+
+        foreach (var log in logFiles)
+        {
+            Logs.Add(log);
+        }
+    }
+
+
+    private void RunBackup()
+    {
+        if (SelectedBackup == null)
+        {
+            MessageBox.Show(easySave.GetText("box.execute"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var startTime = DateTime.Now;
+        _backupManager.ExecuteJob(SelectedBackup.Id);
+        var endTime = DateTime.Now;
+        long durationMs = (long)(endTime - startTime).TotalMilliseconds;
+
+        _logger.Log(SelectedBackup.Name, SelectedBackup.Source, SelectedBackup.Target, durationMs);
+        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")} {durationMs} ms !", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
+
+        LoadLogs();
+    }
+
+    private void OpenLog()
+    {
+        if (SelectedLog == null)
+        {
+            MessageBox.Show(easySave.GetText("box.logs"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        string logsPath = _logger.GetLogFormatter() is JsonLogFormatter
+            ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "JSON")
+            : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "XML");
+
+        string filePath = Path.Combine(logsPath, SelectedLog + (_logger.GetLogFormatter() is JsonLogFormatter ? ".json" : ".xml"));
+
+        if (!File.Exists(filePath))
+        {
+            MessageBox.Show(easySave.GetText("box.logs_exist"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        try
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                Process.Start("xdg-open", filePath);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Process.Start("open", filePath);
+            }
+            else
+            {
+                MessageBox.Show(easySave.GetText("box.os"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"{easySave.GetText("box.logs_error")} : {ex.Message}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+
+    private void ToggleLogFormat()
+    {
+        bool isCurrentlyJson = _logger.GetLogFormatter() is JsonLogFormatter;
+
+        _logger.SetLogFormatter(isCurrentlyJson ? new XmlLogFormatter() : new JsonLogFormatter());
+
+        string newFormat = isCurrentlyJson ? "XML" : "JSON";
+        MessageBox.Show($"{easySave.GetText("box.logs_format")} {newFormat} !", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
+
+
+        LoadLogs();
+    }
+
+    private Language currentLanguage = new EnLanguage();
+    public string this[string key] => easySave.GetText(key);
+
+    private void ToggleLanguage()
+    {
+        currentLanguage = currentLanguage is FrLanguage ? new EnLanguage() : new FrLanguage();
+        easySave.SetLanguage(currentLanguage);
+        UpdateLanguage();
+    }
+
+    private void UpdateLanguage()
+    {
+        OnPropertyChanged("");
     }
 
     private void ExitApplication()
