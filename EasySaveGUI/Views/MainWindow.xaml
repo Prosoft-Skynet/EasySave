@@ -22,8 +22,8 @@
                 <Border Grid.Column="0"
                         Background="#1E3888"
                         Width="250"
-                        Margin="10"
-                        CornerRadius="15">
+                        Margin="10">
+
                         <StackPanel Width="200"
                                     Margin="10"
                                     Orientation="Vertical">
@@ -33,7 +33,7 @@
                                            Foreground="White"
                                            HorizontalAlignment="Center"/>
 
-                                <Button Content="Ajouter une sauvegarde"
+                                <Button Content="{Binding [menu.add]}"
                                         Command="{Binding AddBackupCommand}"
                                         Background="#60AFFF"
                                         Foreground="White"
@@ -42,7 +42,7 @@
                                         HorizontalAlignment="Center"
                                         IsEnabled="{Binding CanAddBackup}"/>
 
-                                <Button Content="Supprimer une sauvegarde"
+                                <Button Content="{Binding [menu.delete]}"
                                         Command="{Binding DeleteBackupCommand}"
                                         Background="#60AFFF"
                                         Foreground="White"
@@ -50,7 +50,7 @@
                                         Width="200"
                                         HorizontalAlignment="Center"/>
 
-                                <Button Content="Exécuter une sauvegarde"
+                                <Button Content="{Binding [menu.execute]}"
                                         Command="{Binding RunBackupCommand}"
                                         Background="#60AFFF"
                                         Foreground="White"
@@ -59,7 +59,7 @@
                                         HorizontalAlignment="Center"
                                         IsEnabled="{Binding CanExecuteOrRestore}"/>
 
-                                <Button Content="Restaurer une sauvegarde"
+                                <Button Content="{Binding [menu.restore]}"
                                         Command="{Binding RestoreBackupCommand}"
                                         Background="#60AFFF"
                                         Foreground="White"
@@ -68,7 +68,7 @@
                                         HorizontalAlignment="Center"
                                         IsEnabled="{Binding CanExecuteOrRestore}"/>
 
-                                <Button Content="Voir les logs"
+                                <Button Content="{Binding [menu.logs]}"
                                         Command="{Binding OpenLogCommand}"
                                         IsEnabled="{Binding CanViewLog}"
                                         Background="#60AFFF"
@@ -76,7 +76,8 @@
                                         Padding="10"
                                         Width="200"
                                         HorizontalAlignment="Center"/>
-                                <Button Content="Voir l'état"
+
+                                <Button Content="{Binding [menu.state]}"
                                         Command="{Binding ViewStateCommand}"
                                         Background="#60AFFF"
                                         Foreground="White"
@@ -86,12 +87,13 @@
 
                                 <Separator/>
 
-                                <Button Content="Changer Format Logs"
+                                <Button Content="{Binding [menu.change_logs]}"
                                         Command="{Binding ToggleLogFormatCommand}"
                                         Background="#8BC34A"
                                         Foreground="White"
                                         Padding="10"
                                         Width="200"/>
+
                                 <Button Content="EN/FR"
                                         Command="{Binding ToggleLanguageCommand}"
                                         Background="#8BC34A"
@@ -99,7 +101,8 @@
                                         Padding="10"
                                         Width="200"
                                         HorizontalAlignment="Center"/>
-                                <Button Content="Quitter"
+
+                                <Button Content="{Binding [menu.quit]}"
                                         Command="{Binding ExitCommand}"
                                         Background="Red"
                                         Foreground="White"
@@ -113,23 +116,23 @@
                 <Border Grid.Column="1"
                         Background="#E0F7FA"
                         Padding="10"
-                        Margin="10"
-                        CornerRadius="10">
+                        Margin="10">
                         <StackPanel>
-                                <TextBlock Text="Créer une nouvelle sauvegarde"
+                                <TextBlock Text="{Binding [menu.create]}"
                                            FontSize="18"
                                            FontWeight="Bold"
                                            Foreground="Black"
                                            Margin="0,0,0,10"/>
 
-                                <TextBlock Text="Nom de la sauvegarde :"
+                                <TextBlock Text="{Binding [menu.name]}"
                                            Foreground="Black"
                                            Margin="10,0,0,0"/>
                                 <StackPanel Orientation="Horizontal">
                                         <TextBox Text="{Binding BackupName, UpdateSourceTrigger=PropertyChanged}"
                                                  Width="250"/>
                                 </StackPanel>
-                                <TextBlock Text="Dossier source :"
+
+                                <TextBlock Text="{Binding [menu.source]}"
                                            Foreground="Black"
                                            Margin="10,0,0,0"/>
                                 <StackPanel Orientation="Horizontal">
@@ -141,7 +144,7 @@
                                                 Width="30"/>
                                 </StackPanel>
 
-                                <TextBlock Text="Dossier cible :"
+                                <TextBlock Text="{Binding [menu.target]}"
                                            Foreground="Black"
                                            Margin="10,0,0,0"/>
                                 <StackPanel Orientation="Horizontal">
@@ -155,15 +158,15 @@
 
                                 <StackPanel Orientation="Vertical"
                                             Margin="10,0,0,0">
-                                        <TextBlock Text="Type de sauvegarde :"
+                                        <TextBlock Text="{Binding [menu.type]}"
                                                    Foreground="Black"/>
                                         <StackPanel Orientation="Horizontal">
-                                                <RadioButton Content="Complète"
+                                                <RadioButton Content="{Binding [menu.complete]}"
                                                              IsChecked="{Binding IsFullBackup}"
                                                              GroupName="BackupType"
                                                              Foreground="Black"
                                                              Margin="5,0,10,0"/>
-                                                <RadioButton Content="Différentielle"
+                                                <RadioButton Content="{Binding [menu.differential]}"
                                                              IsChecked="{Binding IsDifferentialBackup}"
                                                              GroupName="BackupType"
                                                              Foreground="Black"/>
@@ -172,8 +175,9 @@
 
                                 <Separator Margin="10"/>
 
-                                <TextBlock Text="Liste des sauvegardes :"
+                                <TextBlock Text="{Binding [menu.list]}"
                                            Foreground="Black"/>
+
                                 <ListBox ItemsSource="{Binding Backups}"
                                          SelectedItem="{Binding SelectedBackup}"
                                          DisplayMemberPath="Name"
@@ -184,7 +188,7 @@
 
                                 <Separator Margin="10"/>
 
-                                <TextBlock Text="Liste des logs :"
+                                <TextBlock Text="Logs :"
                                            Foreground="Black"/>
                                 <ListBox ItemsSource="{Binding Logs}"
                                          SelectedItem="{Binding SelectedLog}"
@@ -194,6 +198,5 @@
                                          BorderThickness="1"/>
                         </StackPanel>
                 </Border>
-
         </Grid>
 </Window>
