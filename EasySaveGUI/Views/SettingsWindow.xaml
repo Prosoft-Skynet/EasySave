@@ -1,0 +1,48 @@
+﻿<Window x:Class="EasySaveGUI.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Settings"
+        Width="500"
+        Height="400"
+        Background="#60AFFF">
+
+    <Grid>
+        <Border Grid.Column="1"
+                Background="#E0F7FA"
+                Padding="10"
+                Margin="10"
+                CornerRadius="10">
+            <StackPanel>
+                <TextBlock Text="Processus métiers :"
+                           Foreground="Black"
+                           Margin="10,0,0,0"/>
+
+                <StackPanel Orientation="Horizontal">
+                    <!-- Correction du Binding -->
+                    <TextBox Text="{Binding BusinessApplicationsPath, UpdateSourceTrigger=PropertyChanged}"
+                     Width="250"
+                     IsReadOnly="True"/>
+
+                    <Button Content="..."
+                    Command="{Binding SelectBusinessApplicationCommand}"
+                    Width="30"/>
+
+                    <Button Content="Ajouter un processus"
+                    Command="{Binding AddBusinessApplicationCommand}"
+                    Margin="20,0,0,0"
+                    Width="150"/>
+                </StackPanel>
+
+                <Separator Margin="10"/>
+
+                <TextBlock Text="Liste des processus métiers :"
+                           Foreground="Black"/>
+                <ListBox ItemsSource="{Binding BusinessApplications}"
+                         Height="200"
+                         Background="White"
+                         BorderBrush="Gray"
+                         BorderThickness="1"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

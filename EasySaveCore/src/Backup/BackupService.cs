@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace EasySaveCore.Backup;
 
 /// <summary>
@@ -10,7 +12,7 @@ public class BackupService
     /// </summary>
     /// <param name="source">The source directory.</param>
     /// <param name="target">The target directory.</param>
-    public void TransferFiles(string source, string target)
+    public void TransferFiles(string source, string target, ObservableCollection<string> filesExceptions)
     {
         var sourceDirectory = new DirectoryInfo(source);
         var targetDirectory = new DirectoryInfo(target);
@@ -22,12 +24,14 @@ public class BackupService
 
         foreach (var file in sourceDirectory.GetFiles())
         {
-            file.CopyTo(Path.Combine(target, file.Name), true);
+            if (!filesExceptions.Contains(file.FullName)){
+                file.CopyTo(Path.Combine(target, file.Name), true);
+            }
         }
 
         foreach (var directory in sourceDirectory.GetDirectories())
         {
-            TransferFiles(directory.FullName, Path.Combine(target, directory.Name));
+            TransferFiles(directory.FullName, Path.Combine(target, directory.Name), filesExceptions);
         }
     }
 

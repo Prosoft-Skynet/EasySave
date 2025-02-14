@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace EasySaveCore.Backup;
 
 /// <summary>
@@ -10,5 +12,5 @@ public interface IBackupTypeStrategy
     /// </summary>
     /// <param name="source">The source directory.</param>
     /// <param name="target">The target directory.</param>
-    void ExecuteBackupStrategy(string source, string target);
+    void ExecuteBackupStrategy(string source, string target, ObservableCollection<string> filesExceptions);
 }

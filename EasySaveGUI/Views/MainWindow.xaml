@@ -77,6 +77,14 @@
                                         Width="200"
                                         BorderThickness="0"
                                         Margin="5"/>
+                                
+                                <Button Content="paramètres"
+                                        Command="{Binding OpenSettingsCommand}"
+                                        Background="#60AFFF"
+                                        Foreground="White"
+                                        Padding="10"
+                                        Width="200"
+                                        HorizontalAlignment="Center"/>        
 
                                 <Separator Margin="10"/>
 
