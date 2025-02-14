@@ -1,16 +1,20 @@
 ﻿namespace EasySaveGUI.ViewModels;
 
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Windows;
 using System.Windows.Input;
 using EasySaveCore.Backup;
 using EasySaveCore.Controller;
+using EasySaveCore.CryptoSoft;
 using EasySaveGUI.Helpers;
 
 public class MainViewModel : ViewModelBase
 {
     private readonly BackupManager _backupManager;
+
 
     private string _backupName = string.Empty;
     private string _sourcePath = string.Empty;
@@ -39,6 +43,13 @@ public class MainViewModel : ViewModelBase
 
     // Propriété pour activer/désactiver le bouton "Ajouter"
     public bool CanAddBackup => SelectedBackup == null;
+
+    private string _encryptionKey = string.Empty;
+    public string EncryptionKey
+    {
+        get => _encryptionKey;
+        set { _encryptionKey = value; OnPropertyChanged(); }
+    }
 
 
     public string BackupName
@@ -91,6 +102,7 @@ public class MainViewModel : ViewModelBase
         ExitCommand = new RelayCommand(ExitApplication);
     }
 
+
     private void AddBackup()
     {
         if (string.IsNullOrWhiteSpace(BackupName) || string.IsNullOrWhiteSpace(SourcePath) || string.IsNullOrWhiteSpace(DestinationPath))
@@ -107,12 +119,14 @@ public class MainViewModel : ViewModelBase
 
         try
         {
+           
+
             IBackupTypeStrategy strategy = IsFullBackup ? new CompleteBackupStrategy() : new DifferentialBackupStrategy();
             var job = new BackupJob(BackupName, SourcePath, DestinationPath, IsFullBackup, strategy);
 
             _backupManager.AddBackup(job);
-            Backups.Add(job);
 
+            Backups.Add(job);
             MessageBox.Show($"La sauvegarde {BackupName} a été créée avec succès !");
 
             BackupName = string.Empty;
@@ -124,6 +138,8 @@ public class MainViewModel : ViewModelBase
             MessageBox.Show($"Erreur : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
+
+
 
     private bool CanDeleteBackup()
     {
@@ -161,10 +177,14 @@ public class MainViewModel : ViewModelBase
             return;
         }
 
-        _backupManager.ExecuteJob(SelectedBackup.Id);
+        Func<string, string> getEncryptionKeyCallback = (fileName) =>
+        {
+            return Microsoft.VisualBasic.Interaction.InputBox($"Entrez la clé de cryptage pour le fichier : {fileName}", "Cryptage du fichier", "", -1, -1);
+        };
+
+        _backupManager.ExecuteJobinterface(SelectedBackup.Id, getEncryptionKeyCallback);
         MessageBox.Show($"Sauvegarde {SelectedBackup.Name} exécutée !");
     }
-
     private void RestoreBackup()
     {
         if (SelectedBackup == null)
