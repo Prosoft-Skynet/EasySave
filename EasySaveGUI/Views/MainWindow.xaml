@@ -87,7 +87,7 @@
 
                                 <Separator/>
 
-                                <Button Content="Changer Format Logs"
+                                <Button Content="{Binding [menu.change_logs]}"
                                         Command="{Binding ToggleLogFormatCommand}"
                                         Background="#8BC34A"
                                         Foreground="White"
@@ -188,7 +188,7 @@
 
                                 <Separator Margin="10"/>
 
-                                <TextBlock Text="Liste des logs :"
+                                <TextBlock Text="Logs :"
                                            Foreground="Black"/>
                                 <ListBox ItemsSource="{Binding Logs}"
                                          SelectedItem="{Binding SelectedLog}"

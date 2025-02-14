@@ -28,6 +28,7 @@ public class FrLanguage : Language
             { "menu.differential", "Différentielle" },
             { "menu.list", "Liste des sauvegardes :" },
             { "menu.quit", "Quitter" },
+            { "menu.change_logs", "Changer format Logs (XML/JSON)" },
             { "box.error", "Erreur" },
             { "box.fill", "Veuillez remplir tous les champs." },
             { "box.name", "Une sauvegarde avec ce nom existe déjà." },
@@ -37,9 +38,15 @@ public class FrLanguage : Language
             { "box.delete", "Sélectionnez une sauvegarde à supprimer." },
             { "box.delete_success", "supprimée avec succès !" },
             { "box.execute", "Veuillez sélectionner une sauvegarde à exécuter." },
-            { "box.execute_success", "exécutée !" },
+            { "box.execute_success", "exécutée en" },
             { "box.restore", "Veuillez sélectionner une sauvegarde à restaurer." },
             { "box.restore_success", "restaurée !" },
+            { "box.success", "Succès" },
+            { "box.logs", "Veuillez sélectionner un log à ouvrir." },
+            { "box.logs_exist", "Le fichier log n'existe pas." },
+            { "box.os", "Système d'exploitation non supporté." },
+            { "box.logs_error", "Erreur lors de l'ouverture du fichier" },
+            { "box.logs_format", "Format des logs changé en" },
         };
     }
 }

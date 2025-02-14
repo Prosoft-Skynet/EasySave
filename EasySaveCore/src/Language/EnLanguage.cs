@@ -20,7 +20,6 @@ public class EnLanguage : Language
             { "menu.restore", "Restore a backup" },
             { "menu.logs", "View logs" },
             { "menu.state", "View state" },
-            { "menu.quit", "Quit" },
             { "menu.create", "Create a new backup" },
             { "menu.name", "Backup name :" },
             { "menu.source", "Source folder :" },
@@ -28,6 +27,8 @@ public class EnLanguage : Language
             { "menu.type", "Backup type :" },
             { "menu.complete", "Complete" },
             { "menu.differential", "Differential" },
+            { "menu.quit", "Quit" },
+            { "menu.change_logs", "Change Logs format (XML/JSON)" },
             { "box.error", "Error" },
             { "box.fill", "Please fill all fields." },
             { "box.name", "A backup with this name already exists." },
@@ -37,9 +38,15 @@ public class EnLanguage : Language
             { "box.delete", "Select a backup to delete." },
             { "box.delete_success", "deleted successfully !" },
             { "box.execute", "Please select a backup to execute." },
-            { "box.execute_success", "executed !" },
+            { "box.execute_success", "executed in" },
             { "box.restore", "Please select a backup to restore." },
             { "box.restore_success", "restored !" },
+            { "box.success", "Success" },
+            { "box.logs", "Please select a log to open." },
+            { "box.logs_exist", "Log file does not exist." },
+            { "box.os", "Unsupported operating system." },
+            { "box.logs_error", "Error opening file" },
+            { "box.logs_format", "Logs format changed to" },
         };
     }
 }

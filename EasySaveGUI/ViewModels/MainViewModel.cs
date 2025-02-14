@@ -259,8 +259,7 @@ public class MainViewModel : ViewModelBase
         long durationMs = (long)(endTime - startTime).TotalMilliseconds;
 
         _logger.Log(SelectedBackup.Name, SelectedBackup.Source, SelectedBackup.Target, durationMs);
-        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")}");
-        MessageBox.Show($"Sauvegarde {SelectedBackup.Name} exécutée en {durationMs} ms !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")} {durationMs} ms !", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
 
         LoadLogs();
     }
@@ -269,7 +268,7 @@ public class MainViewModel : ViewModelBase
     {
         if (SelectedLog == null)
         {
-            MessageBox.Show("Veuillez sélectionner un log à ouvrir.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(easySave.GetText("box.logs"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -281,7 +280,7 @@ public class MainViewModel : ViewModelBase
 
         if (!File.Exists(filePath))
         {
-            MessageBox.Show("Le fichier log n'existe pas.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(easySave.GetText("box.logs_exist"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -301,12 +300,12 @@ public class MainViewModel : ViewModelBase
             }
             else
             {
-                MessageBox.Show("Système d'exploitation non supporté.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(easySave.GetText("box.os"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Erreur lors de l'ouverture du fichier : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"{easySave.GetText("box.logs_error")} : {ex.Message}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -318,7 +317,7 @@ public class MainViewModel : ViewModelBase
         _logger.SetLogFormatter(isCurrentlyJson ? new XmlLogFormatter() : new JsonLogFormatter());
 
         string newFormat = isCurrentlyJson ? "XML" : "JSON";
-        MessageBox.Show($"Format des logs changé en {newFormat} !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show($"{easySave.GetText("box.logs_format")} {newFormat} !", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
 
 
         LoadLogs();
