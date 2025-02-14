@@ -25,6 +25,7 @@ public class EnLanguage : Language
             { "menu.logs_format_XML", "8. XML" },
             { "menu.language", "9. FR" },
             { "menu.quit", "10. Quit" },
+            { "menu.cle.cryptage", "Please enter the encryption key :" },
             { "menu.choice", "Your choice: " },
             { "backup.name", "Backup name : " },
             { "backup.name_use", "Name already in use" },

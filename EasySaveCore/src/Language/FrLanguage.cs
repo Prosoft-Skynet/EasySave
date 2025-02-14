@@ -25,6 +25,7 @@ public class FrLanguage : Language
             { "menu.logs_format_XML", "8. XML" },
             { "menu.language", "9. EN" },
             { "menu.quit", "10. Quitter" },
+            { "menu.cle.cryptage", "Veuillez entrer la clé de cryptage :" },
             { "menu.choice", "Votre choix: " },
             { "backup.name", "Nom de la sauvegarde : " },
             { "backup.name_use", "Nom déjà utilisé" },
