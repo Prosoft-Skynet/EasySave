@@ -284,26 +284,6 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-
-    private void RunBackup()
-    {
-        if (SelectedBackup == null)
-        {
-            MessageBox.Show(easySave.GetText("box.execute"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
-        var startTime = DateTime.Now;
-        _backupManager.ExecuteJob(SelectedBackup.Id);
-        var endTime = DateTime.Now;
-        long durationMs = (long)(endTime - startTime).TotalMilliseconds;
-
-        _logger.Log(SelectedBackup.Name, SelectedBackup.Source, SelectedBackup.Target, durationMs);
-        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")} {durationMs} ms !", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
-
-        LoadLogs();
-    }
-
     private void OpenLog()
     {
         if (SelectedLog == null)
