@@ -40,9 +40,9 @@ public class EasySave
     /// Executes a backup job specified by its identifier.
     /// </summary>
     /// <param name="jobId">The identifier of the backup job.</param>
-    public void Run(Guid jobId)
+    public void Run(Guid jobId, Func<string, string> getEncryptionKeyCallback)
     {
-        backupManager.ExecuteJob(jobId);
+        backupManager.ExecuteJobinterface(jobId, getEncryptionKeyCallback);
     }
 
     /// <summary>

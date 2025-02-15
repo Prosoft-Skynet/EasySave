@@ -47,6 +47,10 @@ public class EnLanguage : Language
             { "box.os", "Unsupported operating system." },
             { "box.logs_error", "Error opening file" },
             { "box.logs_format", "Logs format changed to" },
+            { "menu.encrypt", "Please enter the encryption key for" },
+            { "menu.decrypt", "Please enter the decryption key for" },
+            { "menu.encryption_key", "Encryption Key" },
+            { "menu.decryption_key", "Decryption Key" },
         };
     }
 }

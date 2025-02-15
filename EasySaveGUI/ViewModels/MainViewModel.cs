@@ -5,10 +5,12 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Windows;
 using System.Windows.Input;
 using EasySaveCore.Backup;
 using EasySaveCore.Controller;
+using EasySaveCore.CryptoSoft;
 using EasySaveCore.Language;
 using EasySaveGUI.Helpers;
 using EasySaveLogger.Logger;
@@ -18,6 +20,7 @@ public class MainViewModel : ViewModelBase
 {
     private readonly BackupManager _backupManager;
     private readonly Logger _logger;
+
 
     private string _backupName = string.Empty;
     private string _sourcePath = string.Empty;
@@ -56,6 +59,12 @@ public class MainViewModel : ViewModelBase
 
     public bool CanExecuteOrRestoreOrDelete => SelectedBackup != null;
     public bool CanAddBackup => SelectedBackup == null && SelectedLog == null;
+    private string _encryptionKey = string.Empty;
+    public string EncryptionKey
+    {
+        get => _encryptionKey;
+        set { _encryptionKey = value; OnPropertyChanged(); }
+    }
 
     public bool CanViewLog => !string.IsNullOrEmpty(SelectedLog);
 
@@ -119,6 +128,7 @@ public class MainViewModel : ViewModelBase
         ExitCommand = new RelayCommand(ExitApplication);
     }
 
+
     private void AddBackup()
     {
         if (string.IsNullOrWhiteSpace(BackupName) || string.IsNullOrWhiteSpace(SourcePath) || string.IsNullOrWhiteSpace(DestinationPath))
@@ -135,12 +145,14 @@ public class MainViewModel : ViewModelBase
 
         try
         {
+
+
             IBackupTypeStrategy strategy = IsFullBackup ? new CompleteBackupStrategy() : new DifferentialBackupStrategy();
             var job = new BackupJob(BackupName, SourcePath, DestinationPath, IsFullBackup, strategy);
 
             _backupManager.AddBackup(job);
-            Backups.Add(job);
 
+            Backups.Add(job);
             MessageBox.Show($"{easySave.GetText("box.backup")} {BackupName} {easySave.GetText("box.create_success")}");
 
             BackupName = string.Empty;
@@ -152,6 +164,7 @@ public class MainViewModel : ViewModelBase
             MessageBox.Show($"{easySave.GetText("box.error")} : {ex.Message}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
+
 
     private void DeleteBackup()
     {
@@ -176,6 +189,61 @@ public class MainViewModel : ViewModelBase
         MessageBox.Show($"{easySave.GetText("box.backup")} {backupName} {easySave.GetText("box.delete_success")}");
     }
 
+    private void RunBackup()
+    {
+        if (SelectedBackup == null)
+        {
+            MessageBox.Show(easySave.GetText("box.execute"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var startTime = DateTime.Now;
+
+        Func<string, string> getEncryptionKeyCallback = (fileName) =>
+        {
+            var extension = Path.GetExtension(fileName).ToLower();
+            if (!_backupManager.extensionsToEncrypt.Contains(extension)) return string.Empty;
+
+            string encryptionKey;
+            do
+            {
+                encryptionKey = CustomInputDialog.ShowDialog(
+                    $"{easySave.GetText("menu.encrypt")} {fileName}",
+                    easySave.GetText("menu.encryption_key"));
+            } while (string.IsNullOrEmpty(encryptionKey));
+
+            return encryptionKey;
+        };
+
+        var copyCryptStartTime = DateTime.Now;
+        var copyCryptTimeMs = 0L;
+        try
+        {
+            _backupManager.ExecuteJobinterface(SelectedBackup.Id, getEncryptionKeyCallback);
+            var copyCryptEndTime = DateTime.Now;
+            copyCryptTimeMs = (long)(copyCryptEndTime - copyCryptStartTime).TotalMilliseconds;
+        }
+        catch (Exception)
+        {
+            copyCryptTimeMs = -1000;
+        }
+
+        var endTime = DateTime.Now;
+        long totalDurationMs = (long)(endTime - startTime).TotalMilliseconds;
+
+        _logger.Log(
+            SelectedBackup.Name,
+            SelectedBackup.Source,
+            SelectedBackup.Target,
+            totalDurationMs,
+            copyCryptTimeMs
+        );
+
+        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")} {totalDurationMs} ms !", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
+
+        LoadLogs();
+    }
+
     private void RestoreBackup()
     {
         if (SelectedBackup == null)
@@ -184,9 +252,27 @@ public class MainViewModel : ViewModelBase
             return;
         }
 
-        _backupManager.RestoreJob(SelectedBackup.Id);
+        Func<string, string> getDecryptionKeyCallback = (fileName) =>
+        {
+            var extension = Path.GetExtension(fileName).ToLower();
+            if (!_backupManager.extensionsToEncrypt.Contains(extension)) return string.Empty;
+
+            string decryptionKey;
+            do
+            {
+                decryptionKey = CustomInputDialog.ShowDialog(
+                    $"{easySave.GetText("menu.decrypt")} {fileName}",
+                    easySave.GetText("menu.decryption_key"));
+            } while (string.IsNullOrEmpty(decryptionKey));
+
+            return decryptionKey;
+        };
+
+        _backupManager.RestoreJob(SelectedBackup.Id, getDecryptionKeyCallback);
+
         MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.restore_success")}");
     }
+
 
     private void SelectSource()
     {
@@ -242,26 +328,6 @@ public class MainViewModel : ViewModelBase
         {
             Logs.Add(log);
         }
-    }
-
-
-    private void RunBackup()
-    {
-        if (SelectedBackup == null)
-        {
-            MessageBox.Show(easySave.GetText("box.execute"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
-        var startTime = DateTime.Now;
-        _backupManager.ExecuteJob(SelectedBackup.Id);
-        var endTime = DateTime.Now;
-        long durationMs = (long)(endTime - startTime).TotalMilliseconds;
-
-        _logger.Log(SelectedBackup.Name, SelectedBackup.Source, SelectedBackup.Target, durationMs);
-        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")} {durationMs} ms !", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
-
-        LoadLogs();
     }
 
     private void OpenLog()

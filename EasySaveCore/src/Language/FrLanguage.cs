@@ -47,6 +47,10 @@ public class FrLanguage : Language
             { "box.os", "Système d'exploitation non supporté." },
             { "box.logs_error", "Erreur lors de l'ouverture du fichier" },
             { "box.logs_format", "Format des logs changé en" },
+            { "menu.encrypt", "Veuillez entrer la clé de cryptage pour" },
+            { "menu.decrypt", "Veuillez entrer la clé de décryptage pour" },
+            { "menu.encryption_key", "Clé de cryptage" },
+            { "menu.decryption_key", "Clé de décryptage" },
         };
     }
 }
