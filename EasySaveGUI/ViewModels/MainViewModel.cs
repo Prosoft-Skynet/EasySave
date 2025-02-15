@@ -145,7 +145,7 @@ public class MainViewModel : ViewModelBase
 
         try
         {
-           
+
 
             IBackupTypeStrategy strategy = IsFullBackup ? new CompleteBackupStrategy() : new DifferentialBackupStrategy();
             var job = new BackupJob(BackupName, SourcePath, DestinationPath, IsFullBackup, strategy);
@@ -196,54 +196,53 @@ public class MainViewModel : ViewModelBase
             MessageBox.Show(easySave.GetText("box.execute"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-        var encryptionStartTime = DateTime.Now;
-        var startTime = DateTime.Now;
 
+        var startTime = DateTime.Now;
 
         Func<string, string> getEncryptionKeyCallback = (fileName) =>
         {
-            return Microsoft.VisualBasic.Interaction.InputBox($"Entrez la clé de cryptage pour le fichier : {fileName}", "Cryptage du fichier", "", -1, -1);
+            var extension = Path.GetExtension(fileName).ToLower();
+            if (!_backupManager.extensionsToEncrypt.Contains(extension)) return string.Empty;
+
+            string encryptionKey;
+            do
+            {
+                encryptionKey = CustomInputDialog.ShowDialog(
+                    $"{easySave.GetText("menu.encrypt")} {fileName}",
+                    easySave.GetText("menu.encryption_key"));
+            } while (string.IsNullOrEmpty(encryptionKey));
+
+            return encryptionKey;
         };
 
-        var endTime = DateTime.Now;
-
-
-        long encryptionTimeMs = 0; 
-
+        var copyCryptStartTime = DateTime.Now;
+        var copyCryptTimeMs = 0L;
         try
         {
-
             _backupManager.ExecuteJobinterface(SelectedBackup.Id, getEncryptionKeyCallback);
-            var encryptionEndTime = DateTime.Now;
-
-            encryptionTimeMs = (long)(encryptionEndTime - encryptionStartTime).TotalMilliseconds; 
+            var copyCryptEndTime = DateTime.Now;
+            copyCryptTimeMs = (long)(copyCryptEndTime - copyCryptStartTime).TotalMilliseconds;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            encryptionTimeMs = -1000; 
+            copyCryptTimeMs = -1000;
         }
 
-        long durationMs = (long)(endTime - startTime).TotalMilliseconds;
+        var endTime = DateTime.Now;
+        long totalDurationMs = (long)(endTime - startTime).TotalMilliseconds;
 
         _logger.Log(
             SelectedBackup.Name,
             SelectedBackup.Source,
             SelectedBackup.Target,
-            durationMs,
-            encryptionTimeMs 
+            totalDurationMs,
+            copyCryptTimeMs
         );
 
-        string encryptionMessage = encryptionTimeMs >= 0
-            ? $"Temps de cryptage : {encryptionTimeMs} ms"
-            : "Aucun cryptage effectué ou erreur lors du cryptage.";
-
-        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")} {durationMs} ms !\n{encryptionMessage}", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")} {totalDurationMs} ms !", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
 
         LoadLogs();
     }
-
-
-
 
     private void RestoreBackup()
     {
@@ -252,14 +251,28 @@ public class MainViewModel : ViewModelBase
             MessageBox.Show(easySave.GetText("box.restore"), easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-        Func<string, string> getEncryptionKeyCallback = (fileName) =>
+
+        Func<string, string> getDecryptionKeyCallback = (fileName) =>
         {
-            return Microsoft.VisualBasic.Interaction.InputBox($"Entrez la clé de cryptage pour le fichier : {fileName}", "Cryptage du fichier", "", -1, -1);
+            var extension = Path.GetExtension(fileName).ToLower();
+            if (!_backupManager.extensionsToEncrypt.Contains(extension)) return string.Empty;
+
+            string decryptionKey;
+            do
+            {
+                decryptionKey = CustomInputDialog.ShowDialog(
+                    $"{easySave.GetText("menu.decrypt")} {fileName}",
+                    easySave.GetText("menu.decryption_key"));
+            } while (string.IsNullOrEmpty(decryptionKey));
+
+            return decryptionKey;
         };
 
-        _backupManager.RestoreJob(SelectedBackup.Id, getEncryptionKeyCallback);
+        _backupManager.RestoreJob(SelectedBackup.Id, getDecryptionKeyCallback);
+
         MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.restore_success")}");
     }
+
 
     private void SelectSource()
     {

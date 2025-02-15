@@ -11,7 +11,7 @@ public class BackupManager
 {
     private List<BackupJob> backupJobs = new List<BackupJob>();
     private StateManager stateManager = new StateManager();
-    private List<string> extensionsToEncrypt = new List<string> { ".txt", ".docx" }; // Extensions to be encrypted
+    public List<string> extensionsToEncrypt = new List<string> { ".txt", ".docx" }; // Extensions to be encrypted
 
     /// <summary>
     /// Adds a new backup job.
@@ -51,6 +51,7 @@ public class BackupManager
             stateManager.UpdateState(job, "Finish", 100, 100, 1.0f, 0, 0, "", "");
         }
     }
+
     private void EncryptFilesInDirectory(string directoryPath, Func<string, string> getEncryptionKeyCallback)
     {
         if (!Directory.Exists(directoryPath)) return;
@@ -63,12 +64,33 @@ public class BackupManager
 
                 if (string.IsNullOrEmpty(encryptionKey))
                 {
-                    continue; 
+                    continue;
                 }
                 CryptoSoft.Crypt(new string[] { file, encryptionKey });
             }
         }
     }
+
+    private void DecryptFilesInDirectory(string directoryPath, Func<string, string> getEncryptionKeyCallback)
+    {
+        if (!Directory.Exists(directoryPath)) return;
+
+        foreach (var file in Directory.GetFiles(directoryPath))
+        {
+            if (extensionsToEncrypt.Contains(Path.GetExtension(file)))
+            {
+                string decryptionKey = getEncryptionKeyCallback(Path.GetFileName(file));
+
+                if (string.IsNullOrEmpty(decryptionKey))
+                {
+                    continue;
+                }
+
+                CryptoSoft.Crypt(new string[] { file, decryptionKey });
+            }
+        }
+    }
+
 
     /// <summary>
     /// Executes a list of backup jobs sequentially.
@@ -88,14 +110,16 @@ public class BackupManager
     /// <param name="jobId">The identifier of the backup job.</param>
     public void RestoreJob(Guid jobId, Func<string, string> getEncryptionKeyCallback)
     {
-
         var job = backupJobs.FirstOrDefault(j => j.Id == jobId);
         if (job != null)
         {
-            EncryptFilesInDirectory(job.Target, getEncryptionKeyCallback);
+            // 🔹 Décrypter les fichiers .txt et .docx avant de restaurer
+            DecryptFilesInDirectory(job.Target, getEncryptionKeyCallback);
+
             job.Restore();
         }
     }
+
 
     /// <summary>
     /// Retrieves the list of backup jobs.

@@ -20,7 +20,6 @@ public class FrLanguage : Language
             { "menu.logs", "Voir les logs" },
             { "menu.state", "Voir l'état" },
             { "menu.create", "Créer une nouvelle sauvegarde" },
-            { "menu.cle.cryptage", "Veuillez entrer la clé de cryptage :" },
             { "menu.name", "Nom de la sauvegarde :" },
             { "menu.source", "Dossier source :" },
             { "menu.target", "Dossier cible :" },
@@ -48,6 +47,10 @@ public class FrLanguage : Language
             { "box.os", "Système d'exploitation non supporté." },
             { "box.logs_error", "Erreur lors de l'ouverture du fichier" },
             { "box.logs_format", "Format des logs changé en" },
+            { "menu.encrypt", "Veuillez entrer la clé de cryptage pour" },
+            { "menu.decrypt", "Veuillez entrer la clé de décryptage pour" },
+            { "menu.encryption_key", "Clé de cryptage" },
+            { "menu.decryption_key", "Clé de décryptage" },
         };
     }
 }

@@ -27,7 +27,6 @@ public class EnLanguage : Language
             { "menu.type", "Backup type :" },
             { "menu.complete", "Complete" },
             { "menu.differential", "Differential" },
-            { "menu.cle.cryptage", "Please enter the encryption key :" },
             { "menu.quit", "Quit" },
             { "menu.change_logs", "Change Logs format (XML/JSON)" },
             { "box.error", "Error" },
@@ -48,6 +47,10 @@ public class EnLanguage : Language
             { "box.os", "Unsupported operating system." },
             { "box.logs_error", "Error opening file" },
             { "box.logs_format", "Logs format changed to" },
+            { "menu.encrypt", "Please enter the encryption key for" },
+            { "menu.decrypt", "Please enter the decryption key for" },
+            { "menu.encryption_key", "Encryption Key" },
+            { "menu.decryption_key", "Decryption Key" },
         };
     }
 }
