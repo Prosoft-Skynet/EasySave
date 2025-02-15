@@ -25,7 +25,7 @@ public class LogEntry
 
     [JsonPropertyName("transferTimeMs")]
     public long TransferTime { get; set; }
-    
+
     [JsonPropertyName("encryptionTimeMs")]
     public long EncryptionTime { get; set; }
 

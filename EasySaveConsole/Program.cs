@@ -114,7 +114,7 @@ public class Program
             Console.WriteLine(easySave.GetText("backup.name_use"));
             return;
         }
-        
+
         Console.Write(easySave.GetText("backup.source"));
         string source = Console.ReadLine()!;
 
