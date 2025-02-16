@@ -174,7 +174,7 @@ public class MainViewModel : ViewModelBase
         MessageBox.Show($"{easySave.GetText("box.backup")} {backupName} {easySave.GetText("box.delete_success")}");
     }
 
-    private void RunBackup()
+    private async void RunBackup()
     {
         if (SelectedBackup == null)
         {
@@ -189,22 +189,31 @@ public class MainViewModel : ViewModelBase
             var extension = Path.GetExtension(fileName).ToLower();
             if (!_backupManager.extensionsToEncrypt.Contains(extension)) return string.Empty;
 
-            string encryptionKey;
-            do
+            string encryptionKey = string.Empty;
+
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                encryptionKey = CustomInputDialog.ShowDialog(
-                    $"{easySave.GetText("menu.encrypt")} {fileName}",
-                    easySave.GetText("menu.encryption_key"));
-            } while (string.IsNullOrEmpty(encryptionKey));
+                do
+                {
+                    encryptionKey = CustomInputDialog.ShowDialog(
+                        $"{easySave.GetText("menu.encrypt")} {fileName}",
+                        easySave.GetText("menu.encryption_key"));
+                } while (string.IsNullOrEmpty(encryptionKey));
+            });
 
             return encryptionKey;
         };
 
         var copyCryptStartTime = DateTime.Now;
         var copyCryptTimeMs = 0L;
+
         try
         {
-            _backupManager.ExecuteJobinterface(SelectedBackup.Id, getEncryptionKeyCallback);
+            await Task.Run(() =>
+            {
+                _backupManager.ExecuteJobinterface(SelectedBackup.Id, getEncryptionKeyCallback);
+            });
+
             var copyCryptEndTime = DateTime.Now;
             copyCryptTimeMs = (long)(copyCryptEndTime - copyCryptStartTime).TotalMilliseconds;
         }
@@ -229,7 +238,7 @@ public class MainViewModel : ViewModelBase
         LoadLogs();
     }
 
-    private void RestoreBackup()
+    private async void RestoreBackup()
     {
         if (SelectedBackup == null)
         {
@@ -242,20 +251,36 @@ public class MainViewModel : ViewModelBase
             var extension = Path.GetExtension(fileName).ToLower();
             if (!_backupManager.extensionsToEncrypt.Contains(extension)) return string.Empty;
 
-            string decryptionKey;
-            do
+            string decryptionKey = string.Empty;
+
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                decryptionKey = CustomInputDialog.ShowDialog(
-                    $"{easySave.GetText("menu.decrypt")} {fileName}",
-                    easySave.GetText("menu.decryption_key"));
-            } while (string.IsNullOrEmpty(decryptionKey));
+                do
+                {
+                    decryptionKey = CustomInputDialog.ShowDialog(
+                        $"{easySave.GetText("menu.decrypt")} {fileName}",
+                        easySave.GetText("menu.decryption_key"));
+                } while (string.IsNullOrEmpty(decryptionKey));
+            });
 
             return decryptionKey;
         };
 
-        _backupManager.RestoreJob(SelectedBackup.Id, getDecryptionKeyCallback);
+        try
+        {
+            await Task.Run(() =>
+            {
+                _backupManager.RestoreJob(SelectedBackup.Id, getDecryptionKeyCallback);
+            });
 
-        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.restore_success")}");
+            MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.restore_success")}",
+                            easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"{easySave.GetText("box.error")} : {ex.Message}",
+                            easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     private void SelectSource()

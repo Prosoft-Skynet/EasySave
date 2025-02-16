@@ -121,7 +121,7 @@ public class BackupManager
         }
     }
 
-    private void DecryptFilesInDirectory(string directoryPath, Func<string, string> getEncryptionKeyCallback)
+    private void DecryptFilesInDirectory(string directoryPath, Func<string, string> getDecryptionKeyCallback)
     {
         if (!Directory.Exists(directoryPath)) return;
 
@@ -129,7 +129,7 @@ public class BackupManager
         {
             if (extensionsToEncrypt.Contains(Path.GetExtension(file)))
             {
-                string decryptionKey = getEncryptionKeyCallback(Path.GetFileName(file));
+                string decryptionKey = getDecryptionKeyCallback(Path.GetFileName(file));
 
                 if (string.IsNullOrEmpty(decryptionKey))
                 {
@@ -157,15 +157,14 @@ public class BackupManager
     /// Restores a backup job specified by its identifier.
     /// </summary>
     /// <param name="jobId">The identifier of the backup job.</param>
-    public void RestoreJob(Guid jobId, Func<string, string> getEncryptionKeyCallback)
+    public void RestoreJob(Guid jobId, Func<string, string> getDecryptionKeyCallback)
     {
         var job = backupJobs.FirstOrDefault(j => j.Id == jobId);
         if (job != null)
         {
-            // 🔹 Décrypter les fichiers .txt et .docx avant de restaurer
-            DecryptFilesInDirectory(job.Target, getEncryptionKeyCallback);
-
             job.Restore();
+            DecryptFilesInDirectory(job.Source, getDecryptionKeyCallback);
+
         }
     }
 
