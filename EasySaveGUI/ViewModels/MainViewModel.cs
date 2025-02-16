@@ -28,6 +28,7 @@ public class MainViewModel : ViewModelBase
     private bool _isFullBackup = true;
 
     public ObservableCollection<BackupJob> Backups { get; }
+
     public ObservableCollection<string> Logs { get; }
 
     private EasySave easySave = EasySave.GetInstance();
@@ -111,7 +112,7 @@ public class MainViewModel : ViewModelBase
         _backupManager = new BackupManager();
         _logger = new Logger(new JsonLogFormatter());
 
-        Backups = new ObservableCollection<BackupJob>(_backupManager.GetBackupJobs());
+        Backups = new ObservableCollection<BackupJob>(_backupManager.LoadBackupJobs());
         Logs = new ObservableCollection<string>();
 
         LoadLogs();
@@ -145,12 +146,11 @@ public class MainViewModel : ViewModelBase
 
         try
         {
-
-
             IBackupTypeStrategy strategy = IsFullBackup ? new CompleteBackupStrategy() : new DifferentialBackupStrategy();
             var job = new BackupJob(BackupName, SourcePath, DestinationPath, IsFullBackup, strategy);
 
             _backupManager.AddBackup(job);
+            _backupManager.SaveBackupJobs();
 
             Backups.Add(job);
             MessageBox.Show($"{easySave.GetText("box.backup")} {BackupName} {easySave.GetText("box.create_success")}");
@@ -183,6 +183,7 @@ public class MainViewModel : ViewModelBase
         }
 
         Backups.Remove(SelectedBackup);
+        _backupManager.SaveBackupJobs();
 
         SelectedBackup = null;
 

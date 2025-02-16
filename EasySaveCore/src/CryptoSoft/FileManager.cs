@@ -1,10 +1,10 @@
-﻿using System;
+﻿namespace EasySaveCore.CryptoSoft;
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Diagnostics;
-
-namespace EasySaveCore.CryptoSoft;
 
 /// <summary>
 /// File manager class

@@ -1,18 +1,29 @@
 namespace EasySaveCore.Backup;
 
 using System;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Represents a backup job with details such as name, source, target, and backup type.
 /// </summary>
 public class BackupJob
 {
-    public Guid Id { get; private set; }
-    public string Name { get; private set; }
-    public string Source { get; private set; }
-    public string Target { get; private set; }
-    public bool IsFullBackup { get; private set; }
-    private IBackupTypeStrategy backupStrategy;
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Source { get; set; } = string.Empty;
+    public string Target { get; set; } = string.Empty;
+    public bool IsFullBackup { get; set; }
+
+    [JsonIgnore]
+    private IBackupTypeStrategy? backupStrategy;
+
+    /// <summary>
+    /// Constructeur vide requis pour la désérialisation JSON.
+    /// </summary>
+    public BackupJob()
+    {
+        Id = Guid.NewGuid();
+    }
 
     /// <summary>
     /// Initializes a new instance of the BackupJob class.
@@ -33,10 +44,22 @@ public class BackupJob
     }
 
     /// <summary>
+    /// Définit la stratégie de sauvegarde après désérialisation.
+    /// </summary>
+    public void SetBackupStrategy(IBackupTypeStrategy strategy)
+    {
+        backupStrategy = strategy;
+    }
+
+    /// <summary>
     /// Executes the backup job.
     /// </summary>
     public void Execute()
     {
+        if (backupStrategy == null)
+        {
+            throw new InvalidOperationException("Backup strategy is not set.");
+        }
         backupStrategy.ExecuteBackupStrategy(Source, Target);
     }
 
