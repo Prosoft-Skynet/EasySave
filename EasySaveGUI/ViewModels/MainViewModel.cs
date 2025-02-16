@@ -20,17 +20,13 @@ public class MainViewModel : ViewModelBase
 {
     private readonly BackupManager _backupManager;
     private readonly Logger _logger;
-
-
     private string _backupName = string.Empty;
     private string _sourcePath = string.Empty;
     private string _destinationPath = string.Empty;
     private bool _isFullBackup = true;
 
     public ObservableCollection<BackupJob> Backups { get; }
-
     public ObservableCollection<string> Logs { get; }
-
     private EasySave easySave = EasySave.GetInstance();
 
     private BackupJob? _selectedBackup;
@@ -41,8 +37,6 @@ public class MainViewModel : ViewModelBase
         {
             _selectedBackup = value;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(CanExecuteOrRestoreOrDelete));
-            OnPropertyChanged(nameof(CanAddBackup));
         }
     }
 
@@ -54,20 +48,15 @@ public class MainViewModel : ViewModelBase
         {
             _selectedLog = value;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(CanViewLog));
         }
     }
 
-    public bool CanExecuteOrRestoreOrDelete => SelectedBackup != null;
-    public bool CanAddBackup => SelectedBackup == null && SelectedLog == null;
     private string _encryptionKey = string.Empty;
     public string EncryptionKey
     {
         get => _encryptionKey;
         set { _encryptionKey = value; OnPropertyChanged(); }
     }
-
-    public bool CanViewLog => !string.IsNullOrEmpty(SelectedLog);
 
     public string BackupName
     {
@@ -98,13 +87,10 @@ public class MainViewModel : ViewModelBase
     public ICommand RunBackupCommand { get; }
     public ICommand RestoreBackupCommand { get; }
     public ICommand SelectSourceCommand { get; }
-
     public ICommand SelectDestinationCommand { get; }
     public ICommand OpenLogCommand { get; }
     public ICommand ToggleLogFormatCommand { get; }
-
     public ICommand ToggleLanguageCommand { get; }
-
     public ICommand ExitCommand { get; }
 
     public MainViewModel()
@@ -117,18 +103,17 @@ public class MainViewModel : ViewModelBase
 
         LoadLogs();
 
-        AddBackupCommand = new RelayCommand(AddBackup, () => CanAddBackup);
-        DeleteBackupCommand = new RelayCommand(DeleteBackup, () => CanExecuteOrRestoreOrDelete);
-        RunBackupCommand = new RelayCommand(RunBackup, () => CanExecuteOrRestoreOrDelete);
-        RestoreBackupCommand = new RelayCommand(RestoreBackup, () => CanExecuteOrRestoreOrDelete);
+        AddBackupCommand = new RelayCommand(AddBackup);
+        DeleteBackupCommand = new RelayCommand(DeleteBackup);
+        RunBackupCommand = new RelayCommand(RunBackup);
+        RestoreBackupCommand = new RelayCommand(RestoreBackup);
         SelectSourceCommand = new RelayCommand(SelectSource);
         SelectDestinationCommand = new RelayCommand(SelectDestination);
-        OpenLogCommand = new RelayCommand(OpenLog, () => CanViewLog);
+        OpenLogCommand = new RelayCommand(OpenLog);
         ToggleLogFormatCommand = new RelayCommand(ToggleLogFormat);
         ToggleLanguageCommand = new RelayCommand(ToggleLanguage);
         ExitCommand = new RelayCommand(ExitApplication);
     }
-
 
     private void AddBackup()
     {
@@ -164,7 +149,6 @@ public class MainViewModel : ViewModelBase
             MessageBox.Show($"{easySave.GetText("box.error")} : {ex.Message}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
-
 
     private void DeleteBackup()
     {
@@ -274,7 +258,6 @@ public class MainViewModel : ViewModelBase
         MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.restore_success")}");
     }
 
-
     private void SelectSource()
     {
         var dialog = new Microsoft.Win32.OpenFileDialog
@@ -375,7 +358,6 @@ public class MainViewModel : ViewModelBase
             MessageBox.Show($"{easySave.GetText("box.logs_error")} : {ex.Message}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
-
 
     private void ToggleLogFormat()
     {

@@ -1,7 +1,6 @@
 using EasySaveCore.State;
 using EasySaveCore.Controller;
 
-
 /// <summary>
 /// Class responsible for the command line interface.
 /// </summary>
@@ -9,7 +8,6 @@ public class CLI
 {
     private BackupManager backupManager;
     private StateManager stateManager;
-
     private EasySave easySave = EasySave.GetInstance();
 
     /// <summary>
@@ -258,5 +256,4 @@ public class CLI
     {
         Console.WriteLine($"Error: {message}");
     }
-
 }

@@ -5,14 +5,7 @@
 /// </summary>
 public class LanguageManager
 {
-    /// <summary>
-    /// Language currently selected.
-    /// </summary>
     private Language currentLanguage = null!;
-
-    /// <summary>
-    /// Dictionary containing translations in key/value form.
-    /// </summary>
     private Dictionary<string, string> translations = new Dictionary<string, string>();
 
     /// <summary>

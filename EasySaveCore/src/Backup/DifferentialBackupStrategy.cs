@@ -36,5 +36,4 @@ public class DifferentialBackupStrategy : IBackupTypeStrategy
             ExecuteBackupStrategy(directory.FullName, targetSubDirPath);
         }
     }
-
 }

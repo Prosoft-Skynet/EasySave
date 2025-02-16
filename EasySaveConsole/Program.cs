@@ -11,14 +11,11 @@ using EasySaveLogger.Logger;
 /// </summary>
 public class Program
 {
-
     private EasySave easySave = EasySave.GetInstance();
     private static StateManager stateManager = new StateManager();
-
     private Language currentLanguage = new EnLanguage();
     private static BackupManager backupManager = new BackupManager();
     private CLI cli = new CLI(backupManager, stateManager);
-
     private Logger logger;
 
     public Program()

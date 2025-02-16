@@ -13,7 +13,6 @@ public class BackupManager
     private List<BackupJob> backupJobs = new List<BackupJob>();
     private StateManager stateManager = new StateManager();
     public List<string> extensionsToEncrypt = new List<string> { ".txt", ".docx" }; // Extensions to be encrypted
-
     private readonly string _backupJobsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupJobs.json");
 
     public BackupManager()
@@ -57,16 +56,12 @@ public class BackupManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine({ ex.Message});
+            Console.WriteLine(ex.Message);
             backupJobs = new List<BackupJob>();
         }
 
         return backupJobs;
     }
-
-
-
-
 
     /// <summary>
     /// Adds a new backup job.
@@ -146,7 +141,6 @@ public class BackupManager
         }
     }
 
-
     /// <summary>
     /// Executes a list of backup jobs sequentially.
     /// </summary>
@@ -175,7 +169,6 @@ public class BackupManager
         }
     }
 
-
     /// <summary>
     /// Retrieves the list of backup jobs.
     /// </summary>
@@ -184,7 +177,4 @@ public class BackupManager
     {
         return backupJobs;
     }
-
 }
-
-
