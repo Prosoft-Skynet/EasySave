@@ -1,7 +1,8 @@
-﻿using System;
+﻿namespace EasySaveCore.CryptoSoft;
+
+using System;
 using System.IO;
 
-namespace EasySaveCore.CryptoSoft;
 /// <summary>
 /// Static class for file encryption.
 /// </summary>
