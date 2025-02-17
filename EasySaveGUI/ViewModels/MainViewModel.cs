@@ -257,7 +257,7 @@ public class MainViewModel : ViewModelBase
             copyCryptTimeMs
         );
 
-        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")} {totalDurationMs} ms !", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")} {totalDurationMs} ms ! \n {easySave.GetText("menu.exception_application")} ", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
 
         LoadLogs();
     }

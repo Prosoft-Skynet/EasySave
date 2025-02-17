@@ -51,6 +51,7 @@ public class EnLanguage : Language
             { "menu.decrypt", "Please enter the decryption key for" },
             { "menu.encryption_key", "Encryption Key" },
             { "menu.decryption_key", "Decryption Key" },
+            {"menu.exception_application","Warning: business apps hasn't been added to the backup"},
         };
     }
 }

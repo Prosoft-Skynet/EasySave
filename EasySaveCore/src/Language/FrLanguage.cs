@@ -51,6 +51,7 @@ public class FrLanguage : Language
             { "menu.decrypt", "Veuillez entrer la clé de décryptage pour" },
             { "menu.encryption_key", "Clé de cryptage" },
             { "menu.decryption_key", "Clé de décryptage" },
+            {"menu.exception_application","Attention : des applications métiers n'ont pas été ajoutées à la sauvegarde."},
         };
     }
 }
