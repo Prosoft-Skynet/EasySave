@@ -1,23 +1,23 @@
-namespace EasySaveCore.State;
+namespace EasySaveCore.src.Services;
 
 using System.Text.Json;
-using EasySaveCore.Backup;
+using EasySaveCore.src.Models;
 
-public class StateManager
+public class StateService
 {
     private string stateFilePath = string.Empty;
-    private Dictionary<Guid, StateEntry> currentState;
+    private Dictionary<Guid, StateModel> currentState;
 
     /// <summary>
     ///Initializes the state manager with a path for the state file.
     /// The file will be created in the project's 'temp' folder.
     /// </summary>
     /// <param name="path">Chemin du fichier d'état. Par défaut, il sera situé dans le dossier 'temp'.</param>
-    public StateManager(string path = null!)
+    public StateService(string path = null!)
     {
         ConfigureStatePath(path);
 
-        currentState = new Dictionary<Guid, StateEntry>();
+        currentState = new Dictionary<Guid, StateModel>();
         LoadState();
     }
 
@@ -33,23 +33,25 @@ public class StateManager
     /// <param name="remainingSize">Size of the remaining files to be processed (in bytes)</param>
     /// <param name="currentSource">Current source of the backup job (source directory or file)</param>
     /// <param name="currentTarget">Current destination of the backup (target directory)</param>
-    public void UpdateState(BackupJob job, string status, int filesTotal, int sizeTotal, float progress, int remainingFiles, int remainingSize, string currentSource, string currentTarget)
+    public void UpdateState(BackupJobModel job, string state)
     {
-        var entry = new StateEntry
-        {
-            JobName = job.Name,
-            Timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-            Status = status,
-            FilesTotal = filesTotal,
-            SizeTotal = sizeTotal,
-            Progress = progress,
-            RemainingFiles = remainingFiles,
-            RemainingSize = remainingSize,
-            CurrentSource = currentSource,
-            CurrentTarget = currentTarget
-        };
+        var stateModel = new StateModel();
 
-        currentState[job.Id] = entry;
+        switch(state){
+            case "Finished":
+                stateModel = GenerateFinishedStateModel(job);
+                break;
+            case "Loading":
+                stateModel = GenerateLoadingStateModel(job);
+                break;
+            default:
+                stateModel = new StateModel();
+                break;
+        }
+            
+        
+        
+        currentState[job.Id] = stateModel;
         SaveState();
     }
 
@@ -70,11 +72,51 @@ public class StateManager
         }
     }
 
+
+
+    public StateModel GenerateLoadingStateModel(BackupJobModel job)
+    {
+        var loadingState = new StateModel
+        {
+            JobName = job.Name,
+            Timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+            Status = "In progress",
+            FilesTotal = 0,
+            SizeTotal = 0,
+            Progress = 0,
+            RemainingFiles = 0,
+            RemainingSize = 0,
+            CurrentSource = job.Source,
+            CurrentTarget = job.Target
+        };
+
+        return loadingState;
+    }
+
+    public StateModel GenerateFinishedStateModel(BackupJobModel job)
+    {
+        var loadingState = new StateModel
+        {
+            JobName = job.Name,
+            Timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+            Status = "Finish",
+            FilesTotal = 100,
+            SizeTotal = 100,
+            Progress = 1.0f,
+            RemainingFiles = 0,
+            RemainingSize = 0,
+            CurrentSource = "currentSource",
+            CurrentTarget = "currentTarget"
+        };
+
+        return loadingState;
+    }
+
     /// <summary>
     /// Retrieve the current state of a given job.
     /// </summary>
     /// <param name="jobId">Identifier of the job</param>
-    public StateEntry GetCurrentState(Guid jobId)
+    public StateModel GetCurrentState(Guid jobId)
     {
         return currentState.ContainsKey(jobId) ? currentState[jobId] : null!;
     }
@@ -102,7 +144,7 @@ public class StateManager
         if (File.Exists(stateFilePath))
         {
             var json = File.ReadAllText(stateFilePath);
-            currentState = JsonSerializer.Deserialize<Dictionary<Guid, StateEntry>>(json) ?? new Dictionary<Guid, StateEntry>();
+            currentState = JsonSerializer.Deserialize<Dictionary<Guid, StateModel>>(json) ?? new Dictionary<Guid, StateModel>();
         }
     }
 

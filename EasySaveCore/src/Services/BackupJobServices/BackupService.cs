@@ -1,21 +1,25 @@
-namespace EasySaveCore.Controller;
+namespace EasySaveCore.src.Services.BackupJobServices;
 
-using EasySaveCore.Backup;
-using EasySaveCore.CryptoSoft;
-using EasySaveCore.State;
+using EasySaveCore.src.Models;
+using EasySaveCore.src.Services;
+using System;
+using System.Collections.ObjectModel;
 using System.Text.Json;
 
 /// <summary>
 /// Manages backup jobs, including adding, executing, and restoring backups.
 /// </summary>
-public class BackupManager
+public class BackupService
 {
-    private List<BackupJob> backupJobs = new List<BackupJob>();
-    private StateManager stateManager = new StateManager();
+
+    IBackupTypeStrategy? backupStrategy = null;
+    private List<BackupJobModel> backupJobs = new List<BackupJobModel>();
+    private StateService _stateService = new StateService();
+    private BusinessApplicationService _businessApplicationService = new BusinessApplicationService();
     public List<string> extensionsToEncrypt = new List<string> { ".txt", ".docx" }; // Extensions to be encrypted
     private readonly string _backupJobsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupJobs.json");
 
-    public BackupManager()
+    public BackupService()
     {
         LoadBackupJobs();
     }
@@ -32,7 +36,7 @@ public class BackupManager
     /// <summary>
     /// Loads the backup jobs from a JSON file.
     /// </summary>
-    public List<BackupJob> LoadBackupJobs()
+    public List<BackupJobModel> LoadBackupJobs()
     {
         try
         {
@@ -41,23 +45,24 @@ public class BackupManager
                 string json = File.ReadAllText(_backupJobsFilePath);
                 if (!string.IsNullOrWhiteSpace(json))
                 {
-                    backupJobs = JsonSerializer.Deserialize<List<BackupJob>>(json) ?? new List<BackupJob>();
+                    List<BackupJobModel> BJobs = JsonSerializer.Deserialize<List<BackupJobModel>>(json);
+                    backupJobs = BJobs ?? new List<BackupJobModel>();
 
                     foreach (var job in backupJobs)
                     {
-                        job.SetBackupStrategy(job.IsFullBackup ? new CompleteBackupStrategy() : new DifferentialBackupStrategy());
+                        backupStrategy = job.IsFullBackup ? new CompleteBackupStrategy() : new DifferentialBackupStrategy();
                     }
                 }
             }
             else
             {
-                backupJobs = new List<BackupJob>();
+                backupJobs = new List<BackupJobModel>();
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-            backupJobs = new List<BackupJob>();
+            backupJobs = new List<BackupJobModel>();
         }
 
         return backupJobs;
@@ -67,7 +72,7 @@ public class BackupManager
     /// Adds a new backup job.
     /// </summary>
     /// <param name="job">The backup job to add.</param>
-    public void AddBackup(BackupJob job)
+    public void AddBackup(BackupJobModel job)
     {
         backupJobs.Add(job);
 
@@ -78,9 +83,11 @@ public class BackupManager
         var job = backupJobs.FirstOrDefault(j => j.Id == jobId);
         if (job != null)
         {
-            stateManager.UpdateState(job, "In progress", 0, 0, 0, 0, 0, job.Source, job.Target);
-            job.Execute();
-            stateManager.UpdateState(job, "Finish", 100, 100, 1.0f, 0, 0, "", "");
+            _stateService.UpdateState(job, "Loading");
+            Execute(job);
+
+
+            _stateService.UpdateState(job, "Finished");
         }
     }
 
@@ -93,12 +100,13 @@ public class BackupManager
         var job = backupJobs.FirstOrDefault(j => j.Id == jobId);
         if (job != null)
         {
-            stateManager.UpdateState(job, "In progress", 0, 0, 0, 0, 0, job.Source, job.Target);
-            job.Execute();
 
+            
+
+            _stateService.UpdateState(job, "Loading");
+            Execute(job);
             EncryptFilesInDirectory(job.Target, getEncryptionKeyCallback);
-
-            stateManager.UpdateState(job, "Finish", 100, 100, 1.0f, 0, 0, "", "");
+            _stateService.UpdateState(job, "Finished");
         }
     }
 
@@ -116,7 +124,7 @@ public class BackupManager
                 {
                     continue;
                 }
-                CryptoSoft.Crypt(new string[] { file, encryptionKey });
+                CryptoSoftService.Crypt(new string[] { file, encryptionKey });
             }
         }
     }
@@ -136,7 +144,7 @@ public class BackupManager
                     continue;
                 }
 
-                CryptoSoft.Crypt(new string[] { file, decryptionKey });
+                CryptoSoftService.Crypt(new string[] { file, decryptionKey });
             }
         }
     }
@@ -162,18 +170,85 @@ public class BackupManager
         var job = backupJobs.FirstOrDefault(j => j.Id == jobId);
         if (job != null)
         {
-            job.Restore();
+            Restore(job);
             DecryptFilesInDirectory(job.Source, getDecryptionKeyCallback);
 
         }
     }
 
+
     /// <summary>
     /// Retrieves the list of backup jobs.
     /// </summary>
     /// <returns>The list of backup jobs.</returns>
-    public List<BackupJob> GetBackupJobs()
+    public List<BackupJobModel> GetBackupJobs()
     {
         return backupJobs;
+    }
+
+
+    public void TransferFiles(string source, string target, ObservableCollection<string> filesExceptions)
+    {
+        var sourceDirectory = new DirectoryInfo(source);
+        var targetDirectory = new DirectoryInfo(target);
+
+        if (!targetDirectory.Exists)
+        {
+            CreateDirectories(target);
+        }
+
+        foreach (var file in sourceDirectory.GetFiles())
+        {
+            if (!filesExceptions.Contains(file.FullName))
+            {
+                file.CopyTo(Path.Combine(target, file.Name), true);
+            }
+        }
+
+        foreach (var directory in sourceDirectory.GetDirectories())
+        {
+            TransferFiles(directory.FullName, Path.Combine(target, directory.Name), filesExceptions);
+        }
+    }
+
+    /// <summary>
+    /// Creates the necessary directories.
+    /// </summary>
+    /// <param name="path">The path of the directory to create.</param>
+    public void CreateDirectories(string path)
+    {
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+    }
+    public void Restore(BackupJobModel backUpJob)
+    {
+        TransferFiles(backUpJob.Target, backUpJob.Source, _businessApplicationService.GetBusinessApplications());
+    }
+
+    public void Execute(BackupJobModel backupJob)
+    {
+        if(backupJob.IsFullBackup)
+            backupStrategy = new CompleteBackupStrategy();
+        else
+            backupStrategy = new DifferentialBackupStrategy();
+        backupStrategy.ExecuteBackupStrategy(backupJob.Source, backupJob.Target, _businessApplicationService.GetBusinessApplications());
+    }
+
+    public void SetBackupStrategy(IBackupTypeStrategy strategy)
+    {
+        backupStrategy = strategy;
+    }
+
+    public void SetBackupStrategy(bool isFullBackub)
+    {
+        if (isFullBackub)
+        {
+            backupStrategy = new CompleteBackupStrategy();
+        }
+        else { 
+            backupStrategy = new DifferentialBackupStrategy();
+        }
     }
 }

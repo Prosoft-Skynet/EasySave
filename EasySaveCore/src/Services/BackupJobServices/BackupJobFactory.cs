@@ -1,7 +1,8 @@
-namespace EasySaveCore.Backup;
+namespace EasySaveCore.src.Services.BackupJobServices;
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EasySaveCore.src.Models;
 
 /// <summary>
 /// Factory class responsible for creating and executing backup jobs in parallel.
@@ -12,15 +13,8 @@ public class BackupJobFactory
     /// Creates and executes backup jobs in parallel.
     /// </summary>
     /// <param name="jobs">List of backup jobs to execute.</param>
-    public void CreateBackupJobsInParallel(List<BackupJob> jobs)
+    public void CreateBackupJobsInParallel(List<BackupJobModel> jobs)
     {
-        List<Task> tasks = new List<Task>();
 
-        foreach (var job in jobs)
-        {
-            tasks.Add(Task.Run(() => job.Execute()));
-        }
-
-        Task.WaitAll(tasks.ToArray());
     }
 }

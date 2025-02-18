@@ -1,4 +1,4 @@
-﻿namespace EasySaveCore.CryptoSoft;
+﻿namespace EasySaveCore.src.Services;
 
 using System;
 using System.IO;
@@ -6,7 +6,7 @@ using System.IO;
 /// <summary>
 /// Static class for file encryption.
 /// </summary>
-public static class CryptoSoft
+public static class CryptoSoftService
 {
     /// <summary>
     /// Main method for encrypting a file.
@@ -34,7 +34,7 @@ public static class CryptoSoft
 
             Console.WriteLine($"Encryption key : {key}");
 
-            var fileManager = new FileManager(filePath, key);
+            var fileManager = new FileService(filePath, key);
             long elapsedTime = fileManager.TransformFile();
         }
         catch (Exception e)

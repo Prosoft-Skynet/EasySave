@@ -1,4 +1,4 @@
-﻿namespace EasySaveCore.CryptoSoft;
+﻿namespace EasySaveCore.src.Services;
 
 using System;
 using System.Collections.Generic;
@@ -10,15 +10,15 @@ using System.Diagnostics;
 /// File manager class
 /// This class is used to encrypt and decrypt files
 /// </summary>
-public class FileManager
+public class FileService
 {
-    private string FilePath { get; }
-    private string Key { get; }
+    private string filePath { get; }
+    private string key { get; }
 
-    public FileManager(string path, string key)
+    public FileService(string path, string key)
     {
-        FilePath = path;
-        Key = key;
+        this.filePath = path;
+        this.key = key;
     }
 
     /// <summary>
@@ -26,7 +26,7 @@ public class FileManager
     /// </summary>
     private bool CheckFile()
     {
-        if (File.Exists(FilePath))
+        if (File.Exists(filePath))
             return true;
 
         Console.WriteLine("Erreur : Fichier non trouvé.");
@@ -41,10 +41,10 @@ public class FileManager
         if (!CheckFile()) return -1;
 
         Stopwatch stopwatch = Stopwatch.StartNew();
-        var fileBytes = File.ReadAllBytes(FilePath);
-        var keyBytes = ConvertToByte(Key);
+        var fileBytes = File.ReadAllBytes(filePath);
+        var keyBytes = ConvertToByte(key);
         fileBytes = XorMethod(fileBytes, keyBytes);
-        File.WriteAllBytes(FilePath, fileBytes);
+        File.WriteAllBytes(filePath, fileBytes);
         stopwatch.Stop();
 
         // Vérification si le fichier a bien été transformé
