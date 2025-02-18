@@ -1,21 +1,21 @@
-using EasySaveCore.State;
-using EasySaveCore.Controller;
+using EasySaveCore.src.Services;
+using EasySaveCore.src.Services.BackupJobServices;
 
 /// <summary>
 /// Class responsible for the command line interface.
 /// </summary>
 public class CLI
 {
-    private BackupManager backupManager;
-    private StateManager stateManager;
-    private EasySave easySave = EasySave.GetInstance();
+    private BackupService backupManager;
+    private StateService stateManager;
+    private LanguageService _languageService = new LanguageService();
 
     /// <summary>
     /// Initializes a new instance of the CLI class.
     /// </summary>
     /// <param name="backupManager">Instance of BackupManager to manage backups.</param>
     /// <param name="stateManager">StateManager instance for managing the state of backups.</param>
-    public CLI(BackupManager backupManager, StateManager stateManager)
+    public CLI(BackupService backupManager, StateService stateManager)
     {
         this.backupManager = backupManager;
         this.stateManager = stateManager;
@@ -177,9 +177,9 @@ public class CLI
             if (position > 0 && position <= jobs.Count)
             {
                 var job = jobs[position - 1];
-                Console.WriteLine($"{easySave.GetText("exec.launch")}{job.Name}...");
+                Console.WriteLine($"{_languageService.GetTranslation("exec.launch")}{job.Name}...");
                 backupManager.ExecuteJob(job.Id);
-                Console.WriteLine(easySave.GetText("exec.finish"));
+                Console.WriteLine(_languageService.GetTranslation("exec.finish"));
             }
             else
             {
@@ -204,7 +204,7 @@ public class CLI
             {
                 var job = jobs[position - 1];
                 backupManager.GetBackupJobs().Remove(job);
-                Console.WriteLine(easySave.GetText("delete.delete"));
+                Console.WriteLine(_languageService.GetTranslation("delete.delete"));
             }
             else
             {
@@ -228,9 +228,9 @@ public class CLI
             if (position > 0 && position <= jobs.Count)
             {
                 var job = jobs[position - 1];
-                Console.WriteLine($"{easySave.GetText("restore.restore")}{job.Name}...");
-                backupManager.RestoreJob(job.Id);
-                Console.WriteLine(easySave.GetText("restore.finish"));
+                Console.WriteLine($"{_languageService.GetTranslation("restore.restore")}{job.Name}...");
+                backupManager.Restore(job);
+                Console.WriteLine(_languageService.GetTranslation("restore.finish"));
             }
             else
             {

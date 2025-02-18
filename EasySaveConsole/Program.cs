@@ -1,21 +1,19 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using EasySaveCore.Controller;
-using EasySaveCore.Backup;
-using EasySaveCore.Language;
-using EasySaveCore.State;
 using EasySaveLogger.Logger;
+using EasySaveCore.src.Services;
+using EasySaveCore.src.Models;
+using EasySaveCore.src.Services.BackupJobServices;
 
 /// <summary>
 /// Represents the main program of EasySave.
 /// </summary>
 public class Program
 {
-    private EasySave easySave = EasySave.GetInstance();
-    private static StateManager stateManager = new StateManager();
-    private Language currentLanguage = new EnLanguage();
-    private static BackupManager backupManager = new BackupManager();
-    private CLI cli = new CLI(backupManager, stateManager);
+    private static StateService stateManager = new StateService();
+    private static BackupService _backupService = new BackupService();
+    private LanguageService _languageService = new LanguageService();
+    private CLI cli = new CLI(_backupService, stateManager);
     private Logger logger;
 
     public Program()
@@ -32,20 +30,20 @@ public class Program
         while (true)
         {
             Console.WriteLine("\n--- EasySave Menu ---");
-            Console.WriteLine(easySave.GetText("menu.add"));
-            Console.WriteLine(easySave.GetText("menu.delete"));
-            Console.WriteLine(easySave.GetText("menu.list"));
-            Console.WriteLine(easySave.GetText("menu.execute"));
-            Console.WriteLine(easySave.GetText("menu.restore"));
-            Console.WriteLine(easySave.GetText("menu.logs"));
-            Console.WriteLine(easySave.GetText("menu.state"));
+            Console.WriteLine(_languageService.GetTranslation("menu.add"));
+            Console.WriteLine(_languageService.GetTranslation("menu.delete"));
+            Console.WriteLine(_languageService.GetTranslation("menu.list"));
+            Console.WriteLine(_languageService.GetTranslation("menu.execute"));
+            Console.WriteLine(_languageService.GetTranslation("menu.restore"));
+            Console.WriteLine(_languageService.GetTranslation("menu.logs"));
+            Console.WriteLine(_languageService.GetTranslation("menu.state"));
             if (logger.GetLogFormatter() is JsonLogFormatter)
-                Console.WriteLine(easySave.GetText("menu.logs_format_XML"));
+                Console.WriteLine(_languageService.GetTranslation("menu.logs_format_XML"));
             else
-                Console.WriteLine(easySave.GetText("menu.logs_format_JSON"));
-            Console.WriteLine(easySave.GetText("menu.language"));
-            Console.WriteLine(easySave.GetText("menu.quit"));
-            Console.Write(easySave.GetText("menu.choice"));
+                Console.WriteLine(_languageService.GetTranslation("menu.logs_format_JSON"));
+            Console.WriteLine(_languageService.GetTranslation("menu.language"));
+            Console.WriteLine(_languageService.GetTranslation("menu.quit"));
+            Console.Write(_languageService.GetTranslation("menu.choice"));
             string choice = Console.ReadLine()!;
 
             if (choice.StartsWith("execute") || choice.StartsWith("delete") || choice.StartsWith("restore"))
@@ -81,15 +79,7 @@ public class Program
                         ChangerFormatLog();
                         break;
                     case "9":
-                        if (currentLanguage is FrLanguage)
-                        {
-                            currentLanguage = new EnLanguage();
-                        }
-                        else
-                        {
-                            currentLanguage = new FrLanguage();
-                        }
-                        easySave.SetLanguage(currentLanguage);
+                        _languageService.ChangeLanguage();
                         break;
                     case "10":
                         return;
@@ -103,25 +93,25 @@ public class Program
     /// </summary>
     private void AjouterSauvegarde()
     {
-        Console.Write(easySave.GetText("backup.name"));
+        Console.Write(_languageService.GetTranslation("backup.name"));
         string name = Console.ReadLine()!;
 
-        if (backupManager.GetBackupJobs().Exists(job => job.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+        if (_backupService.GetBackupJobs().Exists(job => job.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
         {
-            Console.WriteLine(easySave.GetText("backup.name_use"));
+            Console.WriteLine(_languageService.GetTranslation("backup.name_use"));
             return;
         }
 
-        Console.Write(easySave.GetText("backup.source"));
+        Console.Write(_languageService.GetTranslation("backup.source"));
         string source = Console.ReadLine()!;
 
-        Console.Write(easySave.GetText("backup.destination"));
+        Console.Write(_languageService.GetTranslation("backup.destination"));
         string target = Console.ReadLine()!;
 
         int type;
         do
         {
-            Console.Write(easySave.GetText("backup.type"));
+            Console.Write(_languageService.GetTranslation("backup.type"));
         } while (!int.TryParse(Console.ReadLine(), out type) || (type != 1 && type != 2));
 
         IBackupTypeStrategy strategy;
@@ -134,9 +124,9 @@ public class Program
             strategy = new DifferentialBackupStrategy();
         }
 
-        BackupJob job = new BackupJob(name, source, target, type == 1, strategy);
-        backupManager.AddBackup(job);
-        Console.WriteLine(easySave.GetText("backup.add"));
+        BackupJobModel job = new BackupJobModel(name, source, target, type == 1);
+        _backupService.AddBackup(job);
+        Console.WriteLine(_languageService.GetTranslation("backup.add"));
     }
 
     /// <summary>
@@ -144,25 +134,25 @@ public class Program
     /// </summary>
     private void SupprimerSauvegarde()
     {
-        if (backupManager.GetBackupJobs().Count == 0)
+        if (_backupService.GetBackupJobs().Count == 0)
         {
-            Console.WriteLine(easySave.GetText("list.none"));
+            Console.WriteLine(_languageService.GetTranslation("list.none"));
             return;
         }
         ListerSauvegardes();
-        Console.Write(easySave.GetText("delete.name"));
+        Console.Write(_languageService.GetTranslation("delete.name"));
         string name = Console.ReadLine()!;
 
-        var job = backupManager.GetBackupJobs().FirstOrDefault(j => j.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        var job = _backupService.GetBackupJobs().FirstOrDefault(j => j.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
         if (job != null)
         {
-            backupManager.GetBackupJobs().Remove(job);
-            Console.WriteLine(easySave.GetText("delete.delete"));
+            _backupService.GetBackupJobs().Remove(job);
+            Console.WriteLine(_languageService.GetTranslation("delete.delete"));
         }
         else
         {
-            Console.WriteLine(easySave.GetText("name.invalid"));
+            Console.WriteLine(_languageService.GetTranslation("name.invalid"));
         }
     }
 
@@ -171,23 +161,23 @@ public class Program
     /// </summary>
     private void ListerSauvegardes()
     {
-        if (backupManager.GetBackupJobs().Count == 0)
+        if (_backupService.GetBackupJobs().Count == 0)
         {
-            Console.WriteLine(easySave.GetText("list.none"));
+            Console.WriteLine(_languageService.GetTranslation("list.none"));
             return;
         }
         else
         {
-            Console.WriteLine(easySave.GetText("list.list"));
-            var jobs = backupManager.GetBackupJobs();
+            Console.WriteLine(_languageService.GetTranslation("list.list"));
+            var jobs = _backupService.GetBackupJobs();
             for (int i = 0; i < jobs.Count; i++)
             {
                 var job = jobs[i];
 
-                Console.WriteLine($"{easySave.GetText("list.name")}{job.Name}");
+                Console.WriteLine($"{_languageService.GetTranslation("list.name")}{job.Name}");
                 Console.WriteLine($"Source : {job.Source}");
-                Console.WriteLine($"{easySave.GetText("list.target")}{job.Target}");
-                Console.WriteLine($"Type : {(job.IsFullBackup ? easySave.GetText("list.complete") : easySave.GetText("list.differential"))}");
+                Console.WriteLine($"{_languageService.GetTranslation("list.target")}{job.Target}");
+                Console.WriteLine($"Type : {(job.IsFullBackup ? _languageService.GetTranslation("list.complete") : _languageService.GetTranslation("list.differential"))}");
                 Console.WriteLine(new string('-', 40));
             }
         }
@@ -200,23 +190,22 @@ public class Program
     {
         var debutTime = DateTime.Now.Millisecond;
 
-        if (backupManager.GetBackupJobs().Count == 0)
+        if (_backupService.GetBackupJobs().Count == 0)
         {
-            Console.WriteLine(easySave.GetText("list.none"));
+            Console.WriteLine(_languageService.GetTranslation("list.none"));
             return;
         }
         ListerSauvegardes();
-        Console.Write(easySave.GetText("exec.name"));
+        Console.Write(_languageService.GetTranslation("exec.name"));
         string name = Console.ReadLine()!;
 
-        var jobs = backupManager.GetBackupJobs();
-        var job = backupManager.GetBackupJobs().FirstOrDefault(j => j.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        var job = _backupService.GetBackupJobs().FirstOrDefault(j => j.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
         if (job != null)
         {
-            Console.WriteLine($"{easySave.GetText("exec.launch")}{job.Name}...");
-            backupManager.ExecuteJob(job.Id);
-            Console.WriteLine(easySave.GetText("exec.finish"));
+            Console.WriteLine($"{_languageService.GetTranslation("exec.launch")}{job.Name}...");
+            _backupService.ExecuteJob(job.Id);
+            Console.WriteLine(_languageService.GetTranslation("exec.finish"));
 
             long savingTime = DateTime.Now.Millisecond - debutTime;
 
@@ -224,7 +213,7 @@ public class Program
         }
         else
         {
-            Console.WriteLine(easySave.GetText("name.invalid"));
+            Console.WriteLine(_languageService.GetTranslation("name.invalid"));
         }
     }
 
@@ -233,27 +222,27 @@ public class Program
     /// </summary>
     private void RestaurerSauvegarde()
     {
-        if (backupManager.GetBackupJobs().Count == 0)
+        if (_backupService.GetBackupJobs().Count == 0)
         {
-            Console.WriteLine(easySave.GetText("list.none"));
+            Console.WriteLine(_languageService.GetTranslation("list.none"));
             return;
         }
         ListerSauvegardes();
-        Console.Write(easySave.GetText("restore.name"));
+        Console.Write(_languageService.GetTranslation("restore.name"));
         string name = Console.ReadLine()!;
 
-        var jobs = backupManager.GetBackupJobs();
+        var jobs = _backupService.GetBackupJobs();
         var job = jobs.FirstOrDefault(j => j.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
         if (job != null)
         {
-            Console.WriteLine($"{easySave.GetText("restore.restore")}{job.Name}...");
-            backupManager.RestoreJob(job.Id);
-            Console.WriteLine(easySave.GetText("restore.finish"));
+            Console.WriteLine($"{_languageService.GetTranslation("restore.restore")}{job.Name}...");
+            _backupService.Restore(job);
+            Console.WriteLine(_languageService.GetTranslation("restore.finish"));
         }
         else
         {
-            Console.WriteLine(easySave.GetText("name.invalid"));
+            Console.WriteLine(_languageService.GetTranslation("name.invalid"));
         }
     }
 
@@ -268,12 +257,12 @@ public class Program
         if (currentFormatter is JsonLogFormatter)
         {
             newFormatter = new XmlLogFormatter();
-            Console.WriteLine(easySave.GetText("logs.XML_format"));
+            Console.WriteLine(_languageService.GetTranslation("logs.XML_format"));
         }
         else
         {
             newFormatter = new JsonLogFormatter();
-            Console.WriteLine(easySave.GetText("logs.JSON_format"));
+            Console.WriteLine(_languageService.GetTranslation("logs.JSON_format"));
         }
 
         logger.SetLogFormatter(newFormatter);
@@ -306,7 +295,7 @@ public class Program
             var chosenFile = "";
             while (!filesName.Contains(chosenFile))
             {
-                Console.WriteLine(easySave.GetText("logs.chose"));
+                Console.WriteLine(_languageService.GetTranslation("logs.chose"));
                 foreach (var file in filesName)
                 {
                     Console.WriteLine(file);
@@ -345,7 +334,7 @@ public class Program
         }
         else
         {
-            Console.WriteLine(easySave.GetText("logs.none"));
+            Console.WriteLine(_languageService.GetTranslation("logs.none"));
         }
     }
 

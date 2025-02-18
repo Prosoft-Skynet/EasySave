@@ -1,0 +1,247 @@
+[
+    {
+        "title": "menu.add",
+        "fr": "Ajouter une sauvegarde",
+        "en": "Add a backup"
+    },
+    {
+        "title": "menu.delete",
+        "fr": "Supprimer une sauvegarde",
+        "en": "Delete a backup"
+    },
+    {
+        "title": "menu.list",
+        "fr": "Liste des sauvegardes :",
+        "en": "List of backups :"
+    },
+    {
+        "title": "menu.execute",
+        "fr": "Exécuter une sauvegarde",
+        "en": "Execute a backup"
+    },
+    {
+        "title": "menu.restore",
+        "fr": "Restaurer une sauvegarde",
+        "en": "Restore a backup"
+    },
+    {
+        "title": "menu.logs",
+        "fr": "Voir les logs",
+        "en": "View logs"
+    },
+    {
+        "title": "menu.state",
+        "fr": "Voir l'état",
+        "en": "View state"
+    },
+    {
+        "title": "menu.create",
+        "fr": "Créer une nouvelle sauvegarde",
+        "en": "Create a new backup"
+    },
+    {
+        "title": "menu.name",
+        "fr": "Nom de la sauvegarde :",
+        "en": "Backup name :"
+    },
+    {
+        "title": "menu.source",
+        "fr": "Dossier source :",
+        "en": "Source folder :"
+    },
+    {
+        "title": "menu.target",
+        "fr": "Dossier cible :",
+        "en": "Target folder :"
+    },
+    {
+        "title": "menu.type",
+        "fr": "Type de sauvegarde :",
+        "en": "Backup type :"
+    },
+    {
+        "title": "menu.complete",
+        "fr": "Complète",
+        "en": "Complete"
+    },
+    {
+        "title": "menu.differential",
+        "fr": "Différentielle",
+        "en": "Differential"
+    },
+    {
+        "title": "menu.params",
+        "fr": "Paramètres",
+        "en": "Settings"
+    },
+    {
+        "title": "menu.quit",
+        "fr": "Quitter",
+        "en": "Quit"
+    },
+    {
+        "title": "menu.change_logs",
+        "fr": "Changer format Logs (XML/JSON)",
+        "en": "Change Logs format (XML/JSON)"
+    },
+    {
+        "title": "box.error",
+        "fr": "Erreur",
+        "en": "Error"
+    },
+    {
+        "title": "box.fill",
+        "fr": "Veuillez remplir tous les champs.",
+        "en": "Please fill all fields."
+    },
+    {
+        "title": "box.name",
+        "fr": "Une sauvegarde avec ce nom existe déjà.",
+        "en": "A backup with this name already exists."
+    },
+    {
+        "title": "box.files",
+        "fr": "Sélectionnez un dossier",
+        "en": "Select a folder"
+    },
+    {
+        "title": "box.backup",
+        "fr": "Sauvegarde",
+        "en": "Backup"
+    },
+    {
+        "title": "box.create_success",
+        "fr": "créée avec succès !",
+        "en": "created successfully !"
+    },
+    {
+        "title": "box.delete",
+        "fr": "Sélectionnez une sauvegarde à supprimer.",
+        "en": "Select a backup to delete."
+    },
+    {
+        "title": "box.delete_success",
+        "fr": "supprimée avec succès !",
+        "en": "deleted successfully !"
+    },
+    {
+        "title": "box.execute",
+        "fr": "Veuillez sélectionner une sauvegarde à exécuter.",
+        "en": "Please select a backup to execute."
+    },
+    {
+        "title": "box.execute_success",
+        "fr": "exécutée en",
+        "en": "executed in"
+    },
+    {
+        "title": "box.restore",
+        "fr": "Veuillez sélectionner une sauvegarde à restaurer.",
+        "en": "Please select a backup to restore."
+    },
+    {
+        "title": "box.restore_success",
+        "fr": "restaurée !",
+        "en": "restored !"
+    },
+    {
+        "title": "box.success",
+        "fr": "Succès",
+        "en": "Success"
+    },
+    {
+        "title": "box.logs",
+        "fr": "Veuillez sélectionner un log à ouvrir.",
+        "en": "Please select a log to open."
+    },
+    {
+        "title": "box.logs_exist",
+        "fr": "Le fichier log n'existe pas.",
+        "en": "Log file does not exist."
+    },
+    {
+        "title": "box.os",
+        "fr": "Système d'exploitation non supporté.",
+        "en": "Unsupported operating system."
+    },
+    {
+        "title": "box.logs_error",
+        "fr": "Erreur lors de l'ouverture du fichier",
+        "en": "Error opening file"
+    },
+    {
+        "title": "box.logs_format",
+        "fr": "Format des logs changé en",
+        "en": "Logs format changed to"
+    },
+    {
+        "title": "menu.encrypt",
+        "fr": "Veuillez entrer la clé de cryptage pour",
+        "en": "Please enter the encryption key for"
+    },
+    {
+        "title": "menu.decrypt",
+        "fr": "Veuillez entrer la clé de décryptage pour",
+        "en": "Please enter the decryption key for"
+    },
+    {
+        "title": "menu.encryption_key",
+        "fr": "Clé de cryptage",
+        "en": "Encryption Key"
+    },
+    {
+        "title": "menu.decryption_key",
+        "fr": "Clé de décryptage",
+        "en": "Decryption Key"
+    },
+    {
+        "title": "menu.exception_application",
+        "fr": "Attention : des applications métiers n'ont pas été ajoutées à la sauvegarde.",
+        "en": "Warning: business apps haven't been added to the backup"
+    },
+    {
+        "title": "settings.valid_exe",
+        "fr": "Veuillez sélectionner un fichier .exe valide.",
+        "en": "Please select a valid .exe file."
+    },
+    {
+        "title": "settings.application_added",
+        "fr": "Application déjà ajoutée",
+        "en": "Application already added"
+    },
+    {
+        "title": "settings.application_added_success",
+        "fr": "Application ajoutée avec succès !",
+        "en": "Application added successfully!"
+    },
+    {
+        "title": "settings.select_path_first",
+        "fr": "Veuillez d'abord sélectionner un chemin d'application.",
+        "en": "Please select an application path first."
+    },
+    {
+        "title": "settings.add_business_process",
+        "fr": "Ajouter un processus métier",
+        "en": "Add a business process"
+    },
+    {
+        "title": "settings.back",
+        "fr": "Retour",
+        "en": "Back"
+    },
+    {
+        "title": "settings.manage_business_processes",
+        "fr": "Gérer les processus métiers",
+        "en": "Manage business processes"
+    },
+    {
+        "title": "settings.select_application_file",
+        "fr": "Sélectionner un fichier d'application :",
+        "en": "Select an application file:"
+    },
+    {
+        "title": "settings.list_business_processes",
+        "fr": "Liste des processus métiers :",
+        "en": "List of business processes:"
+    }
+]

@@ -1,10 +1,10 @@
-namespace EasySaveCore.State;
+namespace EasySaveCore.src.Models;
 
 /// <summary>
 /// Represents the state of a backup job.
 /// Contains information about the job such as name, status, progress, size, and remaining files.
 /// </summary>
-public class StateEntry
+public class StateModel
 {
     public string JobName { get; set; }
     public string Timestamp { get; set; }
@@ -18,10 +18,10 @@ public class StateEntry
     public string CurrentTarget { get; set; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="StateEntry"/> class.
+    /// Initializes a new instance of the <see cref="StateModel"/> class.
     /// The default status is "Inactive" and the timestamp is set to the current date and time.
     /// </summary>
-    public StateEntry()
+    public StateModel()
     {
         JobName = string.Empty;
         CurrentSource = string.Empty;
@@ -29,4 +29,5 @@ public class StateEntry
         Timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         Status = "Non Actif";
     }
+
 }
