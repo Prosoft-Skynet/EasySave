@@ -106,6 +106,7 @@ public class MainViewModel : ViewModelBase
     public ICommand ToggleLogFormatCommand { get; }
     public ICommand ToggleLanguageCommand { get; }
     public ICommand SelectBusinessApplicationCommand { get; }
+    public ICommand CloseSettingsCommand { get; }
     public ICommand ExitCommand { get; }
     public ICommand OpenSettingsCommand { get; }
     public ICommand AddBusinessApplicationCommand { get; }
@@ -133,6 +134,7 @@ public class MainViewModel : ViewModelBase
         ToggleLogFormatCommand = new RelayCommand(ToggleLogFormat);
         ToggleLanguageCommand = new RelayCommand(ToggleLanguage);
         SelectBusinessApplicationCommand = new RelayCommand(SelectBusinessApplication);
+        CloseSettingsCommand = new RelayCommand(CloseSettings);
         ExitCommand = new RelayCommand(ExitApplication);
         OpenSettingsCommand = new RelayCommand(OpenSettings);
         AddBusinessApplicationCommand = new RelayCommand(AddBusinessApplication);
@@ -441,66 +443,71 @@ public class MainViewModel : ViewModelBase
     {
         var settingsWindow = new SettingsWindow
         {
-            Owner = Application.Current.MainWindow // Définit la fenêtre principale comme propriétaire
+            Owner = Application.Current.MainWindow
         };
         settingsWindow.ShowDialog();
     }
 
-private void SelectBusinessApplication()
-{
-    var dialog = new Microsoft.Win32.OpenFileDialog
+    private void SelectBusinessApplication()
     {
-        Title = "Sélectionnez une application",
-        Filter = "Fichiers exécutables (*.exe)|*.exe",
-        CheckFileExists = true,
-        CheckPathExists = true
-    };
-
-    if (dialog.ShowDialog() == true)
-    {
-        string selectedPath = dialog.FileName;
-
-        // Vérifier si le fichier est bien un .exe
-        if (System.IO.Path.GetExtension(selectedPath).Equals(".exe", StringComparison.OrdinalIgnoreCase))
+        var dialog = new Microsoft.Win32.OpenFileDialog
         {
-            BusinessApplicationsPath = selectedPath;
-        }
-        else
+            Title = "Sélectionnez une application",
+            Filter = "Fichiers exécutables (*.exe)|*.exe",
+            CheckFileExists = true,
+            CheckPathExists = true
+        };
+
+        if (dialog.ShowDialog() == true)
         {
-            MessageBox.Show("Veuillez sélectionner un fichier .exe valide.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            string selectedPath = dialog.FileName;
+
+            // Vérifier si le fichier est bien un .exe
+            if (System.IO.Path.GetExtension(selectedPath).Equals(".exe", StringComparison.OrdinalIgnoreCase))
+            {
+                BusinessApplicationsPath = selectedPath;
+            }
+            else
+            {
+                MessageBox.Show($"{easySave.GetText("settings.valid_exe")}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
     }
-}
 
     private void AddBusinessApplication()
     {
         if (!string.IsNullOrWhiteSpace(BusinessApplicationsPath))
         {
-            // Vérifier si le chemin pointe bien vers un fichier .exe
             if (System.IO.Path.GetExtension(BusinessApplicationsPath).Equals(".exe", StringComparison.OrdinalIgnoreCase))
             {
                 if (!BusinessApplications.Contains(BusinessApplicationsPath))
                 {
                     BusinessApplications.Add(BusinessApplicationsPath);
-                    MessageBox.Show("Application ajoutée avec succès !", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    BusinessApplicationsPath = string.Empty;
+                    MessageBox.Show($"{easySave.GetText("settings.application_added_success")}", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    MessageBox.Show("application dèja ajoutée", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show($"{easySave.GetText("settings.application_added")}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
             else
             {
-                MessageBox.Show("Veuillez sélectionner un fichier .exe valide.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"{easySave.GetText("settings.valid_exe")}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
         else
         {
-            MessageBox.Show("Veuillez d'abord sélectionner un chemin d'application.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show($"{easySave.GetText("settings.select_path_first")}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
-
+    private void CloseSettings()
+    {
+        Application.Current.Windows
+            .OfType<Window>()
+            .FirstOrDefault(w => w is Views.SettingsWindow)?.Close();
+    }
 
     private void ExitApplication()
     {

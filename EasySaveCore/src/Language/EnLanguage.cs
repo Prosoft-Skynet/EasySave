@@ -27,6 +27,7 @@ public class EnLanguage : Language
             { "menu.type", "Backup type :" },
             { "menu.complete", "Complete" },
             { "menu.differential", "Differential" },
+            { "menu.params", "Settings" },
             { "menu.quit", "Quit" },
             { "menu.change_logs", "Change Logs format (XML/JSON)" },
             { "box.error", "Error" },
@@ -51,7 +52,16 @@ public class EnLanguage : Language
             { "menu.decrypt", "Please enter the decryption key for" },
             { "menu.encryption_key", "Encryption Key" },
             { "menu.decryption_key", "Decryption Key" },
-            {"menu.exception_application","Warning: business apps hasn't been added to the backup"},
+            { "menu.exception_application","Warning: business apps hasn't been added to the backup" },
+            { "settings.valid_exe", "Please select a valid .exe file." },
+            { "settings.application_added", "Application already added" },
+            { "settings.application_added_success", "Application added successfully!" },
+            { "settings.select_path_first", "Please select an application path first." },
+            { "settings.add_business_process", "Add a business process" },
+            { "settings.back", "Back" },
+            { "settings.manage_business_processes", "Manage business processes" },
+            { "settings.select_application_file", "Select an application file:" },
+            { "settings.list_business_processes", "List of business processes:" },
         };
     }
 }

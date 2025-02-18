@@ -1,46 +1,87 @@
 ﻿<Window x:Class="EasySaveGUI.Views.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Settings"
-        Width="500"
-        Height="400"
-        Background="#60AFFF">
+        Title="{Binding [menu.params]}"
+        Width="600"
+        Height="500"
+        Background="#d7dae5"
+        WindowStartupLocation="CenterScreen">
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <Border Grid.Column="0"
+                Background="#8eaf9d"
+                Padding="15">
+            <StackPanel Width="220"
+                        Orientation="Vertical"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+
+                <TextBlock Text="{Binding [menu.params]}"
+                           FontSize="26"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           Margin="0,10,0,20"/>
+
+                <Button Content="{Binding [settings.add_business_process]}"
+                        Command="{Binding AddBusinessApplicationCommand}"
+                        Background="#a6d8d4"
+                        Foreground="White"
+                        Padding="10"
+                        Width="200"
+                        BorderThickness="0"
+                        Margin="5"/>
+
+                <Separator Margin="10"/>
+
+                <Button Content="{Binding [settings.back]}"
+                        Command="{Binding CloseSettingsCommand}"
+                        Background="#6b7d7d"
+                        Foreground="White"
+                        Padding="10"
+                        Width="200"
+                        BorderThickness="0"
+                        Margin="5"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
         <Border Grid.Column="1"
-                Background="#E0F7FA"
-                Padding="10"
-                Margin="10"
-                CornerRadius="10">
+                Background="#FFFFFF"
+                Padding="20">
             <StackPanel>
-                <TextBlock Text="Processus métiers :"
+                <TextBlock Text="{Binding [settings.manage_business_processes]}"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="#6b7d7d"
+                           Margin="0,0,0,10"/>
+
+                <TextBlock Text="{Binding [settings.select_application_file]}"
                            Foreground="Black"
                            Margin="10,0,0,0"/>
-
                 <StackPanel Orientation="Horizontal">
-                    <!-- Correction du Binding -->
                     <TextBox Text="{Binding BusinessApplicationsPath, UpdateSourceTrigger=PropertyChanged}"
-                     Width="250"
-                     IsReadOnly="True"/>
-
+                             Width="250"
+                             IsReadOnly="True"/>
                     <Button Content="..."
-                    Command="{Binding SelectBusinessApplicationCommand}"
-                    Width="30"/>
-
-                    <Button Content="Ajouter un processus"
-                    Command="{Binding AddBusinessApplicationCommand}"
-                    Margin="20,0,0,0"
-                    Width="150"/>
+                            Command="{Binding SelectBusinessApplicationCommand}"
+                            Width="30"/>
                 </StackPanel>
 
                 <Separator Margin="10"/>
 
-                <TextBlock Text="Liste des processus métiers :"
+                <TextBlock Text="{Binding [settings.list_business_processes]}"
                            Foreground="Black"/>
                 <ListBox ItemsSource="{Binding BusinessApplications}"
                          Height="200"
                          Background="White"
-                         BorderBrush="Gray"
+                         BorderBrush="#6b7d7d"
                          BorderThickness="1"/>
             </StackPanel>
         </Border>

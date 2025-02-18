@@ -14,7 +14,7 @@ public class BackupJob
     public string Source { get; set; } = string.Empty;
     public string Target { get; set; } = string.Empty;
     public bool IsFullBackup { get; set; }
-    public ObservableCollection<string> BusinessApplications { get; set; }
+    public ObservableCollection<string> BusinessApplications { get; set; } = new ObservableCollection<string>();
 
     [JsonIgnore]
     private IBackupTypeStrategy? backupStrategy;

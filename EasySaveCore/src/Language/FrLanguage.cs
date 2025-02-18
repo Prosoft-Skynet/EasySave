@@ -27,6 +27,7 @@ public class FrLanguage : Language
             { "menu.complete", "Complète" },
             { "menu.differential", "Différentielle" },
             { "menu.list", "Liste des sauvegardes :" },
+            { "menu.params", "Paramètres" },
             { "menu.quit", "Quitter" },
             { "menu.change_logs", "Changer format Logs (XML/JSON)" },
             { "box.error", "Erreur" },
@@ -51,7 +52,16 @@ public class FrLanguage : Language
             { "menu.decrypt", "Veuillez entrer la clé de décryptage pour" },
             { "menu.encryption_key", "Clé de cryptage" },
             { "menu.decryption_key", "Clé de décryptage" },
-            {"menu.exception_application","Attention : des applications métiers n'ont pas été ajoutées à la sauvegarde."},
+            { "menu.exception_application","Attention : des applications métiers n'ont pas été ajoutées à la sauvegarde." },
+            { "settings.valid_exe","Veuillez sélectionner un fichier .exe valide." },
+            { "settings.application_added","Application déjà ajoutée" },
+            { "settings.application_added_success","Application ajoutée avec succès !" },
+            { "settings.select_path_first", "Veuillez d'abord sélectionner un chemin d'application." },
+            { "settings.add_business_process","Ajouter un processus métier" },
+            { "settings.back","Retour" },
+            { "settings.manage_business_processes","Gérer les processus métiers" },
+            { "settings.select_application_file","Sélectionner un fichier d'application :" },
+            { "settings.list_business_processes","Liste des processus métiers :" },
         };
     }
 }
