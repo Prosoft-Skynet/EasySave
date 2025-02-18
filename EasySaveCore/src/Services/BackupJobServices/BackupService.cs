@@ -11,7 +11,6 @@ using System.Text.Json;
 /// </summary>
 public class BackupService
 {
-
     IBackupTypeStrategy? backupStrategy = null;
     private List<BackupJobModel> backupJobs = new List<BackupJobModel>();
     private StateService _stateService = new StateService();
@@ -75,7 +74,6 @@ public class BackupService
     public void AddBackup(BackupJobModel job)
     {
         backupJobs.Add(job);
-
     }
 
     public void ExecuteJob(Guid jobId)
@@ -85,7 +83,6 @@ public class BackupService
         {
             _stateService.UpdateState(job, "Loading");
             Execute(job);
-
 
             _stateService.UpdateState(job, "Finished");
         }
@@ -100,9 +97,6 @@ public class BackupService
         var job = backupJobs.FirstOrDefault(j => j.Id == jobId);
         if (job != null)
         {
-
-            
-
             _stateService.UpdateState(job, "Loading");
             Execute(job);
             EncryptFilesInDirectory(job.Target, getEncryptionKeyCallback);
@@ -176,7 +170,6 @@ public class BackupService
         }
     }
 
-
     /// <summary>
     /// Retrieves the list of backup jobs.
     /// </summary>
@@ -185,7 +178,6 @@ public class BackupService
     {
         return backupJobs;
     }
-
 
     public void TransferFiles(string source, string target, ObservableCollection<string> filesExceptions)
     {
@@ -222,6 +214,7 @@ public class BackupService
             Directory.CreateDirectory(path);
         }
     }
+
     public void Restore(BackupJobModel backUpJob)
     {
         TransferFiles(backUpJob.Target, backUpJob.Source, _businessApplicationService.GetBusinessApplications());
@@ -229,7 +222,7 @@ public class BackupService
 
     public void Execute(BackupJobModel backupJob)
     {
-        if(backupJob.IsFullBackup)
+        if (backupJob.IsFullBackup)
             backupStrategy = new CompleteBackupStrategy();
         else
             backupStrategy = new DifferentialBackupStrategy();
@@ -247,7 +240,8 @@ public class BackupService
         {
             backupStrategy = new CompleteBackupStrategy();
         }
-        else { 
+        else
+        {
             backupStrategy = new DifferentialBackupStrategy();
         }
     }

@@ -37,7 +37,8 @@ public class StateService
     {
         var stateModel = new StateModel();
 
-        switch(state){
+        switch (state)
+        {
             case "Finished":
                 stateModel = GenerateFinishedStateModel(job);
                 break;
@@ -48,9 +49,7 @@ public class StateService
                 stateModel = new StateModel();
                 break;
         }
-            
-        
-        
+
         currentState[job.Id] = stateModel;
         SaveState();
     }
@@ -71,8 +70,6 @@ public class StateService
             stateFilePath = path;
         }
     }
-
-
 
     public StateModel GenerateLoadingStateModel(BackupJobModel job)
     {

@@ -1,6 +1,6 @@
-using System.Collections.ObjectModel;
-
 namespace EasySaveCore.src.Services.BackupJobServices;
+
+using System.Collections.ObjectModel;
 
 /// <summary>
 /// Implements the differential backup strategy.

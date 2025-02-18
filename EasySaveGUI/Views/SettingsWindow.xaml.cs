@@ -10,6 +10,5 @@ public partial class SettingsWindow : Window
     {
         InitializeComponent();
         DataContext = new SettingsViewModel();
-
     }
 }

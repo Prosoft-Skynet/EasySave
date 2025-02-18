@@ -18,14 +18,10 @@ using EasySaveCore.src.Services.BackupJobServices;
 
 public class SettingsViewModel : ViewModelBase
 {
-  
     private string _businessApplicationPath = string.Empty;
     private ObservableCollection<string> _businessApplication;
     private LanguageService _languageService;
     private BusinessApplicationService _businessApplicationService;
-
-
-
 
     public string BusinessApplicationsPath
     {
@@ -38,14 +34,11 @@ public class SettingsViewModel : ViewModelBase
         set { _businessApplication = value; OnPropertyChanged(); }
     }
 
-
-
     public ICommand SelectBusinessApplicationCommand { get; }
     public ICommand CloseSettingsCommand { get; }
     public ICommand AddBusinessApplicationCommand { get; }
 
     public string this[string key] => _languageService.GetTranslation(key);
-
 
     public SettingsViewModel()
     {
@@ -56,10 +49,7 @@ public class SettingsViewModel : ViewModelBase
         SelectBusinessApplicationCommand = new RelayCommand(SelectBusinessApplication);
         CloseSettingsCommand = new RelayCommand(CloseSettings);
         AddBusinessApplicationCommand = new RelayCommand(AddBusinessApplication);
-
-
     }
-
 
     private void SelectBusinessApplication()
     {
@@ -122,5 +112,4 @@ public class SettingsViewModel : ViewModelBase
             .OfType<Window>()
             .FirstOrDefault(w => w is Views.SettingsWindow)?.Close();
     }
-
 }

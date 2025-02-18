@@ -25,7 +25,6 @@ public class BackupJobModel
         IsFullBackup = false;
     }
 
-
     /// <summary>
     /// Initializes a new instance of the BackupJob class.
     /// </summary>

@@ -30,15 +30,19 @@ public class MainViewModel : ViewModelBase
     public ObservableCollection<BackupJobModel> Backups { get; }
     public ObservableCollection<string> Logs { get; }
 
-
-    private BackupJobModel? _selectedBackup;
+    private BackupJobModel? _selectedBackup = new BackupJobModel();
     public BackupJobModel? SelectedBackup
     {
         get => _selectedBackup;
         set
         {
             _selectedBackup = value;
-            _backubService.SetBackupStrategy(_selectedBackup.IsFullBackup);
+
+            if (_selectedBackup != null)
+            {
+                _backubService.SetBackupStrategy(_selectedBackup.IsFullBackup);
+            }
+
             OnPropertyChanged();
         }
     }
@@ -99,7 +103,6 @@ public class MainViewModel : ViewModelBase
 
     public string this[string key] => _languageService.GetTranslation(key);
 
-
     public MainViewModel()
     {
         _backubService = new BackupService();
@@ -124,8 +127,6 @@ public class MainViewModel : ViewModelBase
         ToggleLanguageCommand = new RelayCommand(ToggleLanguage);
         ExitCommand = new RelayCommand(ExitApplication);
         OpenSettingsCommand = new RelayCommand(OpenSettings);
-
-
     }
 
     private void AddBackup()
@@ -410,10 +411,8 @@ public class MainViewModel : ViewModelBase
         string newFormat = isCurrentlyJson ? "XML" : "JSON";
         MessageBox.Show($"{_languageService.GetTranslation("box.logs_format")} {newFormat} !", _languageService.GetTranslation("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
 
-
         LoadLogs();
     }
-
 
     private void ToggleLanguage()
     {
@@ -425,7 +424,6 @@ public class MainViewModel : ViewModelBase
     {
         OnPropertyChanged("");
     }
-
 
     private void OpenSettings()
     {

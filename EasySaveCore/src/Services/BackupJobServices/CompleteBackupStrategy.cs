@@ -1,10 +1,9 @@
-using System.Collections.ObjectModel;
-
 namespace EasySaveCore.src.Services.BackupJobServices;
 
 using System;
 using System.IO;
 using System.Linq;
+using System.Collections.ObjectModel;
 
 /// <summary>
 /// Implements the complete backup strategy.
