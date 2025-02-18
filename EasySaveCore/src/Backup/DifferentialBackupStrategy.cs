@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace EasySaveCore.Backup;
 
 /// <summary>
@@ -10,7 +12,7 @@ public class DifferentialBackupStrategy : IBackupTypeStrategy
     /// </summary>
     /// <param name="source">The source directory.</param>
     /// <param name="target">The target directory.</param>
-    public void ExecuteBackupStrategy(string source, string target)
+    public void ExecuteBackupStrategy(string source, string target, ObservableCollection<string> filesExceptions)
     {
         var sourceDirectory = new DirectoryInfo(source);
 
@@ -32,8 +34,7 @@ public class DifferentialBackupStrategy : IBackupTypeStrategy
         foreach (var directory in sourceDirectory.GetDirectories())
         {
             var targetSubDirPath = Path.Combine(target, directory.Name);
-
-            ExecuteBackupStrategy(directory.FullName, targetSubDirPath);
+            ExecuteBackupStrategy(directory.FullName, targetSubDirPath, filesExceptions);
         }
     }
 }

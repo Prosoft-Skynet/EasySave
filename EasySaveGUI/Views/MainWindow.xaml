@@ -80,6 +80,15 @@
 
                                 <Separator Margin="10"/>
 
+                                <Button Content="{Binding [menu.params]}"
+                                        Command="{Binding OpenSettingsCommand}"
+                                        Background="#b9cdda"
+                                        Foreground="White"
+                                        Padding="10"
+                                        Width="200"
+                                        BorderThickness="0"
+                                        Margin="5"/>
+
                                 <Button Content="{Binding [menu.change_logs]}"
                                         Command="{Binding ToggleLogFormatCommand}"
                                         Background="#b9cdda"

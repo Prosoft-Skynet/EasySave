@@ -15,6 +15,7 @@ using EasySaveCore.Language;
 using EasySaveGUI.Helpers;
 using EasySaveLogger.Logger;
 using System.Runtime.InteropServices;
+using EasySaveGUI.Views;
 
 public class MainViewModel : ViewModelBase
 {
@@ -24,10 +25,13 @@ public class MainViewModel : ViewModelBase
     private string _sourcePath = string.Empty;
     private string _destinationPath = string.Empty;
     private bool _isFullBackup = true;
+    private string _businessApplicationPath = string.Empty;
+    private ObservableCollection<string> _businessApplication = new ObservableCollection<string>();
 
     public ObservableCollection<BackupJob> Backups { get; }
     public ObservableCollection<string> Logs { get; }
     private EasySave easySave = EasySave.GetInstance();
+
 
     private BackupJob? _selectedBackup;
     public BackupJob? SelectedBackup
@@ -75,6 +79,16 @@ public class MainViewModel : ViewModelBase
         get => _destinationPath;
         set { _destinationPath = value; OnPropertyChanged(); }
     }
+    public string BusinessApplicationsPath
+    {
+        get => _businessApplicationPath;
+        set { _businessApplicationPath = value; OnPropertyChanged(); }
+    }
+    public ObservableCollection<string> BusinessApplications
+    {
+        get => _businessApplication;
+        set { _businessApplication = value; OnPropertyChanged(); }
+    }
 
     public bool IsFullBackup
     {
@@ -91,12 +105,19 @@ public class MainViewModel : ViewModelBase
     public ICommand OpenLogCommand { get; }
     public ICommand ToggleLogFormatCommand { get; }
     public ICommand ToggleLanguageCommand { get; }
+    public ICommand SelectBusinessApplicationCommand { get; }
+    public ICommand CloseSettingsCommand { get; }
     public ICommand ExitCommand { get; }
+    public ICommand OpenSettingsCommand { get; }
+    public ICommand AddBusinessApplicationCommand { get; }
+
 
     public MainViewModel()
     {
         _backupManager = new BackupManager();
         _logger = new Logger(new JsonLogFormatter());
+        Backups = new ObservableCollection<BackupJob>(_backupManager.GetBackupJobs());
+        BusinessApplications = new ObservableCollection<string>(_businessApplication);
 
         Backups = new ObservableCollection<BackupJob>(_backupManager.LoadBackupJobs());
         Logs = new ObservableCollection<string>();
@@ -112,7 +133,12 @@ public class MainViewModel : ViewModelBase
         OpenLogCommand = new RelayCommand(OpenLog);
         ToggleLogFormatCommand = new RelayCommand(ToggleLogFormat);
         ToggleLanguageCommand = new RelayCommand(ToggleLanguage);
+        SelectBusinessApplicationCommand = new RelayCommand(SelectBusinessApplication);
+        CloseSettingsCommand = new RelayCommand(CloseSettings);
         ExitCommand = new RelayCommand(ExitApplication);
+        OpenSettingsCommand = new RelayCommand(OpenSettings);
+        AddBusinessApplicationCommand = new RelayCommand(AddBusinessApplication);
+
     }
 
     private void AddBackup()
@@ -133,7 +159,7 @@ public class MainViewModel : ViewModelBase
         {
             IBackupTypeStrategy strategy = IsFullBackup ? new CompleteBackupStrategy() : new DifferentialBackupStrategy();
             var job = new BackupJob(BackupName, SourcePath, DestinationPath, IsFullBackup, strategy);
-
+            job.BusinessApplications = BusinessApplications ?? new ObservableCollection<string>();
             _backupManager.AddBackup(job);
             _backupManager.SaveBackupJobs();
 
@@ -233,7 +259,7 @@ public class MainViewModel : ViewModelBase
             copyCryptTimeMs
         );
 
-        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")} {totalDurationMs} ms !", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show($"{easySave.GetText("box.backup")} {SelectedBackup.Name} {easySave.GetText("box.execute_success")} {totalDurationMs} ms ! \n {easySave.GetText("menu.exception_application")} ", easySave.GetText("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
 
         LoadLogs();
     }
@@ -410,6 +436,77 @@ public class MainViewModel : ViewModelBase
     private void UpdateLanguage()
     {
         OnPropertyChanged("");
+    }
+
+
+    private void OpenSettings()
+    {
+        var settingsWindow = new SettingsWindow
+        {
+            Owner = Application.Current.MainWindow
+        };
+        settingsWindow.ShowDialog();
+    }
+
+    private void SelectBusinessApplication()
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = "Sélectionnez une application",
+            Filter = "Fichiers exécutables (*.exe)|*.exe",
+            CheckFileExists = true,
+            CheckPathExists = true
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            string selectedPath = dialog.FileName;
+
+            // Vérifier si le fichier est bien un .exe
+            if (System.IO.Path.GetExtension(selectedPath).Equals(".exe", StringComparison.OrdinalIgnoreCase))
+            {
+                BusinessApplicationsPath = selectedPath;
+            }
+            else
+            {
+                MessageBox.Show($"{easySave.GetText("settings.valid_exe")}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+    }
+
+    private void AddBusinessApplication()
+    {
+        if (!string.IsNullOrWhiteSpace(BusinessApplicationsPath))
+        {
+            if (System.IO.Path.GetExtension(BusinessApplicationsPath).Equals(".exe", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!BusinessApplications.Contains(BusinessApplicationsPath))
+                {
+                    BusinessApplications.Add(BusinessApplicationsPath);
+                    BusinessApplicationsPath = string.Empty;
+                    MessageBox.Show($"{easySave.GetText("settings.application_added_success")}", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show($"{easySave.GetText("settings.application_added")}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            else
+            {
+                MessageBox.Show($"{easySave.GetText("settings.valid_exe")}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+        else
+        {
+            MessageBox.Show($"{easySave.GetText("settings.select_path_first")}", easySave.GetText("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private void CloseSettings()
+    {
+        Application.Current.Windows
+            .OfType<Window>()
+            .FirstOrDefault(w => w is Views.SettingsWindow)?.Close();
     }
 
     private void ExitApplication()

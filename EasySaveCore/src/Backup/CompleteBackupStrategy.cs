@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace EasySaveCore.Backup;
 
 using System;
@@ -14,7 +16,7 @@ public class CompleteBackupStrategy : IBackupTypeStrategy
     /// </summary>
     /// <param name="source">The source directory.</param>
     /// <param name="target">The target directory.</param>
-    public void ExecuteBackupStrategy(string source, string target)
+    public void ExecuteBackupStrategy(string source, string target, ObservableCollection<string> filesExceptions)
     {
         if (!Directory.Exists(source))
         {
@@ -38,6 +40,6 @@ public class CompleteBackupStrategy : IBackupTypeStrategy
         }
 
         var backupService = new BackupService();
-        backupService.TransferFiles(source, target);
+        backupService.TransferFiles(source, target, filesExceptions);
     }
 }

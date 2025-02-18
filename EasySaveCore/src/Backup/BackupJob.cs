@@ -2,6 +2,7 @@ namespace EasySaveCore.Backup;
 
 using System;
 using System.Text.Json.Serialization;
+using System.Collections.ObjectModel;
 
 /// <summary>
 /// Represents a backup job with details such as name, source, target, and backup type.
@@ -13,6 +14,7 @@ public class BackupJob
     public string Source { get; set; } = string.Empty;
     public string Target { get; set; } = string.Empty;
     public bool IsFullBackup { get; set; }
+    public ObservableCollection<string> BusinessApplications { get; set; } = new ObservableCollection<string>();
 
     [JsonIgnore]
     private IBackupTypeStrategy? backupStrategy;
@@ -41,6 +43,7 @@ public class BackupJob
         Target = target;
         IsFullBackup = isFullBackup;
         backupStrategy = strategy;
+        BusinessApplications = new ObservableCollection<string>();
     }
 
     /// <summary>
@@ -60,7 +63,7 @@ public class BackupJob
         {
             throw new InvalidOperationException("Backup strategy is not set.");
         }
-        backupStrategy.ExecuteBackupStrategy(Source, Target);
+        backupStrategy.ExecuteBackupStrategy(Source, Target, BusinessApplications);
     }
 
     /// <summary>
@@ -69,6 +72,6 @@ public class BackupJob
     public void Restore()
     {
         var backupService = new BackupService();
-        backupService.TransferFiles(Target, Source);
+        backupService.TransferFiles(Target, Source, BusinessApplications);
     }
 }
