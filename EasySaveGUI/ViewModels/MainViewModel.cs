@@ -27,6 +27,7 @@ public class MainViewModel : ViewModelBase
     private string _destinationPath = string.Empty;
     private bool _isFullBackup = true;
 
+
     public ObservableCollection<BackupJobModel> Backups { get; }
     public ObservableCollection<string> Logs { get; }
 
@@ -43,6 +44,17 @@ public class MainViewModel : ViewModelBase
                 _backubService.SetBackupStrategy(_selectedBackup.IsFullBackup);
             }
 
+            OnPropertyChanged();
+        }
+    }
+
+    private ObservableCollection<string> _userExtensionsToEncrypt = new ObservableCollection<string>();
+    public ObservableCollection<string> UserExtensionsToEncrypt
+    {
+        get => _userExtensionsToEncrypt;
+        set
+        {
+            _userExtensionsToEncrypt = value;
             OnPropertyChanged();
         }
     }
@@ -103,6 +115,8 @@ public class MainViewModel : ViewModelBase
     public ICommand PauseBackupCommand { get; }
     public ICommand ResumeBackupCommand { get; }
     public ICommand StopBackupCommand { get; }
+    public ICommand AddExtensionCommand { get; }
+
 
     public string this[string key] => _languageService.GetTranslation(key);
 
@@ -133,6 +147,7 @@ public class MainViewModel : ViewModelBase
         PauseBackupCommand = new RelayCommand(PauseBackup);
         ResumeBackupCommand = new RelayCommand(ResumeBackup);
         StopBackupCommand = new RelayCommand(StopBackup);
+        AddExtensionCommand = new RelayCommand(AddExtension);
     }
 
     private void AddBackup()
@@ -458,8 +473,49 @@ public class MainViewModel : ViewModelBase
         MessageBox.Show(_languageService.GetTranslation("box.stop_success"), _languageService.GetTranslation("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
+    private void AddExtension()
+    {
+        var input = CustomInputDialog.ShowDialog(
+            _languageService.GetTranslation("extension.ajout"),
+            _languageService.GetTranslation("extension.info")
+        );
+
+        if (!string.IsNullOrWhiteSpace(input))
+        {
+            var extensions = input.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                   .Select(ext => ext.Trim())
+                                   .Where(ext => ext.StartsWith(".") && ext.Length > 1)
+                                   .Distinct()
+                                   .ToList();
+
+            foreach (var extension in extensions)
+            {
+                if (!UserExtensionsToEncrypt.Contains(extension))
+                {
+                    UserExtensionsToEncrypt.Add(extension);
+                    _backubService.extensionsToEncrypt.Add(extension);
+                    MessageBox.Show($"{_languageService.GetTranslation("extension.valid")} {extension}");
+                }
+                else
+                {
+                    MessageBox.Show($"{_languageService.GetTranslation("extension.present")} {extension}");
+                }
+            }
+
+            if (extensions.Count == 0)
+            {
+                MessageBox.Show(_languageService.GetTranslation("extension.none"));
+            }
+        }
+        else
+        {
+            MessageBox.Show(_languageService.GetTranslation("exec.extension"));
+        }
+    }
+
     private void ExitApplication()
     {
         Application.Current.Shutdown();
     }
 }
+

@@ -15,14 +15,20 @@ public class BackupService
     private List<BackupJobModel> backupJobs = new List<BackupJobModel>();
     private StateService _stateService = new StateService();
     private BusinessApplicationService _businessApplicationService = new BusinessApplicationService();
-    public List<string> extensionsToEncrypt = new List<string> { ".txt", ".docx" }; // Extensions to be encrypted
     private readonly string _backupJobsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupJobs.json");
     private bool _isPaused;
     private bool _isStopped;
 
+    private readonly string ExtensionsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "extensions.txt");
+    public List<string> extensionsToEncrypt { get; private set; } = new List<string>();
+
+
     public BackupService()
     {
         LoadBackupJobs();
+        LoadExtensionsToEncrypt();
+
+
     }
 
     public void PauseBackup()
@@ -124,40 +130,85 @@ public class BackupService
 
     private void EncryptFilesInDirectory(string directoryPath, Func<string, string> getEncryptionKeyCallback)
     {
-        if (!Directory.Exists(directoryPath)) return;
-
-        foreach (var file in Directory.GetFiles(directoryPath))
+        if (!Directory.Exists(directoryPath))
         {
-            if (extensionsToEncrypt.Contains(Path.GetExtension(file)))
+            Console.WriteLine($"Directory does not exist: {directoryPath}");
+            return;
+        }
+
+        var files = Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories);
+        if (files.Length == 0)
+        {
+            Console.WriteLine($"No files found in directory: {directoryPath}. Skipping encryption.");
+            return;
+        }
+
+        Console.WriteLine($"Files found in {directoryPath}:");
+        foreach (var file in files)
+        {
+            Console.WriteLine($"  - {file}");
+        }
+
+        foreach (var file in files)
+        {
+            LoadExtensionsToEncrypt();
+            var fileExtension = Path.GetExtension(file).ToLowerInvariant().Trim();
+
+            if (extensionsToEncrypt.Contains(fileExtension))
             {
                 string encryptionKey = getEncryptionKeyCallback(Path.GetFileName(file));
 
                 if (string.IsNullOrEmpty(encryptionKey))
                 {
+                    Console.WriteLine($"Encryption key is empty for file {file}. Skipping.");
                     continue;
                 }
+
+                Console.WriteLine($"Encrypting file: {file}");
                 CryptoSoftService.Crypt(new string[] { file, encryptionKey });
+            }
+            else
+            {
+                Console.WriteLine($"File {file} has an unsupported extension. Skipping.");
             }
         }
     }
+
 
     private void DecryptFilesInDirectory(string directoryPath, Func<string, string> getDecryptionKeyCallback)
     {
         if (!Directory.Exists(directoryPath)) return;
 
-        foreach (var file in Directory.GetFiles(directoryPath))
+        var files = Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories);
+        if (files.Length == 0)
         {
-            if (extensionsToEncrypt.Contains(Path.GetExtension(file)))
-            {
-                string decryptionKey = getDecryptionKeyCallback(Path.GetFileName(file));
+            Console.WriteLine($"No files found in directory: {directoryPath}. Skipping decryption.");
+            return;
+        }
 
-                if (string.IsNullOrEmpty(decryptionKey))
+        foreach (var file in files)
+        {
+            LoadExtensionsToEncrypt();
+            var fileExtension = Path.GetExtension(file).ToLowerInvariant().Trim();
+
+            if (extensionsToEncrypt.Contains(fileExtension))
+
+                if (extensionsToEncrypt.Contains(Path.GetExtension(file)))
                 {
-                    continue;
-                }
+                    string decryptionKey = getDecryptionKeyCallback(Path.GetFileName(file));
 
-                CryptoSoftService.Crypt(new string[] { file, decryptionKey });
-            }
+                    if (string.IsNullOrEmpty(decryptionKey))
+                    {
+                        continue;
+                    }
+
+                    Console.WriteLine($"Decrypting file: {file}");
+                    CryptoSoftService.Crypt(new string[] { file, decryptionKey });
+                }
+                else
+                {
+                    Console.WriteLine($"File {file} has an unsupported extension. Skipping.");
+                }
         }
     }
 
@@ -280,5 +331,37 @@ public class BackupService
         {
             backupStrategy = new DifferentialBackupStrategy();
         }
+    }
+
+    public List<string> LoadExtensionsToEncrypt()
+    {
+        if (File.Exists(ExtensionsFilePath))
+        {
+            extensionsToEncrypt = File.ReadAllLines(ExtensionsFilePath).ToList();
+        }
+        return extensionsToEncrypt;
+    }
+
+    public void AddExtensionToEncrypt(string extension)
+    {
+        if (!extensionsToEncrypt.Contains(extension))
+        {
+            extensionsToEncrypt.Add(extension);
+            SaveExtensionsToEncrypt();
+        }
+    }
+
+    public void RemoveExtensionToEncrypt(string extension)
+    {
+        if (extensionsToEncrypt.Contains(extension))
+        {
+            extensionsToEncrypt.Remove(extension);
+            SaveExtensionsToEncrypt();
+        }
+    }
+
+    private void SaveExtensionsToEncrypt()
+    {
+        File.WriteAllLines(ExtensionsFilePath, extensionsToEncrypt);
     }
 }
