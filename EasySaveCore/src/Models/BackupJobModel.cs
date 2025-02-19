@@ -16,6 +16,9 @@ public class BackupJobModel
     public string Target { get; set; } = string.Empty;
     public bool IsFullBackup { get; set; }
 
+    /// <summary>
+    /// Builder for the backup job.
+    /// </summary>
     public BackupJobModel()
     {
         Id = Guid.NewGuid();

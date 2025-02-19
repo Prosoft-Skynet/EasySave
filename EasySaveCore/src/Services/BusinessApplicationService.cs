@@ -15,6 +15,7 @@ public class BusinessApplicationService
 
     public BusinessApplicationService() { }
 
+    // Get the business applications from the JSON file
     public ObservableCollection<string> GetBusinessApplications()
     {
         var jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BusinessApplications.json");

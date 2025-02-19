@@ -4,6 +4,9 @@ using System.Windows.Media;
 
 namespace EasySaveGUI.Helpers
 {
+    /// <summary>
+    /// Can you update this summary 
+    /// </summary>
     public class CustomInputDialog
     {
         public static string ShowDialog(string message, string title)

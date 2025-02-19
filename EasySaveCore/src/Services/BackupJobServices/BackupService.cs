@@ -16,7 +16,7 @@ public class BackupService
     private StateService _stateService = new StateService();
     private BusinessApplicationService _businessApplicationService = new BusinessApplicationService();
     public List<string> extensionsToEncrypt = new List<string> { ".txt", ".docx" }; // Extensions to be encrypted
-    private readonly string _backupJobsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupJobs.json");
+    private readonly string _backupJobsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupJobs.json"); //path to the backup job files 
 
     public BackupService()
     {
@@ -44,11 +44,13 @@ public class BackupService
                 string json = File.ReadAllText(_backupJobsFilePath);
                 if (!string.IsNullOrWhiteSpace(json))
                 {
+                    // Make the JSON data readable
                     List<BackupJobModel> BJobs = JsonSerializer.Deserialize<List<BackupJobModel>>(json);
                     backupJobs = BJobs ?? new List<BackupJobModel>();
 
                     foreach (var job in backupJobs)
                     {
+                        // Define if the strategy is full or differential (applied to the backup)
                         backupStrategy = job.IsFullBackup ? new CompleteBackupStrategy() : new DifferentialBackupStrategy();
                     }
                 }
@@ -67,10 +69,6 @@ public class BackupService
         return backupJobs;
     }
 
-    /// <summary>
-    /// Adds a new backup job.
-    /// </summary>
-    /// <param name="job">The backup job to add.</param>
     public void AddBackup(BackupJobModel job)
     {
         backupJobs.Add(job);
@@ -88,10 +86,7 @@ public class BackupService
         }
     }
 
-    /// <summary>
-    /// Executes a backup job specified by its identifier.
-    /// </summary>
-    /// <param name="jobId">The identifier of the backup job.</param>
+    //Used for the interface while ExecuteJob works for the console project 
     public void ExecuteJobinterface(Guid jobId, Func<string, string> getEncryptionKeyCallback)
     {
         var job = backupJobs.FirstOrDefault(j => j.Id == jobId);
@@ -143,10 +138,6 @@ public class BackupService
         }
     }
 
-    /// <summary>
-    /// Executes a list of backup jobs sequentially.
-    /// </summary>
-    /// <param name="jobIds">The list of backup job identifiers.</param>
     public void ExecuteJobsSequentially(List<Guid> jobIds, Func<string, string> getEncryptionKeyCallback)
     {
         foreach (var jobId in jobIds)
@@ -155,10 +146,6 @@ public class BackupService
         }
     }
 
-    /// <summary>
-    /// Restores a backup job specified by its identifier.
-    /// </summary>
-    /// <param name="jobId">The identifier of the backup job.</param>
     public void RestoreJob(Guid jobId, Func<string, string> getDecryptionKeyCallback)
     {
         var job = backupJobs.FirstOrDefault(j => j.Id == jobId);
@@ -170,10 +157,6 @@ public class BackupService
         }
     }
 
-    /// <summary>
-    /// Retrieves the list of backup jobs.
-    /// </summary>
-    /// <returns>The list of backup jobs.</returns>
     public List<BackupJobModel> GetBackupJobs()
     {
         return backupJobs;
@@ -203,10 +186,6 @@ public class BackupService
         }
     }
 
-    /// <summary>
-    /// Creates the necessary directories.
-    /// </summary>
-    /// <param name="path">The path of the directory to create.</param>
     public void CreateDirectories(string path)
     {
         if (!Directory.Exists(path))

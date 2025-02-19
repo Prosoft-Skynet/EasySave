@@ -16,6 +16,10 @@ using EasySaveCore.src.Services;
 using EasySaveCore.src.Models;
 using EasySaveCore.src.Services.BackupJobServices;
 
+/// <summary>
+/// View model for the settings window.
+/// </summary>
+
 public class SettingsViewModel : ViewModelBase
 {
     private string _businessApplicationPath = string.Empty;
@@ -40,6 +44,9 @@ public class SettingsViewModel : ViewModelBase
 
     public string this[string key] => _languageService.GetTranslation(key);
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
+    /// </summary>
     public SettingsViewModel()
     {
         _languageService = new LanguageService();
@@ -51,6 +58,9 @@ public class SettingsViewModel : ViewModelBase
         AddBusinessApplicationCommand = new RelayCommand(AddBusinessApplication);
     }
 
+    /// <summary>
+    /// Selects a business application.
+    /// </summary>
     private void SelectBusinessApplication()
     {
         var dialog = new Microsoft.Win32.OpenFileDialog
@@ -76,6 +86,10 @@ public class SettingsViewModel : ViewModelBase
             }
         }
     }
+
+    /// <summary>
+    /// Adds a business application.
+    /// </summary>
 
     private void AddBusinessApplication()
     {
@@ -106,6 +120,9 @@ public class SettingsViewModel : ViewModelBase
         }
     }
 
+    /// <summary>
+    /// Closes the settings window.
+    /// </summary>
     private void CloseSettings()
     {
         Application.Current.Windows

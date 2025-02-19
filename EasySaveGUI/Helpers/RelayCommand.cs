@@ -3,11 +3,16 @@
 using System;
 using System.Windows.Input;
 
+
+
 public class RelayCommand : ICommand
 {
     private readonly Action _execute;
     private readonly Func<bool>? _canExecute;
 
+    /// <summary>
+    ///  The purpose of this file is to encapsulate actions (commands) that the UI can bind to
+    /// </summary>
     public RelayCommand(Action execute, Func<bool>? canExecute = null)
     {
         _execute = execute ?? throw new ArgumentNullException(nameof(execute));
@@ -24,6 +29,10 @@ public class RelayCommand : ICommand
     public void Execute(object? parameter) => _execute();
 }
 
+/// <summary>
+/// Generic version of RelayCommand
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class RelayCommand<T> : ICommand
 {
     private readonly Action<T> _execute;
@@ -41,6 +50,11 @@ public class RelayCommand<T> : ICommand
         remove { CommandManager.RequerySuggested -= value; }
     }
 
+    /// <summary>
+    /// Checks if the command can be executed
+    /// </summary>
+    /// <param name="parameter"></param>
+    /// <returns></returns>
     public bool CanExecute(object? parameter)
     {
         return _canExecute == null || (parameter is T param && _canExecute(param));

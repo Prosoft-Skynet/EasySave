@@ -317,15 +317,15 @@ public class Program
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                Process.Start("notepad.exe", filePath); // Windows : Ouvre avec le Bloc-notes
+                Process.Start("notepad.exe", filePath); // Windows : open it with Notebloc
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                Process.Start("gedit", filePath); // Linux : Ouvre avec Gedit (Bloc-notes par défaut sur GNOME)
+                Process.Start("gedit", filePath); // Linux : open it with Gedit (default GNOME notebloc)
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                Process.Start("open", "-a TextEdit " + filePath); // macOS : Ouvre avec TextEdit
+                Process.Start("open", "-a TextEdit " + filePath); // macOS : open it with TextEdit
             }
             else
             {

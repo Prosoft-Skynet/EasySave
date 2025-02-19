@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace EasySaveCore.src.Models
 {
+    /// <summary>
+    /// Represents a word model.
+    /// </summary>
     public class WordModel
     {
         [JsonPropertyName("title")]

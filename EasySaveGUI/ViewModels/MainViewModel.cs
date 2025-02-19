@@ -16,6 +16,22 @@ using EasySaveCore.src.Services;
 using EasySaveCore.src.Models;
 using EasySaveCore.src.Services.BackupJobServices;
 
+/// <summary>
+/// Main view model.
+/// Contains all the logic for the main window.
+/// Handles the backup jobs and the logs.
+/// Handles the commands for the main window.
+/// Handles the language changes.
+/// Handles the log format changes.
+/// Handles the application exit.
+/// Handles the settings window opening.
+/// Handles the backup job execution.
+/// Handles the backup job restoration.
+/// Handles the backup job addition.
+/// Handles the backup job deletion.
+/// Handles the source and destination path selection.
+/// Handles the log opening.
+/// </summary>
 public class MainViewModel : ViewModelBase
 {
     private LanguageService _languageService;
@@ -31,6 +47,8 @@ public class MainViewModel : ViewModelBase
     public ObservableCollection<string> Logs { get; }
 
     private BackupJobModel? _selectedBackup = new BackupJobModel();
+
+   
     public BackupJobModel? SelectedBackup
     {
         get => _selectedBackup;
@@ -103,6 +121,11 @@ public class MainViewModel : ViewModelBase
 
     public string this[string key] => _languageService.GetTranslation(key);
 
+    /// <summary>
+    /// Main view model constructor.
+    /// Initializes the backup service, the language service, the business application service and the logger.
+    /// </summary>
+
     public MainViewModel()
     {
         _backubService = new BackupService();
@@ -129,6 +152,9 @@ public class MainViewModel : ViewModelBase
         OpenSettingsCommand = new RelayCommand(OpenSettings);
     }
 
+    /// <summary>
+    /// Adds a new backup job.
+    /// </summary>
     private void AddBackup()
     {
         if (string.IsNullOrWhiteSpace(BackupName) || string.IsNullOrWhiteSpace(SourcePath) || string.IsNullOrWhiteSpace(DestinationPath))
@@ -162,7 +188,9 @@ public class MainViewModel : ViewModelBase
             MessageBox.Show($"{_languageService.GetTranslation("box.error")} : {ex.Message}", _languageService.GetTranslation("box.error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
-
+    /// <summary>
+    /// Deletes a backup job.
+    /// </summary>
     private void DeleteBackup()
     {
         if (SelectedBackup == null)
@@ -189,6 +217,7 @@ public class MainViewModel : ViewModelBase
 
     private async void RunBackup()
     {
+        // If no backup is selected, show a warning message.
         if (SelectedBackup == null)
         {
             MessageBox.Show(_languageService.GetTranslation("box.execute"), _languageService.GetTranslation("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -197,6 +226,7 @@ public class MainViewModel : ViewModelBase
 
         var startTime = DateTime.Now;
 
+        // Callback to get the encryption key from the user.
         Func<string, string> getEncryptionKeyCallback = (fileName) =>
         {
             var extension = Path.GetExtension(fileName).ToLower();
@@ -204,6 +234,7 @@ public class MainViewModel : ViewModelBase
 
             string encryptionKey = string.Empty;
 
+            // Show a dialog to get the encryption key from the user.
             Application.Current.Dispatcher.Invoke(() =>
             {
                 do
@@ -251,14 +282,24 @@ public class MainViewModel : ViewModelBase
         LoadLogs();
     }
 
+    /// <summary>
+    /// Restores a backup job.
+    /// Asks for a decryption key if the file is encrypted.
+    /// If the file is not encrypted, the decryption key is empty.
+    /// If the decryption key is empty, the file is not decrypted.
+    /// If the decryption key is not empty, the file is decrypted.
+    /// </summary>
+
     private async void RestoreBackup()
     {
+        // If no backup is selected, show a warning message.
         if (SelectedBackup == null)
         {
             MessageBox.Show(_languageService.GetTranslation("box.restore"), _languageService.GetTranslation("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
+        // Callback to get the decryption key from the user.
         Func<string, string> getDecryptionKeyCallback = (fileName) =>
         {
             var extension = Path.GetExtension(fileName).ToLower();
@@ -285,19 +326,24 @@ public class MainViewModel : ViewModelBase
             {
                 _backubService.RestoreJob(SelectedBackup.Id, getDecryptionKeyCallback);
             });
-
+            // Show a success message.
             MessageBox.Show($"{_languageService.GetTranslation("box.backup")} {SelectedBackup.Name} {_languageService.GetTranslation("box.restore_success")}",
                             _languageService.GetTranslation("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
+            // Show an error message.
             MessageBox.Show($"{_languageService.GetTranslation("box.error")} : {ex.Message}",
                             _languageService.GetTranslation("box.error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
+    /// <summary>
+    /// Selects the source path.
+    /// </summary>
     private void SelectSource()
     {
+        // Show a dialog to select the source path.
         var dialog = new Microsoft.Win32.OpenFileDialog
         {
             CheckFileExists = false,
@@ -312,8 +358,13 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    /// <summary>
+    /// Selects the destination path.
+    /// </summary>
+
     private void SelectDestination()
     {
+        // Show a dialog to select the destination path.
         var dialog = new Microsoft.Win32.OpenFileDialog
         {
             CheckFileExists = false,
@@ -330,12 +381,13 @@ public class MainViewModel : ViewModelBase
 
     private void LoadLogs()
     {
+        // Clear the logs list.
         Logs.Clear();
 
         string logsPath = _logger.GetLogFormatter() is JsonLogFormatter
             ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "JSON")
             : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "XML");
-
+        // If the logs directory does not exist, return.
         if (!Directory.Exists(logsPath))
             return;
 
@@ -354,6 +406,7 @@ public class MainViewModel : ViewModelBase
 
     private void OpenLog()
     {
+        // If no log is selected, show a warning message.
         if (SelectedLog == null)
         {
             MessageBox.Show(_languageService.GetTranslation("box.logs"), _languageService.GetTranslation("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -371,6 +424,7 @@ public class MainViewModel : ViewModelBase
 
     private void executeLog(string filePath)
     {
+        // If the log file does not exist, show a warning message.
         if (!File.Exists(filePath))
         {
             MessageBox.Show(_languageService.GetTranslation("box.logs_exist"), _languageService.GetTranslation("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -391,6 +445,7 @@ public class MainViewModel : ViewModelBase
             {
                 Process.Start("open", filePath);
             }
+            // If there is an error, show a warning message.
             else
             {
                 MessageBox.Show(_languageService.GetTranslation("box.os"), _languageService.GetTranslation("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);

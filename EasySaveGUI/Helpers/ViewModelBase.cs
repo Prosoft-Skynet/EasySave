@@ -3,6 +3,9 @@ using System.Runtime.CompilerServices;
 
 namespace EasySaveGUI.Helpers;
 
+/// <summary>
+/// Base class for view models.
+/// </summary>
 public class ViewModelBase : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged = delegate { }; // ✅ Initialise pour éviter null

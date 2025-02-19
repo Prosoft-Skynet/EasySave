@@ -26,10 +26,10 @@ public class LanguageService
         {
             try
             {
-                // Lire le JSON depuis le fichier
+                // Read JSON from the file
                 string jsonString = File.ReadAllText(filePath);
 
-                // Désérialiser en liste d'objets C#
+                // Deserialize into a list of C# objects
                 translations = JsonSerializer.Deserialize<List<WordModel>>(jsonString);
             }
             catch (Exception ex)
