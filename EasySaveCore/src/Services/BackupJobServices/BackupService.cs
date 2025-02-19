@@ -17,10 +17,28 @@ public class BackupService
     private BusinessApplicationService _businessApplicationService = new BusinessApplicationService();
     public List<string> extensionsToEncrypt = new List<string> { ".txt", ".docx" }; // Extensions to be encrypted
     private readonly string _backupJobsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupJobs.json");
+    private bool _isPaused;
+    private bool _isStopped;
 
     public BackupService()
     {
         LoadBackupJobs();
+    }
+
+    public void PauseBackup()
+    {
+        _isPaused = true;
+    }
+
+    public void ResumeBackup()
+    {
+        _isPaused = false;
+    }
+
+    public void StopBackup()
+    {
+        _isStopped = true;
+        _isPaused = false;
     }
 
     /// <summary>
@@ -179,7 +197,7 @@ public class BackupService
         return backupJobs;
     }
 
-    public void TransferFiles(string source, string target, ObservableCollection<string> filesExceptions)
+    public void TransferFiles(string source, string target, ObservableCollection<string> filesExceptions, Action checkForPauseAndStop)
     {
         var sourceDirectory = new DirectoryInfo(source);
         var targetDirectory = new DirectoryInfo(target);
@@ -191,6 +209,8 @@ public class BackupService
 
         foreach (var file in sourceDirectory.GetFiles())
         {
+            checkForPauseAndStop();
+
             if (!filesExceptions.Contains(file.FullName))
             {
                 file.CopyTo(Path.Combine(target, file.Name), true);
@@ -199,7 +219,8 @@ public class BackupService
 
         foreach (var directory in sourceDirectory.GetDirectories())
         {
-            TransferFiles(directory.FullName, Path.Combine(target, directory.Name), filesExceptions);
+            var targetSubDirPath = Path.Combine(target, directory.Name);
+            TransferFiles(directory.FullName, targetSubDirPath, filesExceptions, checkForPauseAndStop);
         }
     }
 
@@ -217,17 +238,32 @@ public class BackupService
 
     public void Restore(BackupJobModel backUpJob)
     {
-        TransferFiles(backUpJob.Target, backUpJob.Source, _businessApplicationService.GetBusinessApplications());
+        TransferFiles(backUpJob.Target, backUpJob.Source, _businessApplicationService.GetBusinessApplications(), CheckForPauseAndStop);
     }
 
-    public void Execute(BackupJobModel backupJob)
+    private void Execute(BackupJobModel backupJob)
     {
         if (backupJob.IsFullBackup)
             backupStrategy = new CompleteBackupStrategy();
         else
             backupStrategy = new DifferentialBackupStrategy();
-        backupStrategy.ExecuteBackupStrategy(backupJob.Source, backupJob.Target, _businessApplicationService.GetBusinessApplications());
+
+        backupStrategy.ExecuteBackupStrategy(backupJob.Source, backupJob.Target, _businessApplicationService.GetBusinessApplications(), CheckForPauseAndStop);
     }
+
+    private void CheckForPauseAndStop()
+    {
+        while (_isPaused) // Attente en cas de pause
+        {
+            Thread.Sleep(100);
+        }
+
+        if (_isStopped)
+        {
+            throw new OperationCanceledException("Backup stopped by user.");
+        }
+    }
+
 
     public void SetBackupStrategy(IBackupTypeStrategy strategy)
     {

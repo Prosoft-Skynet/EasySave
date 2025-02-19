@@ -100,6 +100,9 @@ public class MainViewModel : ViewModelBase
     public ICommand ToggleLanguageCommand { get; }
     public ICommand ExitCommand { get; }
     public ICommand OpenSettingsCommand { get; }
+    public ICommand PauseBackupCommand { get; }
+    public ICommand ResumeBackupCommand { get; }
+    public ICommand StopBackupCommand { get; }
 
     public string this[string key] => _languageService.GetTranslation(key);
 
@@ -127,6 +130,9 @@ public class MainViewModel : ViewModelBase
         ToggleLanguageCommand = new RelayCommand(ToggleLanguage);
         ExitCommand = new RelayCommand(ExitApplication);
         OpenSettingsCommand = new RelayCommand(OpenSettings);
+        PauseBackupCommand = new RelayCommand(PauseBackup);
+        ResumeBackupCommand = new RelayCommand(ResumeBackup);
+        StopBackupCommand = new RelayCommand(StopBackup);
     }
 
     private void AddBackup()
@@ -432,6 +438,24 @@ public class MainViewModel : ViewModelBase
             Owner = Application.Current.MainWindow
         };
         settingsWindow.ShowDialog();
+    }
+
+    private void PauseBackup()
+    {
+        _backubService.PauseBackup();
+        MessageBox.Show(_languageService.GetTranslation("box.pause_success"), _languageService.GetTranslation("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    private void ResumeBackup()
+    {
+        _backubService.ResumeBackup();
+        MessageBox.Show(_languageService.GetTranslation("box.resume_success"), _languageService.GetTranslation("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    private void StopBackup()
+    {
+        _backubService.StopBackup();
+        MessageBox.Show(_languageService.GetTranslation("box.stop_success"), _languageService.GetTranslation("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private void ExitApplication()

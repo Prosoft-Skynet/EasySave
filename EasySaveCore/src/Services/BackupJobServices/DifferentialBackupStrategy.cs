@@ -12,7 +12,7 @@ public class DifferentialBackupStrategy : IBackupTypeStrategy
     /// </summary>
     /// <param name="source">The source directory.</param>
     /// <param name="target">The target directory.</param>
-    public void ExecuteBackupStrategy(string source, string target, ObservableCollection<string> filesExceptions)
+    public void ExecuteBackupStrategy(string source, string target, ObservableCollection<string> filesExceptions, Action checkForPauseAndStop)
     {
         var sourceDirectory = new DirectoryInfo(source);
 
@@ -23,6 +23,8 @@ public class DifferentialBackupStrategy : IBackupTypeStrategy
 
         foreach (var file in sourceDirectory.GetFiles())
         {
+            checkForPauseAndStop();
+
             var targetFilePath = Path.Combine(target, file.Name);
 
             if (!File.Exists(targetFilePath) || File.GetLastWriteTime(targetFilePath) < file.LastWriteTime)
@@ -34,7 +36,7 @@ public class DifferentialBackupStrategy : IBackupTypeStrategy
         foreach (var directory in sourceDirectory.GetDirectories())
         {
             var targetSubDirPath = Path.Combine(target, directory.Name);
-            ExecuteBackupStrategy(directory.FullName, targetSubDirPath, filesExceptions);
+            ExecuteBackupStrategy(directory.FullName, targetSubDirPath, filesExceptions, checkForPauseAndStop);
         }
     }
 }

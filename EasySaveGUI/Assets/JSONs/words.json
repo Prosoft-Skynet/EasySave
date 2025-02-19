@@ -243,5 +243,40 @@
         "title": "settings.list_business_processes",
         "fr": "Liste des processus métiers :",
         "en": "List of business processes:"
+    },
+    {
+        "title": "box.pause_success",
+        "fr": "Sauvegarde mise en pause avec succès !",
+        "en": "Backup paused successfully!"
+    },
+    {
+        "title": "box.resume_success",
+        "fr": "Sauvegarde reprise avec succès !",
+        "en": "Backup resumed successfully!"
+    },
+    {
+        "title": "box.stop_success",
+        "fr": "Sauvegarde arrêtée avec succès !",
+        "en": "Backup stopped successfully!"
+    },
+    {
+        "title": "box.success",
+        "fr": "Succès",
+        "en": "Success"
+    },
+    {
+        "title": "menu.pause",
+        "fr": "Mettre en pause",
+        "en": "Pause"
+    },
+    {
+        "title": "menu.resume",
+        "fr": "Reprendre",
+        "en": "Resume"
+    },
+    {
+        "title": "menu.stop",
+        "fr": "Arrêter",
+        "en": "Stop"
     }
 ]
