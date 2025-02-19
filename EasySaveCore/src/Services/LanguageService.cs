@@ -12,7 +12,25 @@ public class LanguageService
 
     public LanguageService()
     {
-        this.currentLanguage = currentLanguage ?? "en";
+        try
+        {
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "language.txt");
+            if (File.Exists(filePath))
+            {
+                currentLanguage = File.ReadAllText(filePath);
+            }
+            else
+            {
+                currentLanguage = "en";
+                File.WriteAllText(filePath, currentLanguage);
+            }
+        }
+        catch (Exception ex)
+        {
+
+            Console.WriteLine($"Erreur : {ex.Message}");
+        }
+
         GetJsonWord();
     }
 
@@ -73,6 +91,10 @@ public class LanguageService
     public void ChangeLanguage()
     {
         currentLanguage = currentLanguage == "fr" ? "en" : "fr";
+
+        var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "language.txt");
+        File.WriteAllText(filePath, currentLanguage);
+        
         Console.WriteLine($"{GetTranslation("Language_changed")} {GetTranslation("Language")}");
     }
 }
