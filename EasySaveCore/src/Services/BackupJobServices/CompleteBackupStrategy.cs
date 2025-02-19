@@ -15,7 +15,7 @@ public class CompleteBackupStrategy : IBackupTypeStrategy
     /// </summary>
     /// <param name="source">The source directory.</param>
     /// <param name="target">The target directory.</param>
-    public void ExecuteBackupStrategy(string source, string target, ObservableCollection<string> filesExceptions)
+    public void ExecuteBackupStrategy(string source, string target, ObservableCollection<string> filesExceptions, Action checkForPauseAndStop)
     {
         if (!Directory.Exists(source))
         {
@@ -31,6 +31,8 @@ public class CompleteBackupStrategy : IBackupTypeStrategy
 
         foreach (var file in Directory.GetFiles(target))
         {
+            checkForPauseAndStop();
+
             var fileName = Path.GetFileName(file);
             if (!sourceFiles.Contains(fileName))
             {
@@ -39,6 +41,6 @@ public class CompleteBackupStrategy : IBackupTypeStrategy
         }
 
         var backupService = new BackupService();
-        backupService.TransferFiles(source, target, filesExceptions);
+        backupService.TransferFiles(source, target, filesExceptions, checkForPauseAndStop);
     }
 }

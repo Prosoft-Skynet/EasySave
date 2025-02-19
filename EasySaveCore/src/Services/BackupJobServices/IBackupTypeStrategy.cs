@@ -12,5 +12,5 @@ public interface IBackupTypeStrategy
     /// </summary>
     /// <param name="source">The source directory.</param>
     /// <param name="target">The target directory.</param>
-    void ExecuteBackupStrategy(string source, string target, ObservableCollection<string> filesExceptions);
+    void ExecuteBackupStrategy(string source, string target, ObservableCollection<string> filesExceptions, Action checkForPauseAndStop);
 }
