@@ -278,5 +278,65 @@
         "title": "menu.stop",
         "fr": "Arrêter",
         "en": "Stop"
+    },
+    {
+        "title": "settings.list_extension",
+        "fr": "Liste des extensions :",
+        "en": "List of extensions :"
+    },
+    {
+        "title": "exec.extension",
+        "fr": "Veuillez saisir au moins une extension.",
+        "en": "Please enter at least one extension."
+    },
+    {
+        "title": "extension.none",
+        "fr": "Aucune extension valide n'a été saisie.",
+        "en": "No valid extensions were entered."
+    },
+    {
+        "title": "extension.present",
+        "fr": "L'extension  est déjà présente :",
+        "en": "The expansion is already present :"
+    },
+    {
+        "title": "extension.valid",
+        "fr": "L'extension a été ajoutée pour le chiffrement :",
+        "en": "The extension has been added for encryption :"
+    },
+    {
+        "title": "extension.ajout",
+        "fr": "Ajouter des extensions à chiffrer : ex : .pdf ",
+        "en": "Add extensions to be encrypted : ex : .pdf "
+    },
+    {
+        "title": "extension.info",
+        "fr": "Entrez les extensions séparées par des espaces ou des virgules (par exemple: .pdf)",
+        "en": "Enter extensions separated by spaces or commas (for example: .pdf)"
+    },
+    {
+        "title": "extension.not_found",
+        "fr": "L'extension  n'a pas été trouver",
+        "en": "Extension not found"
+    },
+    {
+        "title": "extension.removed",
+        "fr": "L'extension a été supprimée",
+        "en": "The extension has been removed"
+    },
+    {
+        "title": "extension.no_selection",
+        "fr": "Aucune extension selectionner",
+        "en": "No extension select"
+    },
+    {
+        "title": "settings.add_extention",
+        "fr": "Ajout d'une extension",
+        "en": "Adding extensions"
+    },
+    {
+        "title": "settings.remove.extension",
+        "fr": "Supprimer une extension",
+        "en": "Remove extensions"
     }
 ]
