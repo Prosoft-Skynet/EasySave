@@ -3,11 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 public class BusinessApplicationService
 {
@@ -18,21 +14,22 @@ public class BusinessApplicationService
     public ObservableCollection<string> GetBusinessApplications()
     {
         var jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BusinessApplications.json");
-        var jsonContent = "";
 
-        if (File.Exists(jsonPath))
+        if (!File.Exists(jsonPath))
         {
-            jsonContent = File.ReadAllText(jsonPath);
+            File.WriteAllText(jsonPath, "[]");
+            return new ObservableCollection<string>();
+        }
+
+        try
+        {
+            string jsonContent = File.ReadAllText(jsonPath);
             BusinessApplications = JsonSerializer.Deserialize<List<string>>(jsonContent) ?? new List<string>();
             return new ObservableCollection<string>(BusinessApplications);
         }
-        else
+        catch (Exception ex)
         {
-            var newJsonFile = File.Create(jsonPath);
-            var jsonToUpdate = JsonSerializer.Serialize(new List<string>());
-
-            newJsonFile.Write(Encoding.UTF8.GetBytes(jsonToUpdate));
-            newJsonFile.Close();
+            Console.WriteLine($"Erreur de lecture du fichier JSON : {ex.Message}");
             return new ObservableCollection<string>();
         }
     }

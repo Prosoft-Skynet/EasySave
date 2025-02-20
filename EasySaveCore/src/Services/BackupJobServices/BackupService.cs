@@ -18,9 +18,10 @@ public class BackupService
     private readonly string _backupJobsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupJobs.json");
     private bool _isPaused;
     private bool _isStopped;
-
     private readonly string ExtensionsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "extensions.txt");
     public List<string> extensionsToEncrypt { get; private set; } = new List<string>();
+    public event Action<string>? OnBackupCancelled;
+    private bool _hasAlreadyCancelled = false;
 
 
     public BackupService()
@@ -122,9 +123,26 @@ public class BackupService
         if (job != null)
         {
             _stateService.UpdateState(job, "Loading");
-            Execute(job);
-            EncryptFilesInDirectory(job.Target, getEncryptionKeyCallback);
-            _stateService.UpdateState(job, "Finished");
+
+            try
+            {
+                Execute(job);
+                EncryptFilesInDirectory(job.Target, getEncryptionKeyCallback);
+                _stateService.UpdateState(job, "Finished");
+            }
+            catch (InvalidOperationException ex)
+            {
+                if (_stateService.GetCurrentState(job.Id).Status != "Cancelled")
+                {
+                    _stateService.UpdateState(job, "Cancelled");
+                    OnBackupCancelled?.Invoke("Sauvegarde annulée : " + ex.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                _stateService.UpdateState(job, "Error");
+                OnBackupCancelled?.Invoke("Erreur inattendue : " + ex.Message);
+            }
         }
     }
 
@@ -294,6 +312,17 @@ public class BackupService
 
     private void Execute(BackupJobModel backupJob)
     {
+        var forbiddenFiles = _businessApplicationService.GetBusinessApplications();
+
+        var sourceDirectory = new DirectoryInfo(backupJob.Source);
+        bool hasForbiddenFile = sourceDirectory.GetFiles("*", SearchOption.AllDirectories)
+                                               .Any(file => forbiddenFiles.Contains(file.FullName));
+
+        if (hasForbiddenFile)
+        {
+            throw new InvalidOperationException("Sauvegarde annulée : Un fichier interdit a été détecté.");
+        }
+
         if (backupJob.IsFullBackup)
             backupStrategy = new CompleteBackupStrategy();
         else
