@@ -19,13 +19,15 @@ using EasySaveCore.src.Services.BackupJobServices;
 public class MainViewModel : ViewModelBase
 {
     private LanguageService _languageService;
-    private readonly BackupService _backubService;
+    private readonly BackupService _backupService;
     private BusinessApplicationService _businessApplicationService;
     private readonly Logger _logger;
     private string _backupName = string.Empty;
     private string _sourcePath = string.Empty;
     private string _destinationPath = string.Empty;
     private bool _isFullBackup = true;
+    private bool _isBackupCancelled = false;
+
 
 
     public ObservableCollection<BackupJobModel> Backups { get; }
@@ -41,7 +43,7 @@ public class MainViewModel : ViewModelBase
 
             if (_selectedBackup != null)
             {
-                _backubService.SetBackupStrategy(_selectedBackup.IsFullBackup);
+                _backupService.SetBackupStrategy(_selectedBackup.IsFullBackup);
             }
 
             OnPropertyChanged();
@@ -122,13 +124,14 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-        _backubService = new BackupService();
+        _backupService = new BackupService();
+        _backupService.OnBackupCancelled += ShowBackupError;
         _languageService = new LanguageService();
         _businessApplicationService = new BusinessApplicationService();
         _logger = new Logger(new JsonLogFormatter());
-        Backups = new ObservableCollection<BackupJobModel>(_backubService.GetBackupJobs());
+        Backups = new ObservableCollection<BackupJobModel>(_backupService.GetBackupJobs());
 
-        Backups = new ObservableCollection<BackupJobModel>(_backubService.LoadBackupJobs());
+        Backups = new ObservableCollection<BackupJobModel>(_backupService.LoadBackupJobs());
         Logs = new ObservableCollection<string>();
 
         LoadLogs();
@@ -168,8 +171,8 @@ public class MainViewModel : ViewModelBase
         {
             IBackupTypeStrategy strategy = IsFullBackup ? new CompleteBackupStrategy() : new DifferentialBackupStrategy();
             var job = new BackupJobModel(BackupName, SourcePath, DestinationPath, IsFullBackup);
-            _backubService.AddBackup(job);
-            _backubService.SaveBackupJobs();
+            _backupService.AddBackup(job);
+            _backupService.SaveBackupJobs();
 
             Backups.Add(job);
             MessageBox.Show($"{_languageService.GetTranslation("box.backup")} {BackupName} {_languageService.GetTranslation("box.create_success")}");
@@ -194,14 +197,14 @@ public class MainViewModel : ViewModelBase
 
         string backupName = SelectedBackup.Name;
 
-        var jobToRemove = _backubService.GetBackupJobs().FirstOrDefault(b => b.Id == SelectedBackup.Id);
+        var jobToRemove = _backupService.GetBackupJobs().FirstOrDefault(b => b.Id == SelectedBackup.Id);
         if (jobToRemove != null)
         {
-            _backubService.GetBackupJobs().Remove(jobToRemove);
+            _backupService.GetBackupJobs().Remove(jobToRemove);
         }
 
         Backups.Remove(SelectedBackup);
-        _backubService.SaveBackupJobs();
+        _backupService.SaveBackupJobs();
 
         SelectedBackup = null;
 
@@ -216,12 +219,13 @@ public class MainViewModel : ViewModelBase
             return;
         }
 
+        _isBackupCancelled = false; 
         var startTime = DateTime.Now;
 
         Func<string, string> getEncryptionKeyCallback = (fileName) =>
         {
             var extension = Path.GetExtension(fileName).ToLower();
-            if (!_backubService.extensionsToEncrypt.Contains(extension)) return string.Empty;
+            if (!_backupService.extensionsToEncrypt.Contains(extension)) return string.Empty;
 
             string encryptionKey = string.Empty;
 
@@ -245,7 +249,7 @@ public class MainViewModel : ViewModelBase
         {
             await Task.Run(() =>
             {
-                _backubService.ExecuteJobinterface(SelectedBackup.Id, getEncryptionKeyCallback);
+                _backupService.ExecuteJobinterface(SelectedBackup.Id, getEncryptionKeyCallback);
             });
 
             var copyCryptEndTime = DateTime.Now;
@@ -253,21 +257,26 @@ public class MainViewModel : ViewModelBase
         }
         catch (Exception)
         {
+            _isBackupCancelled = true; 
             copyCryptTimeMs = -1000;
         }
 
         var endTime = DateTime.Now;
         long totalDurationMs = (long)(endTime - startTime).TotalMilliseconds;
 
-        _logger.Log(
-            SelectedBackup.Name,
-            SelectedBackup.Source,
-            SelectedBackup.Target,
-            totalDurationMs,
-            copyCryptTimeMs
-        );
+        if (!_isBackupCancelled) 
+        {
+            _logger.Log(
+                SelectedBackup.Name,
+                SelectedBackup.Source,
+                SelectedBackup.Target,
+                totalDurationMs,
+                copyCryptTimeMs
+            );
 
-        MessageBox.Show($"{_languageService.GetTranslation("box.backup")} {SelectedBackup.Name} {_languageService.GetTranslation("box.execute_success")} {totalDurationMs} ms ! \n {_languageService.GetTranslation("menu.exception_application")} ", _languageService.GetTranslation("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show($"{_languageService.GetTranslation("box.backup")} {SelectedBackup.Name} {_languageService.GetTranslation("box.execute_success")} {totalDurationMs} ms ! \n {_languageService.GetTranslation("menu.exception_application")} ",
+                            _languageService.GetTranslation("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
+        }
 
         LoadLogs();
     }
@@ -283,7 +292,7 @@ public class MainViewModel : ViewModelBase
         Func<string, string> getDecryptionKeyCallback = (fileName) =>
         {
             var extension = Path.GetExtension(fileName).ToLower();
-            if (!_backubService.extensionsToEncrypt.Contains(extension)) return string.Empty;
+            if (!_backupService.extensionsToEncrypt.Contains(extension)) return string.Empty;
 
             string decryptionKey = string.Empty;
 
@@ -304,7 +313,7 @@ public class MainViewModel : ViewModelBase
         {
             await Task.Run(() =>
             {
-                _backubService.RestoreJob(SelectedBackup.Id, getDecryptionKeyCallback);
+                _backupService.RestoreJob(SelectedBackup.Id, getDecryptionKeyCallback);
             });
 
             MessageBox.Show($"{_languageService.GetTranslation("box.backup")} {SelectedBackup.Name} {_languageService.GetTranslation("box.restore_success")}",
@@ -457,19 +466,19 @@ public class MainViewModel : ViewModelBase
 
     private void PauseBackup()
     {
-        _backubService.PauseBackup();
+        _backupService.PauseBackup();
         MessageBox.Show(_languageService.GetTranslation("box.pause_success"), _languageService.GetTranslation("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private void ResumeBackup()
     {
-        _backubService.ResumeBackup();
+        _backupService.ResumeBackup();
         MessageBox.Show(_languageService.GetTranslation("box.resume_success"), _languageService.GetTranslation("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private void StopBackup()
     {
-        _backubService.StopBackup();
+        _backupService.StopBackup();
         MessageBox.Show(_languageService.GetTranslation("box.stop_success"), _languageService.GetTranslation("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
@@ -493,7 +502,7 @@ public class MainViewModel : ViewModelBase
                 if (!UserExtensionsToEncrypt.Contains(extension))
                 {
                     UserExtensionsToEncrypt.Add(extension);
-                    _backubService.extensionsToEncrypt.Add(extension);
+                    _backupService.extensionsToEncrypt.Add(extension);
                     MessageBox.Show($"{_languageService.GetTranslation("extension.valid")} {extension}");
                 }
                 else
@@ -516,6 +525,13 @@ public class MainViewModel : ViewModelBase
     private void ExitApplication()
     {
         Application.Current.Shutdown();
+    }
+    private void ShowBackupError(string message)
+    {
+        if (_isBackupCancelled) return;
+
+        _isBackupCancelled = true;
+        MessageBox.Show(message, "Erreur de sauvegarde", MessageBoxButton.OK, MessageBoxImage.Warning);
     }
 }
 
