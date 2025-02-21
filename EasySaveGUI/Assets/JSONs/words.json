@@ -338,5 +338,31 @@
         "title": "settings.remove.extension",
         "fr": "Supprimer une extension",
         "en": "Remove extensions"
+    },
+    {
+        "title": "settings.remove_business_process",
+        "fr": "Supprimer le processus métier",
+        "en": "Remove Business Process"
+    },
+    {
+        "title": "settings_remove.no_selection",
+        "fr": "Aucune application métier sélectionnée.",
+        "en": "No business application selected."
+    },
+    {
+        "title": "settings_remove.application_remove",
+        "fr": "Application métier supprimée : ",
+        "en": "Business application removed: "
+    },
+    {
+        "title": "settings_remove.application_not_found",
+        "fr": "Application métier introuvable.",
+        "en": "Business application not found."
+    },
+    {
+        "title": "exception.forbidden_file_detected",
+        "fr": "Sauvegarde annulée : Un fichier interdit a été détecté.",
+        "en": "Backup cancelled: A forbidden file was detected."
     }
+    
 ]
