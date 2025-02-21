@@ -7,7 +7,7 @@ using EasySaveCore.src.Models;
 
 public class LanguageService
 {
-    private string currentLanguage;
+    private string currentLanguage = "en";
     private List<WordModel>? translations;
 
     public LanguageService()
@@ -94,7 +94,7 @@ public class LanguageService
 
         var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "language.txt");
         File.WriteAllText(filePath, currentLanguage);
-        
+
         Console.WriteLine($"{GetTranslation("Language_changed")} {GetTranslation("Language")}");
     }
 }

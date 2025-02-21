@@ -21,7 +21,6 @@ public class BackupService
     private readonly string ExtensionsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "extensions.txt");
     public List<string> extensionsToEncrypt { get; private set; } = new List<string>();
     public event Action<string>? OnBackupCancelled;
-    private bool _hasAlreadyCancelled = false;
     private readonly LanguageService _languageService = new LanguageService();
 
 
@@ -68,7 +67,7 @@ public class BackupService
                 string json = File.ReadAllText(_backupJobsFilePath);
                 if (!string.IsNullOrWhiteSpace(json))
                 {
-                    List<BackupJobModel> BJobs = JsonSerializer.Deserialize<List<BackupJobModel>>(json);
+                    List<BackupJobModel> BJobs = JsonSerializer.Deserialize<List<BackupJobModel>>(json) ?? new List<BackupJobModel>();
                     backupJobs = BJobs ?? new List<BackupJobModel>();
 
                     foreach (var job in backupJobs)
