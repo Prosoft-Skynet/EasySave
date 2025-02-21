@@ -47,25 +47,23 @@
                         BorderThickness="0"
                         Margin="5"/>
 
-                <Button Content="{Binding [settings.add_extention]}" 
-                        Command="{Binding AddExtensionCommand}" 
+                <Button Content="{Binding [settings.add_extention]}"
+                        Command="{Binding AddExtensionCommand}"
                         Background="#a6d8d4"
                         Foreground="White"
                         Padding="10"
                         Width="200"
                         BorderThickness="0"
-                        Margin="5"
-                />
+                        Margin="5"/>
 
-                <Button Content="{Binding [settings.remove.extension]}" 
-                        Command="{Binding RemoveExtensionCommand}" 
+                <Button Content="{Binding [settings.remove.extension]}"
+                        Command="{Binding RemoveExtensionCommand}"
                         Background="#a6d8d4"
-                         Foreground="White"
-                         Padding="10"
-                         Width="200"
-                         BorderThickness="0"
-                         Margin="5" 
-                    />
+                        Foreground="White"
+                        Padding="10"
+                        Width="200"
+                        BorderThickness="0"
+                        Margin="5"/>
 
                 <Separator Margin="10"/>
 
@@ -102,7 +100,7 @@
                             Command="{Binding SelectBusinessApplicationCommand}"
                             Width="30"/>
                 </StackPanel>
-                
+
                 <Separator Margin="10"/>
 
                 <TextBlock Text="{Binding [settings.list_business_processes]}"
@@ -119,14 +117,13 @@
 
                 <StackPanel Orientation="Vertical">
                     <TextBlock Text="{Binding [settings.list_extension]}"
-            Foreground="Black"/>
-                    <ListBox ItemsSource="{Binding UserExtensionsToEncrypt}" 
-                             SelectedItem="{Binding SelectedExtensionToRemove}" 
+                               Foreground="Black"/>
+                    <ListBox ItemsSource="{Binding UserExtensionsToEncrypt}"
+                             SelectedItem="{Binding SelectedExtensionToRemove}"
                              Height="200"
                              Background="White"
                              BorderBrush="#6b7d7d"
-                             BorderThickness="1"
-                    /> 
+                             BorderThickness="1"/>
                 </StackPanel>
             </StackPanel>
         </Border>

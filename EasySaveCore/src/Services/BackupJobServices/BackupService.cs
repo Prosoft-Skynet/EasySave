@@ -22,14 +22,13 @@ public class BackupService
     public List<string> extensionsToEncrypt { get; private set; } = new List<string>();
     public event Action<string>? OnBackupCancelled;
     private bool _hasAlreadyCancelled = false;
+    private readonly LanguageService _languageService = new LanguageService();
 
 
     public BackupService()
     {
         LoadBackupJobs();
         LoadExtensionsToEncrypt();
-
-
     }
 
     public void PauseBackup()
@@ -135,13 +134,13 @@ public class BackupService
                 if (_stateService.GetCurrentState(job.Id).Status != "Cancelled")
                 {
                     _stateService.UpdateState(job, "Cancelled");
-                    OnBackupCancelled?.Invoke("Sauvegarde annulée : " + ex.Message);
+                    OnBackupCancelled?.Invoke(ex.Message);
                 }
             }
             catch (Exception ex)
             {
                 _stateService.UpdateState(job, "Error");
-                OnBackupCancelled?.Invoke("Erreur inattendue : " + ex.Message);
+                OnBackupCancelled?.Invoke(ex.Message);
             }
         }
     }
@@ -320,7 +319,7 @@ public class BackupService
 
         if (hasForbiddenFile)
         {
-            throw new InvalidOperationException("Sauvegarde annulée : Un fichier interdit a été détecté.");
+            throw new InvalidOperationException(_languageService.GetTranslation("exception.forbidden_file_detected"));
         }
 
         if (backupJob.IsFullBackup)
