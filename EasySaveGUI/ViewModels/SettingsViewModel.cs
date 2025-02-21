@@ -32,6 +32,17 @@
             }
         }
 
+        private string? _selectedBusinessApplication;
+        public string? SelectedBusinessApplication
+        {
+            get => _selectedBusinessApplication;
+            set
+            {
+                _selectedBusinessApplication = value;
+                OnPropertyChanged();
+            }
+        }
+
         private string? _selectedExtensionToRemove;
         public string? SelectedExtensionToRemove
         {
@@ -58,6 +69,7 @@
         public ICommand CloseSettingsCommand { get; }
         public ICommand AddBusinessApplicationCommand { get; }
         public ICommand AddExtensionCommand { get; }
+        public ICommand RemoveBusinessApplicationCommand { get; }
 
         public string this[string key] => _languageService.GetTranslation(key);
 
@@ -82,6 +94,7 @@
             AddBusinessApplicationCommand = new RelayCommand(AddBusinessApplication);
             RemoveExtensionCommand = new RelayCommand(RemoveExtension);
             AddExtensionCommand = new RelayCommand(AddExtension);
+            RemoveBusinessApplicationCommand = new RelayCommand(RemoveBusinessApplication);
         }
 
         private void SelectBusinessApplication()
@@ -198,6 +211,39 @@
             else
             {
                 MessageBox.Show(_languageService.GetTranslation("extension.not_found"), _languageService.GetTranslation("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void RemoveBusinessApplication()
+        {
+            if (BusinessApplications.Count == 0 || SelectedBusinessApplication == null)
+            {
+                MessageBox.Show(_languageService.GetTranslation("settings_remove.no_selection"),
+                                _languageService.GetTranslation("box.error"),
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
+                return;
+            }
+
+            var appToRemove = SelectedBusinessApplication;
+
+            if (BusinessApplications.Contains(appToRemove))
+            {
+                BusinessApplications.Remove(appToRemove);
+
+                _businessApplicationService.RemoveBusinessApplication(appToRemove);
+
+                MessageBox.Show($"{_languageService.GetTranslation("settings_remove.application_remove")} {appToRemove}",
+                                "Information",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show(_languageService.GetTranslation("settings_remove.application_not_found"),
+                                _languageService.GetTranslation("box.error"),
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
             }
         }
 

@@ -305,9 +305,9 @@ public class BackupService
         }
     }
 
-    public void Restore(BackupJobModel backUpJob)
+    public void Restore(BackupJobModel backupJob)
     {
-        TransferFiles(backUpJob.Target, backUpJob.Source, _businessApplicationService.GetBusinessApplications(), CheckForPauseAndStop);
+        TransferFiles(backupJob.Target, backupJob.Source, _businessApplicationService.GetBusinessApplications(), CheckForPauseAndStop);
     }
 
     private void Execute(BackupJobModel backupJob)
@@ -350,9 +350,9 @@ public class BackupService
         backupStrategy = strategy;
     }
 
-    public void SetBackupStrategy(bool isFullBackub)
+    public void SetBackupStrategy(bool isFullBackup)
     {
-        if (isFullBackub)
+        if (isFullBackup)
         {
             backupStrategy = new CompleteBackupStrategy();
         }

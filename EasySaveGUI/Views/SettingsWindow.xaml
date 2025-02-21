@@ -38,6 +38,15 @@
                         BorderThickness="0"
                         Margin="5"/>
 
+                <Button Content="{Binding [settings.remove_business_process]}"
+                        Command="{Binding RemoveBusinessApplicationCommand}"
+                        Background="#a6d8d4"
+                        Foreground="White"
+                        Padding="10"
+                        Width="200"
+                        BorderThickness="0"
+                        Margin="5"/>
+
                 <Button Content="{Binding [settings.add_extention]}" 
                         Command="{Binding AddExtensionCommand}" 
                         Background="#a6d8d4"
@@ -99,6 +108,7 @@
                 <TextBlock Text="{Binding [settings.list_business_processes]}"
                            Foreground="Black"/>
                 <ListBox ItemsSource="{Binding BusinessApplications}"
+                         SelectedItem="{Binding SelectedBusinessApplication, Mode=TwoWay}"
                          Height="200"
                          Background="White"
                          BorderBrush="#6b7d7d"

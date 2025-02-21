@@ -43,4 +43,15 @@ public class BusinessApplicationService
 
         File.WriteAllText(jsonPath, jsonToUpdate);
     }
+    public void RemoveBusinessApplication(string path)
+    {
+        var jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BusinessApplications.json");
+
+        if (BusinessApplications.Contains(path))
+        {
+            BusinessApplications.Remove(path);
+            var jsonToUpdate = JsonSerializer.Serialize(BusinessApplications, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(jsonPath, jsonToUpdate);
+        }
+    }
 }
