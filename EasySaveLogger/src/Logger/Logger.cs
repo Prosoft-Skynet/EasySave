@@ -11,6 +11,7 @@ public class Logger
     private readonly string _jsonLogDirectory;
     private readonly string _xmlLogDirectory;
     private ILogFormatter _logFormatter;
+    private readonly WebSocketServer _webSocketServer;
 
     /// <summary>
     /// Initializes the logger with the specified log formatter.
@@ -24,6 +25,9 @@ public class Logger
         Directory.CreateDirectory(_jsonLogDirectory);
         Directory.CreateDirectory(_xmlLogDirectory);
         _logFormatter = logFormatter;
+
+        _webSocketServer = new WebSocketServer("http://localhost:5000/", _jsonLogDirectory);
+        Task.Run(() => _webSocketServer.StartAsync());
     }
 
     /// <summary>
@@ -75,6 +79,10 @@ public class Logger
 
         // Write logs in both JSON and XML formats
         WriteLogInBothFormats(logs);
+
+        string logJson = JsonSerializer.Serialize(logs.Last());
+
+        Task.Run(() => _webSocketServer.BroadcastLogAsync(logJson));
     }
 
     /// <summary>
