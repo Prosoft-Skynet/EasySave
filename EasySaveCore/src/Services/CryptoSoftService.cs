@@ -10,9 +10,8 @@ using System.IO;
 /// </summary>
 public class CryptoSoftService
 {
-    private static readonly Mutex mutex = new Mutex(true, "{B1AFC9E1-8C3D-4A6B-9A1A-2D3E4F5A6B7C}");
-    private static CryptoSoftService instance = null;
-    private static readonly object padlock = new object();
+    private static readonly Mutex mutex = new Mutex();
+    private static readonly CryptoSoftService instance = new CryptoSoftService();
 
     private CryptoSoftService() { }
 
@@ -20,14 +19,7 @@ public class CryptoSoftService
     {
         get
         {
-            lock (padlock)
-            {
-                if (instance == null)
-                {
-                    instance = new CryptoSoftService();
-                }
-                return instance;
-            }
+            return instance;
         }
     }
 
