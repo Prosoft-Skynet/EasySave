@@ -1,0 +1,197 @@
+[
+    {
+        "title": "menu.add",
+        "fr": "1. Ajouter une sauvegarde",
+        "en": "1. Add a backup"
+    },
+    {
+        "title": "menu.delete",
+        "fr": "2. Supprimer une sauvegarde",
+        "en": "2. Delete a backup"
+    },
+    {
+        "title": "menu.list",
+        "fr": "3. Lister les sauvegardes",
+        "en": "3. List backups"
+    },
+    {
+        "title": "menu.execute",
+        "fr": "4. Exécuter une sauvegarde",
+        "en": "4. Execute a backup"
+    },
+    {
+        "title": "menu.restore",
+        "fr": "5. Restaurer une sauvegarde",
+        "en": "5. Restore a backup"
+    },
+    {
+        "title": "menu.logs",
+        "fr": "6. Voir les logs",
+        "en": "6. View logs"
+    },
+    {
+        "title": "menu.state",
+        "fr": "7. Voir l'état",
+        "en": "7. View state"
+    },
+    {
+        "title": "menu.state.Contents",
+        "fr": "Contenu de l'état",
+        "en": "Contents of the state"
+    },
+    {
+        "title": "menu.logs_format_JSON",
+        "fr": "8. JSON",
+        "en": "8. JSON"
+    },
+    {
+        "title": "menu.logs_format_XML",
+        "fr": "8. XML",
+        "en": "8. XML"
+    },
+    {
+        "title": "menu.language",
+        "fr": "9. EN",
+        "en": "9. FR"
+    },
+    {
+        "title": "menu.quit",
+        "fr": "10. Quitter",
+        "en": "10. Quit"
+    },
+    {
+        "title": "menu.choice",
+        "fr": "Votre choix: ",
+        "en": "Your choice:"
+    },
+    {
+        "title": "backup.error_5",
+        "fr": "Impossible d'ajouter plus de 5 travaux de sauvegarde.",
+        "en": "Impossible to add more than 5 backup jobs."
+    },
+    {
+        "title": "backup.name",
+        "fr": "Nom de la sauvegarde : ",
+        "en": "Backup name :"
+    },
+    {
+        "title": "backup.name_use",
+        "fr": "Nom déjà utilisé",
+        "en": "Name already in use"
+    },
+    {
+        "title": "backup.source",
+        "fr": "Répertoire source : ",
+        "en": "Source directory :"
+    },
+    {
+        "title": "backup.destination",
+        "fr": "Répertoire cible : ",
+        "en": "Target directory :"
+    },
+    {
+        "title": "backup.type",
+        "fr": "Type de sauvegarde (1: complète, 2: différentielle) : ",
+        "en": "Backup type (1: full 2: differential) :"
+    },
+    {
+        "title": "backup.add",
+        "fr": "Sauvegarde ajoutée !",
+        "en": "Backup added !"
+    },
+    {
+        "title": "delete.name",
+        "fr": "Entrez le nom de la sauvegarde à supprimer : ",
+        "en": "Enter the name of the backup to be deleted :"
+    },
+    {
+        "title": "delete.delete",
+        "fr": "Sauvegarde supprimée !",
+        "en": "Backup deleted !"
+    },
+    {
+        "title": "name.invalid",
+        "fr": "Nom invalide.",
+        "en": "Invalid name."
+    },
+    {
+        "title": "list.list",
+        "fr": "\nListe des sauvegardes :",
+        "en": "\nList of backups :"
+    },
+    {
+        "title": "list.none",
+        "fr": "Aucune sauvegarde trouvée.",
+        "en": "No backups found."
+    },
+    {
+        "title": "list.name",
+        "fr": "Nom : ",
+        "en": "Name :"
+    },
+    {
+        "title": "list.target",
+        "fr": "Cible : ",
+        "en": "Target :"
+    },
+    {
+        "title": "list.complete",
+        "fr": "Complète",
+        "en": "Complete"
+    },
+    {
+        "title": "list.differential",
+        "fr": "Différentielle",
+        "en": "Differential"
+    },
+    {
+        "title": "exec.name",
+        "fr": "Entrez le nom de la sauvegarde à exécuter : ",
+        "en": "Enter the name of the backup you want to run :"
+    },
+    {
+        "title": "exec.launch",
+        "fr": "Lancement de la sauvegarde ",
+        "en": "Launching the backup"
+    },
+    {
+        "title": "exec.finish",
+        "fr": "Sauvegarde terminée !",
+        "en": "Backup complete !"
+    },
+    {
+        "title": "restore.name",
+        "fr": "Entrez le nom de la sauvegarde à restaurer : ",
+        "en": "Enter the name of the backup you wish to restore :"
+    },
+    {
+        "title": "restore.restore",
+        "fr": "Restauration de la sauvegarde ",
+        "en": "Restoring the backup"
+    },
+    {
+        "title": "restore.finish",
+        "fr": "Restauration terminée !",
+        "en": "Restoration complete !"
+    },
+    {
+        "title": "logs.chose",
+        "fr": "choisis le log à exécuter",
+        "en": "chose the log to execute"
+    },
+    {
+        "title": "logs.JSON_format",
+        "fr": "Affichage des logs en JSON",
+        "en": "Displaying logs in JSON"
+    },
+    {
+        "title": "logs.XML_format",
+        "fr": "Affichage des logs en XML",
+        "en": "Displaying logs in XML"
+    },
+    {
+        "title": "logs.none",
+        "fr": "il n'y a aucun log pour le moment",
+        "en": "there is no log for the moment"
+    }
+]

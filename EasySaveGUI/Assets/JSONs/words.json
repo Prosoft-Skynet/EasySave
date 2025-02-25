@@ -1,0 +1,368 @@
+[
+    {
+        "title": "menu.add",
+        "fr": "Ajouter une sauvegarde",
+        "en": "Add a backup"
+    },
+    {
+        "title": "menu.delete",
+        "fr": "Supprimer une sauvegarde",
+        "en": "Delete a backup"
+    },
+    {
+        "title": "menu.list",
+        "fr": "Liste des sauvegardes :",
+        "en": "List of backups :"
+    },
+    {
+        "title": "menu.execute",
+        "fr": "Exécuter une sauvegarde",
+        "en": "Execute a backup"
+    },
+    {
+        "title": "menu.restore",
+        "fr": "Restaurer une sauvegarde",
+        "en": "Restore a backup"
+    },
+    {
+        "title": "menu.logs",
+        "fr": "Voir les logs",
+        "en": "View logs"
+    },
+    {
+        "title": "menu.state",
+        "fr": "Voir l'état",
+        "en": "View state"
+    },
+    {
+        "title": "menu.create",
+        "fr": "Créer une nouvelle sauvegarde",
+        "en": "Create a new backup"
+    },
+    {
+        "title": "menu.name",
+        "fr": "Nom de la sauvegarde :",
+        "en": "Backup name :"
+    },
+    {
+        "title": "menu.source",
+        "fr": "Dossier source :",
+        "en": "Source folder :"
+    },
+    {
+        "title": "menu.target",
+        "fr": "Dossier cible :",
+        "en": "Target folder :"
+    },
+    {
+        "title": "menu.type",
+        "fr": "Type de sauvegarde :",
+        "en": "Backup type :"
+    },
+    {
+        "title": "menu.complete",
+        "fr": "Complète",
+        "en": "Complete"
+    },
+    {
+        "title": "menu.differential",
+        "fr": "Différentielle",
+        "en": "Differential"
+    },
+    {
+        "title": "menu.params",
+        "fr": "Paramètres",
+        "en": "Settings"
+    },
+    {
+        "title": "menu.quit",
+        "fr": "Quitter",
+        "en": "Quit"
+    },
+    {
+        "title": "menu.change_logs",
+        "fr": "Changer format Logs (XML/JSON)",
+        "en": "Change Logs format (XML/JSON)"
+    },
+    {
+        "title": "box.error",
+        "fr": "Erreur",
+        "en": "Error"
+    },
+    {
+        "title": "box.fill",
+        "fr": "Veuillez remplir tous les champs.",
+        "en": "Please fill all fields."
+    },
+    {
+        "title": "box.name",
+        "fr": "Une sauvegarde avec ce nom existe déjà.",
+        "en": "A backup with this name already exists."
+    },
+    {
+        "title": "box.files",
+        "fr": "Sélectionnez un dossier",
+        "en": "Select a folder"
+    },
+    {
+        "title": "box.backup",
+        "fr": "Sauvegarde",
+        "en": "Backup"
+    },
+    {
+        "title": "box.create_success",
+        "fr": "créée avec succès !",
+        "en": "created successfully !"
+    },
+    {
+        "title": "box.delete",
+        "fr": "Sélectionnez une sauvegarde à supprimer.",
+        "en": "Select a backup to delete."
+    },
+    {
+        "title": "box.delete_success",
+        "fr": "supprimée avec succès !",
+        "en": "deleted successfully !"
+    },
+    {
+        "title": "box.execute",
+        "fr": "Veuillez sélectionner une sauvegarde à exécuter.",
+        "en": "Please select a backup to execute."
+    },
+    {
+        "title": "box.execute_success",
+        "fr": "exécutée en",
+        "en": "executed in"
+    },
+    {
+        "title": "box.restore",
+        "fr": "Veuillez sélectionner une sauvegarde à restaurer.",
+        "en": "Please select a backup to restore."
+    },
+    {
+        "title": "box.restore_success",
+        "fr": "restaurée !",
+        "en": "restored !"
+    },
+    {
+        "title": "box.success",
+        "fr": "Succès",
+        "en": "Success"
+    },
+    {
+        "title": "box.logs",
+        "fr": "Veuillez sélectionner un log à ouvrir.",
+        "en": "Please select a log to open."
+    },
+    {
+        "title": "box.logs_exist",
+        "fr": "Le fichier log n'existe pas.",
+        "en": "Log file does not exist."
+    },
+    {
+        "title": "box.os",
+        "fr": "Système d'exploitation non supporté.",
+        "en": "Unsupported operating system."
+    },
+    {
+        "title": "box.logs_error",
+        "fr": "Erreur lors de l'ouverture du fichier",
+        "en": "Error opening file"
+    },
+    {
+        "title": "box.logs_format",
+        "fr": "Format des logs changé en",
+        "en": "Logs format changed to"
+    },
+    {
+        "title": "menu.encrypt",
+        "fr": "Veuillez entrer la clé de cryptage pour",
+        "en": "Please enter the encryption key for"
+    },
+    {
+        "title": "menu.decrypt",
+        "fr": "Veuillez entrer la clé de décryptage pour",
+        "en": "Please enter the decryption key for"
+    },
+    {
+        "title": "menu.encryption_key",
+        "fr": "Clé de cryptage",
+        "en": "Encryption Key"
+    },
+    {
+        "title": "menu.decryption_key",
+        "fr": "Clé de décryptage",
+        "en": "Decryption Key"
+    },
+    {
+        "title": "menu.exception_application",
+        "fr": "Attention : des applications métiers n'ont pas été ajoutées à la sauvegarde.",
+        "en": "Warning: business apps haven't been added to the backup"
+    },
+    {
+        "title": "settings.valid_exe",
+        "fr": "Veuillez sélectionner un fichier .exe valide.",
+        "en": "Please select a valid .exe file."
+    },
+    {
+        "title": "settings.application_added",
+        "fr": "Application déjà ajoutée",
+        "en": "Application already added"
+    },
+    {
+        "title": "settings.application_added_success",
+        "fr": "Application ajoutée avec succès !",
+        "en": "Application added successfully!"
+    },
+    {
+        "title": "settings.select_path_first",
+        "fr": "Veuillez d'abord sélectionner un chemin d'application.",
+        "en": "Please select an application path first."
+    },
+    {
+        "title": "settings.add_business_process",
+        "fr": "Ajouter un processus métier",
+        "en": "Add a business process"
+    },
+    {
+        "title": "settings.back",
+        "fr": "Retour",
+        "en": "Back"
+    },
+    {
+        "title": "settings.manage_business_processes",
+        "fr": "Gérer les processus métiers",
+        "en": "Manage business processes"
+    },
+    {
+        "title": "settings.select_application_file",
+        "fr": "Sélectionner un fichier d'application :",
+        "en": "Select an application file:"
+    },
+    {
+        "title": "settings.list_business_processes",
+        "fr": "Liste des processus métiers :",
+        "en": "List of business processes:"
+    },
+    {
+        "title": "box.pause_success",
+        "fr": "Sauvegarde mise en pause avec succès !",
+        "en": "Backup paused successfully!"
+    },
+    {
+        "title": "box.resume_success",
+        "fr": "Sauvegarde reprise avec succès !",
+        "en": "Backup resumed successfully!"
+    },
+    {
+        "title": "box.stop_success",
+        "fr": "Sauvegarde arrêtée avec succès !",
+        "en": "Backup stopped successfully!"
+    },
+    {
+        "title": "box.success",
+        "fr": "Succès",
+        "en": "Success"
+    },
+    {
+        "title": "menu.pause",
+        "fr": "Mettre en pause",
+        "en": "Pause"
+    },
+    {
+        "title": "menu.resume",
+        "fr": "Reprendre",
+        "en": "Resume"
+    },
+    {
+        "title": "menu.stop",
+        "fr": "Arrêter",
+        "en": "Stop"
+    },
+    {
+        "title": "settings.list_extension",
+        "fr": "Liste des extensions :",
+        "en": "List of extensions :"
+    },
+    {
+        "title": "exec.extension",
+        "fr": "Veuillez saisir au moins une extension.",
+        "en": "Please enter at least one extension."
+    },
+    {
+        "title": "extension.none",
+        "fr": "Aucune extension valide n'a été saisie.",
+        "en": "No valid extensions were entered."
+    },
+    {
+        "title": "extension.present",
+        "fr": "L'extension  est déjà présente :",
+        "en": "The expansion is already present :"
+    },
+    {
+        "title": "extension.valid",
+        "fr": "L'extension a été ajoutée pour le chiffrement :",
+        "en": "The extension has been added for encryption :"
+    },
+    {
+        "title": "extension.ajout",
+        "fr": "Ajouter des extensions à chiffrer : ex : .pdf ",
+        "en": "Add extensions to be encrypted : ex : .pdf "
+    },
+    {
+        "title": "extension.info",
+        "fr": "Entrez les extensions séparées par des espaces ou des virgules (par exemple: .pdf)",
+        "en": "Enter extensions separated by spaces or commas (for example: .pdf)"
+    },
+    {
+        "title": "extension.not_found",
+        "fr": "L'extension  n'a pas été trouver",
+        "en": "Extension not found"
+    },
+    {
+        "title": "extension.removed",
+        "fr": "L'extension a été supprimée",
+        "en": "The extension has been removed"
+    },
+    {
+        "title": "extension.no_selection",
+        "fr": "Aucune extension selectionner",
+        "en": "No extension select"
+    },
+    {
+        "title": "settings.add_extention",
+        "fr": "Ajout d'une extension",
+        "en": "Adding extensions"
+    },
+    {
+        "title": "settings.remove.extension",
+        "fr": "Supprimer une extension",
+        "en": "Remove extensions"
+    },
+    {
+        "title": "settings.remove_business_process",
+        "fr": "Supprimer le processus métier",
+        "en": "Remove Business Process"
+    },
+    {
+        "title": "settings_remove.no_selection",
+        "fr": "Aucune application métier sélectionnée.",
+        "en": "No business application selected."
+    },
+    {
+        "title": "settings_remove.application_remove",
+        "fr": "Application métier supprimée : ",
+        "en": "Business application removed: "
+    },
+    {
+        "title": "settings_remove.application_not_found",
+        "fr": "Application métier introuvable.",
+        "en": "Business application not found."
+    },
+    {
+        "title": "exception.forbidden_file_detected",
+        "fr": "Sauvegarde annulée : Un fichier interdit a été détecté.",
+        "en": "Backup cancelled: A forbidden file was detected."
+    }
+    
+]
