@@ -233,12 +233,40 @@ public class BackupService
     /// Executes a list of backup jobs sequentially.
     /// </summary>
     /// <param name="jobIds">The list of backup job identifiers.</param>
-    public void ExecuteJobsSequentially(List<Guid> jobIds, Func<string, string> getEncryptionKeyCallback)
+    public Task ExecuteJobsSequentially(List<BackupJobModel> jobIds, Func<string, string> getEncryptionKeyCallback)
     {
-        foreach (var jobId in jobIds)
+        foreach (var jobId in jobIds.Select(j => j.Id))
         {
             ExecuteJobinterface(jobId, getEncryptionKeyCallback);
         }
+        return Task.CompletedTask;
+    }
+
+    public Task ExecuteJobsInParallel(List<BackupJobModel> jobs, Func<string, string> getEncryptionKeyCallback)
+    {
+        if (jobs == null || jobs.Count == 0)
+            return Task.CompletedTask;
+
+        var tasks = jobs.Select(job =>
+        {
+            // Créer une nouvelle instance de BackupService pour chaque job
+            var backupService = new BackupService();
+
+            // Lancer chaque job en parallèle
+            return Task.Run(() =>
+            {
+                try
+                {
+                    backupService.ExecuteJobinterface(job.Id, getEncryptionKeyCallback);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erreur lors de l'exécution du job {job.Name} : {ex.Message}");
+                }
+            });
+        }).ToList();
+
+        return Task.WhenAll(tasks);
     }
 
     /// <summary>
