@@ -1,19 +1,48 @@
-﻿namespace EasySaveCore.src.Services;
+﻿using System.Threading;
+
+namespace EasySaveCore.src.Services;
 
 using System;
 using System.IO;
 
 /// <summary>
-/// Static class for file encryption.
+/// Singleton class for file encryption.
 /// </summary>
-public static class CryptoSoftService
+public class CryptoSoftService
 {
+    private static readonly Mutex mutex = new Mutex(true, "{B1AFC9E1-8C3D-4A6B-9A1A-2D3E4F5A6B7C}");
+    private static CryptoSoftService instance = null;
+    private static readonly object padlock = new object();
+
+    private CryptoSoftService() { }
+
+    public static CryptoSoftService Instance
+    {
+        get
+        {
+            lock (padlock)
+            {
+                if (instance == null)
+                {
+                    instance = new CryptoSoftService();
+                }
+                return instance;
+            }
+        }
+    }
+
     /// <summary>
     /// Main method for encrypting a file.
     /// </summary>
     /// <param name="args">Array of strings containing the file path and encryption key.</param>
-    public static void Crypt(string[] args)
+    public void Crypt(string[] args)
     {
+        if (!mutex.WaitOne(TimeSpan.Zero, true))
+        {
+            Console.WriteLine("Une instance de CryptoSoft est déjà en cours d'exécution.");
+            Environment.Exit(-2);
+        }
+
         try
         {
             if (args.Length < 2)
@@ -41,6 +70,10 @@ public static class CryptoSoftService
         {
             Console.WriteLine("Exception : " + e.Message);
             Environment.Exit(-99);
+        }
+        finally
+        {
+            mutex.ReleaseMutex();
         }
     }
 }
