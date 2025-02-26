@@ -1,0 +1,171 @@
+classDiagram
+    namespace EasySaveNamespace {
+        %% ----- VIEWMODEL ----- 
+        class EasySave {
+            - static EasySave instance
+            - BackupManager backupManager
+            - LanguageManager languageManager
+            - EasySave(): void
+            + static GetInstance(): EasySave
+            + Run(jobId: Guid): void
+            + ListBackup(): List<BackupJob>
+            + SetLanguage(language: Language): void
+            + GetText(key: string): string
+        }
+
+        %% ----- MODEL -----
+        class BackupManager {
+            - List<BackupJob> backupJobs
+            - StateManager stateManager
+            + AddBackup(job: BackupJob): void
+            + ExecuteJob(jobId: Guid): void
+            + ExecuteJobsSequentially(jobIds: List<Guid>): void
+            + RestoreJobs(jobId: Guid): void
+            + GetBackupJobs(): List<BackupJobs>
+        }
+    }
+
+    %% ----- MODEL -----
+    namespace EasySaveNamespace.Backup {
+        class BackupJob {
+            + Guid Id
+            + string Name
+            + string Source
+            + string Target
+            + boolean IsFullBackup
+            - IBackupTypeStrategy backupStrategy
+            + BackupJob(name: string, source: string, target: string, isFullBackup: boolean, strategy: IBackupTypeStrategy )
+            + Execute(): void
+            + Restore(): void
+        }
+
+        class BackupService {
+            + TransferFiles(source: string, target: string): void
+            + CreateDirectories(path: string): void
+        }
+
+        class IBackupTypeStrategy {
+            <<interface>>
+            + ExecuteBackupStrategy(source: string, target: string): void
+        }
+
+        class CompleteBackupStrategy {
+            + ExecuteBackupStrategy(source: string, target: string): void
+        }
+
+        class DifferentialBackupStrategy {
+            + ExecuteBackupStrategy(source: string, target: string): void
+        }
+
+        class BackupJobFactory {
+            + CreateBackupJobsInParallel(jobs: List<BackupJob>): void
+        }
+    }
+
+    %% ----- MODEL -----
+    namespace EasySaveNamespace.State {
+        class StateManager {
+            - string stateFilePath
+            - Dictionnary<Guid, StateEntry> currentState
+            + StateManager(path: string): void
+            - EnsureStateFileExists(): void
+            + UpdateState(job: BackupJob, status: string, filesTotal: int, sizeTotal: int, progress: float, remainingFiles: int, remainingSize: int, currentSource: string, currentTarget: string ): void
+            + ConfigureStatePath(path: string): void
+            + GetCurrentState(jobId: Guid): StateEntry
+            - SaveState(): void
+            - LoadState(): void
+            + GetStateFilePath(): string     
+        }
+
+        class StateEntry {
+            + string JobName
+            + string Timestamp
+            + string Status
+            + int FilesTotal
+            + int SizeTotal
+            + float Progress
+            + int RemainingFiles
+            + int RemainingSize
+            + string CurrentSource
+            + string CurrentTarget
+            + StateEntry(): void
+        }
+    }
+
+    namespace EasySaveNamespace.CLI {
+        class CLI {
+            - BackupManager backupManager
+            - StateManager stateManager
+            - EasySave easySave
+            + CLI (backupManager: BackupManager, stateManager: StateManager ): void
+            + ParseCommand(command: string): void
+            + ExecuteCommand(parameters: string): void
+            + DeleteCommand(parameters: string): void
+            + RestoreCommand(parameters: string): void
+            + ParsePosition(parameters: string): List int
+            + ExecuteJobsByPosition(positions: List int): void
+            + DeleteJobsByPosition(positions: List int): void
+            + RestoreJobsByPosition(positions: List int): void
+            + DisplayState(): void
+            + DisplayError(message: string): void
+        }
+    }
+
+    namespace EasySaveNamespace.Language {
+        class LanguageManager {
+            - Language currentLanguage
+            - Dictionnary <string, string> translations
+            + LanguageManager (language: Language): void
+            + SetLanguage(language: Language): void
+            + GetTranslation(key: string): string
+        }
+        class EnLanguage {
+            + GetTranslations(): Dictionnary <string, string >
+        }
+		class FrLanguage {
+            + GetTranslations(): Dictionnary <string, string >
+        }
+        class Language {
+            <<abstract>>
+             + GetTranslations(): Dictionnary <string, string >
+        }
+    }
+    
+    namespace EasySaveLogger {
+        class Logger {
+            - string logDirectory
+            + Logger(): void
+            + Log(backupName: string, sourcePath: string, destinationPath: string, transferTimeMs: long): void
+            - ConfigureLogPath(): void
+        }
+
+        class LogEntry {
+            + string Timestamp
+            + string JobName
+            + string SourcePath
+            + string TargetPath
+            + long FileSize
+            + long TransferTime
+            + LogEntry(timestamp: string, jobName: string, sourcePath: string, targetPath: string, fileSize: long, transferTime: long): void
+        }
+    }
+
+%% ----- RELATIONS -----
+    EasySave --> BackupManager : uses
+    EasySave --> LanguageManager : uses
+    BackupManager --> StateManager : uses
+    BackupManager --> BackupJob : manages
+    BackupManager --> BackupService : uses
+    BackupJob --> IBackupTypeStrategy : uses
+    IBackupTypeStrategy <|.. CompleteBackupStrategy : implements
+    IBackupTypeStrategy <|.. DifferentialBackupStrategy : implements
+    BackupJob --> BackupService : uses
+    BackupJobFactory --> BackupJob : creates
+    StateManager --> StateEntry : manages
+    CLI --> BackupManager : uses
+    CLI --> StateManager : uses
+    CLI --> EasySave : uses
+    LanguageManager --> Language : manages
+    Language <|-- EnLanguage : extends
+    Language <|-- FrLanguage : extends
+    Logger --> LogEntry : manages

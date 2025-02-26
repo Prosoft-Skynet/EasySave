@@ -1,0 +1,77 @@
+sequenceDiagram
+    participant Application
+    participant Users
+    participant StateManager
+    participant EasySave
+    participant BackupJob
+    participant BackupJobManager
+    participant BackupTypeStrategy
+    participant Logger
+    participant CLI
+    participant LanguageManager
+
+    Application->>+Users: Hello, what action would you like to do?
+    
+    Application->>+Users: 1. Add a backup 2. Delete a backup 3. List backups 4. Execute a backup 5. Restore 6. Logs 7. State 8. Change language (EN/FR) 9. Exit
+    Users-->>-Application: 1  (User chooses to add a backup)
+    
+    Application->>+BackupJob: Add a new backup
+    BackupJob-->>-Application: Backup added
+    Application->>+Users: Backup successfully added 
+
+    Users-->>-Application: 2.  (User chooses to delete a backup)
+    Application->>+BackupJob: Delete an existing backup
+    BackupJob-->>-Application: Backup deleted
+    Application->>+Users: Backup successfully deleted 
+
+    Users-->>-Application: 3.  (User chooses to list backups)
+    Application->>+BackupJobManager: Request available backups
+    BackupJobManager-->>-Application: List of backups
+    Application->>+Users: Here are the available backups 
+
+    Users-->>-Application: 4.  (User chooses to execute a backup)
+    Application->>+EasySave: Start executing the backup job
+    EasySave->>+BackupJob: Start backup job
+    BackupJob->>+BackupTypeStrategy: Apply backup strategy
+    BackupTypeStrategy->>+BackupJob: Backup completed
+    BackupJob->>+StateManager: Update backup status
+    StateManager-->>-BackupJob: Status updated
+    BackupJob->>+Logger: Write entry to logs
+    Logger-->>-BackupJob: Log recorded
+    EasySave->>+StateManager: Check current status of the backup job
+    StateManager-->>-EasySave: Job status
+    EasySave->>+CLI: Send job status for display
+    CLI->>+Users: Display backup status and progress 
+
+    Users-->>-Application: 5.  (User chooses to restore a backup)
+    Application->>+EasySave: Restore a backup
+    EasySave->>+BackupJob: Start restoration
+    BackupJob->>+BackupTypeStrategy: Apply restore strategy
+    BackupTypeStrategy->>+BackupJob: Restoration completed
+    BackupJob->>+StateManager: Update restoration status
+    StateManager-->>-BackupJob: Status updated
+    BackupJob->>+Logger: Write entry to logs
+    Logger-->>-BackupJob: Log recorded
+    EasySave->>+CLI: Restoration completed
+    CLI->>+Users: Display restoration result 
+    
+    Users-->>-Application: 6. (User chooses to view logs)
+    Application->>+Logger: Retrieve logs
+    Logger-->>-Application: Logs retrieved
+    Application->>+Users: Here are the logs
+
+    Users-->>-Application: 7. (User chooses to view system state)
+    Application->>+StateManager: Request current state
+    StateManager-->>-Application: Current state details
+    Application->>+Users: Current system state is displayed
+
+    Users-->>-Application: 8. (User chooses to change format)
+    Application->>+Logger: Update log format (or handle format change action)
+    Application->>+Users: Format updated
+
+    Users-->>-Application: 9. (User chooses to change language)
+    Application->>+LanguageManager: Change language (EN/FR)
+    LanguageManager-->>-Application: Language updated to (EN/FR)
+
+    Users-->>-Application: 10. (User chooses to exit)
+    Application->>+Users: Exit
