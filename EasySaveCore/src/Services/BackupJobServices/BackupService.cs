@@ -4,6 +4,7 @@ using EasySaveCore.src.Models;
 using EasySaveCore.src.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Text.Json;
 
 /// <summary>
@@ -181,8 +182,8 @@ public class BackupService
                 }
 
                 Console.WriteLine($"Encrypting file: {file}");
-                CryptoSoftService.Crypt(new string[] { file, encryptionKey });
-            }
+                CryptoSoftService.Instance.Crypt(new string[] { file, encryptionKey });
+            } 
             else
             {
                 Console.WriteLine($"File {file} has an unsupported extension. Skipping.");
@@ -219,7 +220,7 @@ public class BackupService
                     }
 
                     Console.WriteLine($"Decrypting file: {file}");
-                    CryptoSoftService.Crypt(new string[] { file, decryptionKey });
+                    CryptoSoftService.Instance.Crypt(new string[] { file, decryptionKey });
                 }
                 else
                 {
