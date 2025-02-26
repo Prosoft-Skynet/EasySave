@@ -1,0 +1,367 @@
+classDiagram
+namespace EasySaveCore.Models {
+    class BackupJobModel {
+        + Guid Id
+        + string Name
+        + string Source
+        + string Target
+        + bool IsFullBackup
+        + BackupJobModel(): void
+        + BackupJobModel(name: string, source: string, target: string, isFullBackup: boolean): void
+    }
+
+    class StateModel {
+        + string JobName
+        + string Timestamp
+        + string Status
+        + int FilesTotal
+        + int SizeTotal
+        + float Progress
+        + int RemainingFiles
+        + int RemainingSize
+        + string CurrentSource
+        + string CurrentTarget
+        + StateModel(): void
+    }
+
+    class WordModel{
+        + string Title
+        + string Fr
+        + string En
+        + WordModel(title: string, fr: string, en: string): void
+    }
+}
+
+namespace EasySaveLogger.Logger {
+    class LogEntry {
+        + string Timestamp
+        + string JobName
+        + string SourcePath
+        + string TargetPath
+        + long FileSize
+        + long TransferTime
+        + long EncryptionTime
+        + LogEntry(): void
+        + LogEntry(timestamp: string, jobName: string, sourcePath: string, targetPath: string, fileSize: long, transferTime: long, encryptionTime: long): void
+    }
+
+    class Logger {
+        - string jsonLogDirectory 
+        - string xmlLogDirectory
+        - ILogFormatter logFormatter
+        + Logger(logFormatter: ILogFormatter): void
+        + SetLogFormatter(newFormatter: ILogFormatter): void
+        + GetLogFormatter(): ILogFormatter
+        + Log(backupName: string, sourcePath: string, destinationPath: string, transferTimeMs: long, encryptionTime: long): void
+        - LoadExistingLogs(): List <LogEntry>
+        - WriteLogInBothFormats(logs: List<LogEntry>): void
+    }
+
+    class ILogFormatter {
+        <<interface>>
+        + WriteLog(logDirectory: string, logs: List<LogEntry>): void
+    }
+
+    class JsonLogFormatter {
+        + WriteLog(logDirectory: string, logs: List<LogEntry>): void
+    }
+
+    class XmlLogFormatter {
+        + WriteLog(logDirectory: string, logs: List<LogEntry>): void
+    }
+}
+
+namespace EasySaveCore.Services.BackupJobServices {
+    class BackupService {
+        - IBackupTypeStrategy backupStrategy
+        - List~BackupJobModel~ backupJobs
+        - StateService stateService
+        - BusinessApplicationService businessApplicationService
+        - string backupJobsFilePath
+        - bool isPaused
+        - bool isStopped
+        - string extensionsFilePath
+        - List~string~ extensionsToEncrypt
+        - Action~string~ onBackupCancelled
+
+        + BackupService()
+        + PauseBackup(): void
+        + ResumeBackup(): void
+        + StopBackup(): void
+        + SaveBackupJobs(): void
+        + LoadBackupJobs(): List~BackupJobModel~ 
+        + AddBackup(BackupJobModel job): void
+        + ExecuteJob(Guid jobId): void 
+        + ExecuteJobinterface(Guid jobId, Func~string, string~ getEncryptionKeyCallback): void 
+        - EncryptFilesInDirectory(string directoryPath, Func~string, string~ getEncryptionKeyCallback): void 
+        - DecryptFilesInDirectory(string directoryPath, Func~string, string~ getDecryptionKeyCallback): void 
+        + ExecuteJobsSequentially(List~Guid~ jobIds, Func~string, string~ getEncryptionKeyCallback): void 
+        + ExecuteJobsParallel(List~Guid~ jobIds, Func~string, string~ getEncryptionKeyCallback): void 
+        + RestoreJob(Guid jobId, Func~string, string~ getDecryptionKeyCallback): void 
+        + GetBackupJobs(): List ~BackupJobModel~
+        + TransferFiles(source: string, target: string, filesExceptions: ObservableCollection ~string~, checkForPauseAndStop: Action): void
+        + CreateDirectories(path: string): void
+        + Restore(backupJob: BackupJobModel): void
+        - Execute(backupJob: BackupJobModel): void
+        - CheckForPauseAndStop(): void
+        + SetBackupStrategy(strategy: IBackupTypeStrategy): void
+        + SetBackupStrategy(isFullBackup): void
+        + LoadExtensionsToEncrypt(): List ~string~
+        + AddExtensionToEncrypt(extension: string): void
+        + RemoveExtensionToEncrypt(extension: string): void
+        - SaveExtensionToEncrypt(): void
+    }
+
+    class IBackupTypeStrategy {
+        <<interface>>
+        + ExecuteBackupStrategy(source: string, target: string, filesExceptions: ObservableCollection<string>, checkForPauseAndStop: Action): void
+    }
+
+    class CompleteBackupStrategy {
+        + ExecuteBackupStrategy(source: string, target: string, filesExceptions: ObservableCollection<string>, checkForPauseAndStop: Action): void
+    }
+
+    class DifferentialBackupStrategy {
+        + ExecuteBackupStrategy(source: string, target: string, filesExceptions: ObservableCollection<string>, checkForPauseAndStop: Action): void
+    }
+}
+
+namespace EasySaveCore.Services {
+    class BusinessApplicationService {
+        + List~string~ businessApplications
+        + BusinessApplicationService(): void
+        + GetBusinessApplications(): ObservableCollection~string~
+        + AddBusinessApplication(string path): void
+        + RemoveBusinessApplication(string path): void
+    }
+
+    class StateService {
+        - string stateFilePath
+        - Dictionary~Guid, StateModel~ currentState
+        + StateService(string path ): void
+        + UpdateState(BackupJobModel job, string state): void
+        + ConfigureStatePath(string path): void
+        + GenerateLoadingStateModel(BackupJobModel job): StateModel
+        + GenerateFinishedStateModel(BackupJobModel job): StateModel
+        + GetCurrentState(Guid jobId): StateModel
+        - SaveState(): void
+        - LoadState(): void
+        + GetStateFilePath(): string
+    }
+
+    class LanguageService {
+        - string currentLanguage
+        - List~WordModel~ translations
+        + LanguageService(): void
+        - GetJsonWord(): void
+        + GetTranslation(string key): string
+        + ChangeLanguage(): void
+    }
+
+    class CryptosoftService {
+        + Crypt(args: string[]); void
+    }
+
+    class FileService {
+        - string filePath
+        - string key
+        + FileService(string path, string key):void
+        - CheckFile(): bool
+        + TransformFile(): int
+        - ConvertToByte(string text): byte[]
+        - XorMethod(IReadOnlyList~byte~ fileBytes, IReadOnlyList~byte~ keyBytes): byte[]
+    }
+}
+
+namespace EasySaveGUI.Views {
+    class MainView {
+        + MainWindow(): void
+    }
+    class SettingsView {
+       + SettingsWindow(): void
+    }
+}
+
+namespace EasySaveGUI.ViewModels {
+    class MainViewModel {
+        - LanguageService languageService
+        - BackupService backupService
+        - BusinessApplicationService businessApplicationService
+        - Logger logger
+        - string backupName
+        - string sourcePath
+        - string destinationPath
+        - bool isFullBackup
+        - bool isBackupCancelled
+        + ObservableCollection~BackupJobModel~ Backups
+        + ObservableCollection~string~ Logs
+        - BackupJobModel SelectedBackup
+        + BackupJobModel SelectedBackup
+        + ObservableCollection~string~ UserExtensionsToEncrypt
+        - ObservableCollection~string~ UserExtensionsToEncrypt
+        + string SelectedLog
+        - string SelectedLog
+        + string EncryptionKey
+        - string EncryptionKey
+        + string BackupName
+        + string SourcePath
+        + string DestinationPath
+        + bool IsFullBackup
+        + ICommand AddBackupCommand
+        + ICommand DeleteBackupCommand
+        + ICommand RunBackupCommand
+        + ICommand RunAllBackupsCommand
+        + ICommand RestoreBackupCommand
+        + ICommand SelectSourceCommand
+        + ICommand SelectDestinationCommand
+        + ICommand OpenLogCommand
+        + ICommand ToggleLogFormatCommand
+        + ICommand ToggleLanguageCommand
+        + ICommand ExitCommand
+        + ICommand OpenSettingsCommand
+        + ICommand PauseBackupCommand
+        + ICommand ResumeBackupCommand
+        + ICommand StopBackupCommand
+        + ICommand AddExtensionCommand
+        + MainViewModel(): void
+        - AddBackup(): void
+        - DeleteBackup(): void
+        - RunBackup(): void
+        - RunAllBackups(): void
+        - RestoreBackup(): void
+        - SelectSource(): void
+        - SelectDestination(): void
+        - LoadLogs(): void
+        - OpenLog(): void
+        - executeLog(string filePath): void
+        - ToggleLogFormat(): void
+        - ToggleLanguage(): void
+        - UpdateLanguage(): void
+        - OpenSettings(): void
+        - PauseBackup(): void
+        - ResumeBackup(): void
+        - StopBackup(): void
+        - AddExtension(): void
+        - ExitApplication(): void
+        - ShowBackupError(string message): void
+    }
+
+    class SettingsViewModel {
+        - string businessApplicationPath
+        - BackupService backubService
+        - ObservableCollection~string~ businessApplication
+        - LanguageService languageService
+        - BusinessApplicationService businessApplicationService
+        - ObservableCollection~string~ userExtensionsToEncrypt
+        - string selectedExtensionToRemove
+        - string selectedBusinessApplication;
+        + string SelectedBusinessApplication
+        
+        + string BusinessApplicationsPath
+        + ObservableCollection~string~ BusinessApplications
+        + ObservableCollection~string~ UserExtensionsToEncrypt
+        + string? SelectedExtensionToRemove
+        
+        + ICommand RemoveBusinessApplicationCommand
+        + ICommand SelectBusinessApplicationCommand
+        + ICommand CloseSettingsCommand
+        + ICommand AddBusinessApplicationCommand
+        + ICommand AddExtensionCommand
+        + ICommand RemoveExtensionCommand
+        
+        + SettingsViewModel()
+        - SelectBusinessApplication(): void
+        - AddBusinessApplication(): void
+        - AddExtension(): void
+        - RemoveExtension(): void
+        - RemoveBusinessApplication(): void
+        - CloseSettings(): void
+    }
+
+    class SettingsViewModel {
+        - string businessApplicationPath
+        - BackupService backubService
+        - ObservableCollection~string~ businessApplication
+        - LanguageService languageService
+        - BusinessApplicationService businessApplicationService
+        - ObservableCollection~string~ userExtensionsToEncrypt
+        - string selectedExtensionToRemove
+        + string BusinessApplicationsPath
+        + ObservableCollection~string~ BusinessApplications
+        + ObservableCollection~string~ UserExtensionsToEncrypt
+        + string SelectedExtensionToRemove 
+        + ICommand SelectBusinessApplicationCommand
+        + ICommand CloseSettingsCommand
+        + ICommand AddBusinessApplicationCommand
+        + ICommand AddExtensionCommand
+        + ICommand RemoveExtensionCommand
+        + SettingsViewModel(): void
+        - SelectBusinessApplication(): void
+        - AddBusinessApplication(): void
+        - AddExtension(): void
+        - RemoveExtension(): void
+        - CloseSettings(): void
+    }
+}
+
+namespace EasySaveGUI.Helpers {
+    class CustomInputDialog{
+        + ShowDialog(string message, string title): string
+    }
+
+    class RelayCommand {
+        - Action execute
+        - Func~bool~ canExecute
+        
+        + RelayCommand(Action execute, Func~bool~ canExecute): void
+        + CanExecute(object parameter): bool
+        + Execute(object parameter): void
+        + event EventHandler CanExecuteChanged
+    }
+
+    class RelayCommand~T~ {
+        - Action~T~ execute
+        - Func~T, bool~ canExecute
+        + RelayCommand(Action~T~ execute, Func~T, bool~ canExecute): void
+        + CanExecute(object parameter): bool
+        + Execute(object parameter): void
+        + event EventHandler CanExecuteChanged
+    }
+
+    class ViewModelBase {
+        + event PropertyChangedEventHandler PropertyChanged
+        + OnPropertyChanged(string propertyName): void
+    }
+}
+
+%% Relations pour EasySaveCore.Services.BackupJobServices
+BackupService "1" *-- "*" BackupJobModel : manages
+StateService "1" *-- "*" StateModel : tracks
+BackupService "1" *-- "1" CryptosoftService : encrypts
+BackupService "1" *-- "1" BusinessApplicationService : checks
+BackupService "1" *-- "1" Logger : logs
+BackupService "1" *-- "1" StateService : tracks
+BackupService "1" *-- "1" IBackupTypeStrategy : uses
+IBackupTypeStrategy <|-- CompleteBackupStrategy : implements
+IBackupTypeStrategy <|-- DifferentialBackupStrategy : implements
+
+%% Relations pour EasySaveGUI.Views et EasySaveGUI.ViewModels
+MainView "1" *-- "1" MainViewModel : uses
+SettingsView "1" *-- "1" SettingsViewModel : uses
+MainViewModel "1" *-- "1" BackupService : uses
+MainViewModel "1" *-- "1" Logger : logs
+MainViewModel "1" *-- "1" LanguageService : translates
+SettingsViewModel "1" *-- "1" BusinessApplicationService : manages
+SettingsViewModel "1" *-- "1" LanguageService : manages
+
+%% Relations pour EasySaveLogger.Logger
+Logger "1" *-- "*" LogEntry : stores
+Logger "1" *-- "1" ILogFormatter : formats
+ILogFormatter <|-- JsonLogFormatter : implements
+ILogFormatter <|-- XmlLogFormatter : implements
+
+%% Relations pour EasySaveCore.Models
+BackupJobModel "1" *-- "1" StateModel : state
+BackupJobModel "1" *-- "1" WordModel : title
+StateService "1" *-- "*" StateModel : manages
+LanguageService "1" *-- "*" WordModel : stock

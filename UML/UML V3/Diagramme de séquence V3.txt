@@ -1,0 +1,94 @@
+sequenceDiagram
+    participant Application
+    participant Users
+    participant StateService
+    participant BackupJobModel
+    participant BackupJobService
+    participant IBackupTypeStrategy
+    participant Logger
+    participant CLI
+    participant LanguageService
+    participant CryptoSoftService
+    participant BusinessApplicationService
+    participant RemoteConsole
+
+    Users->>+Application: Start
+
+    alt Add a backup
+        Application->>+BackupJobService: Request to add a new backup
+        BackupJobService-->>-Application: Confirmation of backup added
+        Application->>+Users: Notification of successful addition
+    end
+
+    alt Delete a backup
+        Application->>+BackupJobService: Request to delete a backup
+        BackupJobService-->>-Application: Confirmation of backup deletion
+        Application->>+Users: Notification of successful deletion
+    end
+
+    alt List backups
+        Application->>+BackupJobModel: Request list of backups
+        BackupJobModel-->>-Application: List of available backups
+        Application->>+Users: Display available backups
+    end
+
+    alt Execute a backup
+        Application->>+BusinessApplicationService: Check if business application is running
+        BusinessApplicationService-->>Application: Business application status
+        
+        alt Business application is running
+            Application->>+Logger: Log interruption due to running application
+            Logger-->>-Application: Log recorded
+            Application->>+Users: Notification that backup cannot start
+        else
+            Application->>+BackupJobService: Start backup execution
+            
+            par Parallel Backup Execution
+                BackupJobService->>+IBackupTypeStrategy: Apply backup strategy
+                BackupJobService->>+CryptoSoftService: Encrypt file (one instance (mutex) and Settings extensions)
+                CryptoSoftService-->>-BackupJobService: Encryption result (time in ms or error)
+            and
+                BackupJobService->>+StateService: Update backup status
+                StateService-->>-BackupJobService: Status updated
+                BackupJobService->>+Logger: Log backup event (including encryption time or errors)
+                Logger-->>-BackupJobService: Log recorded
+            end
+            
+            BackupJobService->>+StateService: Request current backup status
+            StateService-->>-BackupJobService: Job status
+        end
+    end
+
+    alt View logs
+        Application->>+Logger: Request logs
+        Logger-->>-Application: Logs retrieved
+        Application->>+Users: Display logs
+        RemoteConsole->>+Logger: Request logs
+        Logger-->>-RemoteConsole: Logs retrieved
+        RemoteConsole->>+Users: Display logs
+    end
+
+    alt View system state
+        Application->>+StateService: Request current system state
+        StateService-->>-Application: Return system state
+        Application->>+Users: Display system state
+        RemoteConsole->>+StateService: Request current system state
+        StateService-->>-RemoteConsole: Return system state
+        RemoteConsole->>+Users: Display system state
+    end
+
+    alt Change log format (JSON/XML)
+        Application->>+Logger: Update log format settings
+        Logger-->>-Application: Log format updated
+        Application->>+Users: Notify format change
+    end
+
+    alt Change language (EN/FR)
+        Application->>+LanguageService: Change system language
+        LanguageService-->>-Application: Confirm language update
+    end
+
+    alt Exit
+        Users->>+Application: Exit selection
+        Application->>+Users: Exit process
+    end
