@@ -28,7 +28,7 @@ public class LanguageService
         catch (Exception ex)
         {
 
-            Console.WriteLine($"Erreur : {ex.Message}");
+            Console.WriteLine($"Error : {ex.Message}");
         }
 
         GetJsonWord();
@@ -44,10 +44,8 @@ public class LanguageService
         {
             try
             {
-                // Lire le JSON depuis le fichier
                 string jsonString = File.ReadAllText(filePath);
 
-                // Désérialiser en liste d'objets C#
                 translations = JsonSerializer.Deserialize<List<WordModel>>(jsonString);
             }
             catch (Exception ex)

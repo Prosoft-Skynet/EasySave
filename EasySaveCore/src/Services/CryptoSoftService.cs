@@ -1,7 +1,6 @@
-﻿using System.Threading;
+﻿namespace EasySaveCore.src.Services;
 
-namespace EasySaveCore.src.Services;
-
+using System.Threading;
 using System;
 using System.IO;
 
@@ -31,7 +30,7 @@ public class CryptoSoftService
     {
         if (!mutex.WaitOne(TimeSpan.Zero, true))
         {
-            Console.WriteLine("Une instance de CryptoSoft est déjà en cours d'exécution.");
+            Console.WriteLine("Another instance of the program is already running.");
             Environment.Exit(-2);
         }
 
@@ -39,8 +38,8 @@ public class CryptoSoftService
         {
             if (args.Length < 2)
             {
-                Console.WriteLine("Erreur : Nombre d'arguments insuffisant.");
-                Console.WriteLine("Syntaxe : cryptosoft.exe fichier_a_crypter clé_de_cryptage");
+                Console.WriteLine("Error : missing arguments");
+                Console.WriteLine("Syntax : EasySaveCore crypt <file path> <encryption key>");
                 Environment.Exit(-1);
             }
 

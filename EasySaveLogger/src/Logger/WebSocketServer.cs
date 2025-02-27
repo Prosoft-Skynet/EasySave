@@ -60,6 +60,7 @@ namespace EasySaveLogger
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error while sending logs history: {ex.Message}");
             }
         }
 

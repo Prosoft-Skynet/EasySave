@@ -131,8 +131,8 @@
     },
     {
         "title": "box.execute_success",
-        "fr": "exécutée en",
-        "en": "executed in"
+        "fr": "exécutée !",
+        "en": "executed !"
     },
     {
         "title": "box.restore",
@@ -193,11 +193,6 @@
         "title": "menu.decryption_key",
         "fr": "Clé de décryptage",
         "en": "Decryption Key"
-    },
-    {
-        "title": "menu.exception_application",
-        "fr": "Attention : des applications métiers n'ont pas été ajoutées à la sauvegarde.",
-        "en": "Warning: business apps haven't been added to the backup"
     },
     {
         "title": "settings.valid_exe",

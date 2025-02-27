@@ -33,7 +33,7 @@ public class MainViewModel : ViewModelBase
     public ObservableCollection<BackupJobModel> Backups { get; }
     public ObservableCollection<string> Logs { get; }
 
-    private BackupJobModel? _selectedBackup = new BackupJobModel();
+    private BackupJobModel? _selectedBackup;
     public BackupJobModel? SelectedBackup
     {
         get => _selectedBackup;
@@ -131,7 +131,6 @@ public class MainViewModel : ViewModelBase
         _logger = new Logger(new JsonLogFormatter());
         Backups = new ObservableCollection<BackupJobModel>(_backupService.GetBackupJobs());
 
-        Backups = new ObservableCollection<BackupJobModel>(_backupService.LoadBackupJobs());
         Logs = new ObservableCollection<string>();
 
         LoadLogs();
@@ -219,7 +218,7 @@ public class MainViewModel : ViewModelBase
             return;
         }
 
-        _isBackupCancelled = false; 
+        _isBackupCancelled = false;
         var startTime = DateTime.Now;
 
         Func<string, string> getEncryptionKeyCallback = (fileName) =>
@@ -257,14 +256,14 @@ public class MainViewModel : ViewModelBase
         }
         catch (Exception)
         {
-            _isBackupCancelled = true; 
+            _isBackupCancelled = true;
             copyCryptTimeMs = -1000;
         }
 
         var endTime = DateTime.Now;
         long totalDurationMs = (long)(endTime - startTime).TotalMilliseconds;
 
-        if (!_isBackupCancelled) 
+        if (!_isBackupCancelled)
         {
             _logger.Log(
                 SelectedBackup.Name,
@@ -274,7 +273,7 @@ public class MainViewModel : ViewModelBase
                 copyCryptTimeMs
             );
 
-            MessageBox.Show($"{_languageService.GetTranslation("box.backup")} {SelectedBackup.Name} {_languageService.GetTranslation("box.execute_success")} {totalDurationMs} ms ! \n {_languageService.GetTranslation("menu.exception_application")} ",
+            MessageBox.Show($"{_languageService.GetTranslation("box.backup")} {SelectedBackup.Name} {_languageService.GetTranslation("box.execute_success")}",
                             _languageService.GetTranslation("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
