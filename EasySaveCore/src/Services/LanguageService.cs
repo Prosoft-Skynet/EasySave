@@ -36,8 +36,7 @@ public class LanguageService
 
     private void GetJsonWord()
     {
-        string projectDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.Parent!.Parent!.Parent!.FullName;
-        string filePath = Path.Combine(projectDirectory, "Assets", "JSONs", "words.json");
+        string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "JSONs", "words.json");
         List<WordModel> words = new List<WordModel>();
 
         if (File.Exists(filePath))

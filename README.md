@@ -13,7 +13,7 @@ cd EasySave
 dotnet build 
 
 dotnet run --projet <EasySaveGUI> <EasysaveConsole>
-````
+```
 
 # 2. Architecture 
 - **EasySaveConsole**: This is the console part of the project, you won't have an interface but all the features are working perfectly
@@ -34,3 +34,10 @@ Need .Net 8 configuration
 Here you can find further explainations about the projet:
 
 https://flat-ketch-6e5.notion.site/Documentation-192ce649365f80dc9ed2f35cc36515c1?pvs=4
+
+
+# 5. Publish
+
+```
+dotnet publish -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -p:IncludeAllContent=true
+````
