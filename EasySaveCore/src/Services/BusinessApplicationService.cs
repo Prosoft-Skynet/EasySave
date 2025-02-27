@@ -29,7 +29,7 @@ public class BusinessApplicationService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Erreur de lecture du fichier JSON : {ex.Message}");
+            Console.WriteLine($"Error while reading BusinessApplications.json: {ex.Message}");
             return new ObservableCollection<string>();
         }
     }

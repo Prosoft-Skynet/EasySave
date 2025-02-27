@@ -19,7 +19,7 @@ public class CompleteBackupStrategy : IBackupTypeStrategy
     {
         if (!Directory.Exists(source))
         {
-            throw new DirectoryNotFoundException($"Le répertoire source {source} n'existe pas.");
+            throw new DirectoryNotFoundException($"The source directory {source} does not exist.");
         }
 
         if (!Directory.Exists(target))

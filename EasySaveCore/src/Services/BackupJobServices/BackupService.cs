@@ -4,6 +4,7 @@ using EasySaveCore.src.Models;
 using EasySaveCore.src.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Text.Json;
 
 /// <summary>
@@ -181,7 +182,7 @@ public class BackupService
                 }
 
                 Console.WriteLine($"Encrypting file: {file}");
-                CryptoSoftService.Crypt(new string[] { file, encryptionKey });
+                CryptoSoftService.Instance.Crypt(new string[] { file, encryptionKey });
             }
             else
             {
@@ -219,7 +220,7 @@ public class BackupService
                     }
 
                     Console.WriteLine($"Decrypting file: {file}");
-                    CryptoSoftService.Crypt(new string[] { file, decryptionKey });
+                    CryptoSoftService.Instance.Crypt(new string[] { file, decryptionKey });
                 }
                 else
                 {
@@ -232,12 +233,40 @@ public class BackupService
     /// Executes a list of backup jobs sequentially.
     /// </summary>
     /// <param name="jobIds">The list of backup job identifiers.</param>
-    public void ExecuteJobsSequentially(List<Guid> jobIds, Func<string, string> getEncryptionKeyCallback)
+    public Task ExecuteJobsSequentially(List<BackupJobModel> jobIds, Func<string, string> getEncryptionKeyCallback)
     {
-        foreach (var jobId in jobIds)
+        foreach (var jobId in jobIds.Select(j => j.Id))
         {
             ExecuteJobinterface(jobId, getEncryptionKeyCallback);
         }
+        return Task.CompletedTask;
+    }
+
+    public Task ExecuteJobsInParallel(List<BackupJobModel> jobs, Func<string, string> getEncryptionKeyCallback)
+    {
+        if (jobs == null || jobs.Count == 0)
+            return Task.CompletedTask;
+
+        var tasks = jobs.Select(job =>
+        {
+            // Créer une nouvelle instance de BackupService pour chaque job
+            var backupService = new BackupService();
+
+            // Lancer chaque job en parallèle
+            return Task.Run(() =>
+            {
+                try
+                {
+                    backupService.ExecuteJobinterface(job.Id, getEncryptionKeyCallback);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erreur lors de l'exécution du job {job.Name} : {ex.Message}");
+                }
+            });
+        }).ToList();
+
+        return Task.WhenAll(tasks);
     }
 
     /// <summary>
@@ -331,7 +360,7 @@ public class BackupService
 
     private void CheckForPauseAndStop()
     {
-        while (_isPaused) // Attente en cas de pause
+        while (_isPaused)
         {
             Thread.Sleep(100);
         }

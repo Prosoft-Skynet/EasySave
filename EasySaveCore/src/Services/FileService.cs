@@ -29,7 +29,7 @@ public class FileService
         if (File.Exists(filePath))
             return true;
 
-        Console.WriteLine("Erreur : Fichier non trouvé.");
+        Console.WriteLine("Error: The file does not exist.");
         return false;
     }
 
@@ -47,15 +47,13 @@ public class FileService
         File.WriteAllBytes(filePath, fileBytes);
         stopwatch.Stop();
 
-        // Vérification si le fichier a bien été transformé
         if (fileBytes.Length > 0)
         {
-            // Message de confirmation après chiffrement ou déchiffrement
             Console.WriteLine("");
         }
         else
         {
-            Console.WriteLine("Erreur dans le processus de transformation du fichier.");
+            Console.WriteLine("Error: The file could not be transformed.");
         }
 
         return (int)stopwatch.ElapsedMilliseconds;

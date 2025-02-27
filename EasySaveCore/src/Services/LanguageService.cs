@@ -28,7 +28,7 @@ public class LanguageService
         catch (Exception ex)
         {
 
-            Console.WriteLine($"Erreur : {ex.Message}");
+            Console.WriteLine($"Error : {ex.Message}");
         }
 
         GetJsonWord();
@@ -36,18 +36,15 @@ public class LanguageService
 
     private void GetJsonWord()
     {
-        string projectDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!.Parent!.Parent!.Parent!.FullName;
-        string filePath = Path.Combine(projectDirectory, "Assets", "JSONs", "words.json");
+        string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "JSONs", "words.json");
         List<WordModel> words = new List<WordModel>();
 
         if (File.Exists(filePath))
         {
             try
             {
-                // Lire le JSON depuis le fichier
                 string jsonString = File.ReadAllText(filePath);
 
-                // Désérialiser en liste d'objets C#
                 translations = JsonSerializer.Deserialize<List<WordModel>>(jsonString);
             }
             catch (Exception ex)

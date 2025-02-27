@@ -1,25 +1,45 @@
 ﻿namespace EasySaveCore.src.Services;
 
+using System.Threading;
 using System;
 using System.IO;
 
 /// <summary>
-/// Static class for file encryption.
+/// Singleton class for file encryption.
 /// </summary>
-public static class CryptoSoftService
+public class CryptoSoftService
 {
+    private static readonly Mutex mutex = new Mutex();
+    private static readonly CryptoSoftService instance = new CryptoSoftService();
+
+    private CryptoSoftService() { }
+
+    public static CryptoSoftService Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+
     /// <summary>
     /// Main method for encrypting a file.
     /// </summary>
     /// <param name="args">Array of strings containing the file path and encryption key.</param>
-    public static void Crypt(string[] args)
+    public void Crypt(string[] args)
     {
+        if (!mutex.WaitOne(TimeSpan.Zero, true))
+        {
+            Console.WriteLine("Another instance of the program is already running.");
+            Environment.Exit(-2);
+        }
+
         try
         {
             if (args.Length < 2)
             {
-                Console.WriteLine("Erreur : Nombre d'arguments insuffisant.");
-                Console.WriteLine("Syntaxe : cryptosoft.exe fichier_a_crypter clé_de_cryptage");
+                Console.WriteLine("Error : missing arguments");
+                Console.WriteLine("Syntax : EasySaveCore crypt <file path> <encryption key>");
                 Environment.Exit(-1);
             }
 
@@ -41,6 +61,10 @@ public static class CryptoSoftService
         {
             Console.WriteLine("Exception : " + e.Message);
             Environment.Exit(-99);
+        }
+        finally
+        {
+            mutex.ReleaseMutex();
         }
     }
 }

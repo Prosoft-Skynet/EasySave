@@ -7,244 +7,253 @@
         Background="#d7dae5"
         WindowStartupLocation="CenterScreen">
 
-    <Window.DataContext>
-        <vm:MainViewModel/>
-    </Window.DataContext>
+        <Window.DataContext>
+                <vm:MainViewModel/>
+        </Window.DataContext>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <Grid>
+                <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="250"/>
+                        <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-        <!-- Sidebar -->
-        <Border Grid.Column="0"
-                Background="#8eaf9d"
-                Padding="15">
-            <StackPanel Width="220"
-                        Orientation="Vertical"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
+                <!-- Sidebar -->
+                <Border Grid.Column="0"
+                        Background="#8eaf9d"
+                        Padding="15">
+                        <StackPanel Width="220"
+                                    Orientation="Vertical"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
 
-                <TextBlock Text="EasySave"
-                           FontSize="26"
-                           FontWeight="Bold"
-                           Foreground="White"
-                           HorizontalAlignment="Center"
-                           Margin="0,10,0,20"/>
+                                <TextBlock Text="EasySave"
+                                           FontSize="26"
+                                           FontWeight="Bold"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,10,0,20"/>
 
-                <Button Content="{Binding [menu.add]}"
-                        Command="{Binding AddBackupCommand}"
-                        Background="#a6d8d4"
-                        Foreground="White"
-                        Padding="10"
-                        Width="200"
-                        BorderThickness="0"
-                        Margin="5"/>
+                                <Button Content="{Binding [menu.add]}"
+                                        Command="{Binding AddBackupCommand}"
+                                        Background="#a6d8d4"
+                                        Foreground="White"
+                                        Padding="10"
+                                        Width="200"
+                                        BorderThickness="0"
+                                        Margin="5"/>
 
-                <Button Content="{Binding [menu.delete]}"
-                        Command="{Binding DeleteBackupCommand}"
-                        Background="#a6d8d4"
-                        Foreground="White"
-                        Padding="10"
-                        Width="200"
-                        BorderThickness="0"
-                        Margin="5"/>
+                                <Button Content="{Binding [menu.delete]}"
+                                        Command="{Binding DeleteBackupCommand}"
+                                        Background="#a6d8d4"
+                                        Foreground="White"
+                                        Padding="10"
+                                        Width="200"
+                                        BorderThickness="0"
+                                        Margin="5"/>
 
-                <Button Content="{Binding [menu.execute]}"
-                        Command="{Binding RunBackupCommand}"
-                        Background="#a6d8d4"
-                        Foreground="White"
-                        Padding="10"
-                        Width="200"
-                        BorderThickness="0"
-                        Margin="5"/>
+                                <Button Content="{Binding [menu.execute]}"
+                                        Command="{Binding RunBackupCommand}"
+                                        Background="#a6d8d4"
+                                        Foreground="White"
+                                        Padding="10"
+                                        Width="200"
+                                        BorderThickness="0"
+                                        Margin="5"/>
 
-                <Button Content="{Binding [menu.restore]}"
-                        Command="{Binding RestoreBackupCommand}"
-                        Background="#a6d8d4"
-                        Foreground="White"
-                        Padding="10"
-                        Width="200"
-                        BorderThickness="0"
-                        Margin="5"/>
+                                <Button Content="{Binding [menu.all_execute]}"
+                                        Command="{Binding RunAllBackupsCommand}"
+                                        Background="#a6d8d4"
+                                        Foreground="White"
+                                        Padding="10"
+                                        Width="200"
+                                        BorderThickness="0"
+                                        Margin="5"/>
 
-                <Button Content="{Binding [menu.logs]}"
-                        Command="{Binding OpenLogCommand}"
-                        Background="#a6d8d4"
-                        Foreground="White"
-                        Padding="10"
-                        Width="200"
-                        BorderThickness="0"
-                        Margin="5"/>
+                                <Button Content="{Binding [menu.restore]}"
+                                        Command="{Binding RestoreBackupCommand}"
+                                        Background="#a6d8d4"
+                                        Foreground="White"
+                                        Padding="10"
+                                        Width="200"
+                                        BorderThickness="0"
+                                        Margin="5"/>
 
-                <Separator Margin="10"/>
+                                <Button Content="{Binding [menu.logs]}"
+                                        Command="{Binding OpenLogCommand}"
+                                        Background="#a6d8d4"
+                                        Foreground="White"
+                                        Padding="10"
+                                        Width="200"
+                                        BorderThickness="0"
+                                        Margin="5"/>
 
-                <Button Content="{Binding [menu.params]}"
-                        Command="{Binding OpenSettingsCommand}"
-                        Background="#b9cdda"
-                        Foreground="White"
-                        Padding="10"
-                        Width="200"
-                        BorderThickness="0"
-                        Margin="5"/>
+                                <Separator Margin="10"/>
 
-                <Button Content="{Binding [menu.change_logs]}"
-                        Command="{Binding ToggleLogFormatCommand}"
-                        Background="#b9cdda"
-                        Foreground="White"
-                        Padding="10"
-                        Width="200"
-                        BorderThickness="0"
-                        Margin="5"/>
+                                <Button Content="{Binding [menu.params]}"
+                                        Command="{Binding OpenSettingsCommand}"
+                                        Background="#b9cdda"
+                                        Foreground="White"
+                                        Padding="10"
+                                        Width="200"
+                                        BorderThickness="0"
+                                        Margin="5"/>
 
-                <Button Content="EN/FR"
-                        Command="{Binding ToggleLanguageCommand}"
-                        Background="#b9cdda"
-                        Foreground="White"
-                        Padding="10"
-                        Width="200"
-                        BorderThickness="0"
-                        Margin="5"/>
+                                <Button Content="{Binding [menu.change_logs]}"
+                                        Command="{Binding ToggleLogFormatCommand}"
+                                        Background="#b9cdda"
+                                        Foreground="White"
+                                        Padding="10"
+                                        Width="200"
+                                        BorderThickness="0"
+                                        Margin="5"/>
 
-                <Button Content="{Binding [menu.quit]}"
-                        Command="{Binding ExitCommand}"
-                        Background="#6b7d7d"
-                        Foreground="White"
-                        Padding="10"
-                        Width="200"
-                        BorderThickness="0"
-                        Margin="5"/>
-            </StackPanel>
-        </Border>
+                                <Button Content="EN/FR"
+                                        Command="{Binding ToggleLanguageCommand}"
+                                        Background="#b9cdda"
+                                        Foreground="White"
+                                        Padding="10"
+                                        Width="200"
+                                        BorderThickness="0"
+                                        Margin="5"/>
 
-        <!-- Main Content -->
-        <Border Grid.Column="1"
-                Background="#FFFFFF"
-                Padding="20">
-            <StackPanel>
-                <TextBlock Text="{Binding [menu.create]}"
-                           FontSize="18"
-                           FontWeight="Bold"
-                           Foreground="#6b7d7d"
-                           Margin="0,0,0,10"/>
+                                <Button Content="{Binding [menu.quit]}"
+                                        Command="{Binding ExitCommand}"
+                                        Background="#6b7d7d"
+                                        Foreground="White"
+                                        Padding="10"
+                                        Width="200"
+                                        BorderThickness="0"
+                                        Margin="5"/>
+                        </StackPanel>
+                </Border>
 
-                <TextBlock Text="{Binding [menu.name]}"
-                           Foreground="Black"
-                           Margin="10,0,0,0"/>
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Text="{Binding BackupName, UpdateSourceTrigger=PropertyChanged}"
-                             Width="250"/>
-                </StackPanel>
+                <!-- Main Content -->
+                <Border Grid.Column="1"
+                        Background="#FFFFFF"
+                        Padding="20">
+                        <StackPanel>
+                                <TextBlock Text="{Binding [menu.create]}"
+                                           FontSize="18"
+                                           FontWeight="Bold"
+                                           Foreground="#6b7d7d"
+                                           Margin="0,0,0,10"/>
 
-                <TextBlock Text="{Binding [menu.source]}"
-                           Foreground="Black"
-                           Margin="10,0,0,0"/>
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Text="{Binding SourcePath, UpdateSourceTrigger=PropertyChanged}"
-                             Width="250"
-                             IsReadOnly="True"/>
-                    <Button Content="..."
-                            Command="{Binding SelectSourceCommand}"
-                            Width="30"/>
-                </StackPanel>
+                                <TextBlock Text="{Binding [menu.name]}"
+                                           Foreground="Black"
+                                           Margin="10,0,0,0"/>
+                                <StackPanel Orientation="Horizontal">
+                                        <TextBox Text="{Binding BackupName, UpdateSourceTrigger=PropertyChanged}"
+                                                 Width="250"/>
+                                </StackPanel>
 
-                <TextBlock Text="{Binding [menu.target]}"
-                           Foreground="Black"
-                           Margin="10,0,0,0"/>
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Text="{Binding DestinationPath, UpdateSourceTrigger=PropertyChanged}"
-                             Width="250"
-                             IsReadOnly="True"/>
-                    <Button Content="..."
-                            Command="{Binding SelectDestinationCommand}"
-                            Width="30"/>
-                </StackPanel>
+                                <TextBlock Text="{Binding [menu.source]}"
+                                           Foreground="Black"
+                                           Margin="10,0,0,0"/>
+                                <StackPanel Orientation="Horizontal">
+                                        <TextBox Text="{Binding SourcePath, UpdateSourceTrigger=PropertyChanged}"
+                                                 Width="250"
+                                                 IsReadOnly="True"/>
+                                        <Button Content="..."
+                                                Command="{Binding SelectSourceCommand}"
+                                                Width="30"/>
+                                </StackPanel>
 
-                <!-- Espacement entre les options -->
-                <TextBlock Text="{Binding [menu.type]}"
-                           Foreground="Black"
-                           Margin="10,0,0,0"/>
-                <StackPanel Orientation="Horizontal"
-                            Margin="10,5,0,0">
-                    <RadioButton Content="{Binding [menu.complete]}"
-                                 IsChecked="{Binding IsFullBackup}"
-                                 GroupName="BackupType"
-                                 Foreground="Black"
-                                 Margin="0,0,10,0"/>
-                    <RadioButton Content="{Binding [menu.differential]}"
-                                 IsChecked="{Binding IsDifferentialBackup}"
-                                 GroupName="BackupType"
-                                 Foreground="Black"/>
-                </StackPanel>
+                                <TextBlock Text="{Binding [menu.target]}"
+                                           Foreground="Black"
+                                           Margin="10,0,0,0"/>
+                                <StackPanel Orientation="Horizontal">
+                                        <TextBox Text="{Binding DestinationPath, UpdateSourceTrigger=PropertyChanged}"
+                                                 Width="250"
+                                                 IsReadOnly="True"/>
+                                        <Button Content="..."
+                                                Command="{Binding SelectDestinationCommand}"
+                                                Width="30"/>
+                                </StackPanel>
 
-                <Separator Margin="10"/>
+                                <!-- Espacement entre les options -->
+                                <TextBlock Text="{Binding [menu.type]}"
+                                           Foreground="Black"
+                                           Margin="10,0,0,0"/>
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="10,5,0,0">
+                                        <RadioButton Content="{Binding [menu.complete]}"
+                                                     IsChecked="{Binding IsFullBackup}"
+                                                     GroupName="BackupType"
+                                                     Foreground="Black"
+                                                     Margin="0,0,10,0"/>
+                                        <RadioButton Content="{Binding [menu.differential]}"
+                                                     IsChecked="{Binding IsDifferentialBackup}"
+                                                     GroupName="BackupType"
+                                                     Foreground="Black"/>
+                                </StackPanel>
 
-                <TextBlock Text="{Binding [menu.list]}"
-                           Foreground="Black"/>
-                <ListBox ItemsSource="{Binding Backups}"
-                         SelectedItem="{Binding SelectedBackup}"
-                         Height="150"
-                         Background="White"
-                         BorderBrush="#6b7d7d"
-                         BorderThickness="1">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <TextBlock Text="{Binding Name}"
-                                           FontWeight="Bold"/>
-                                <TextBlock Text="{Binding Source}"
-                                           FontSize="12"
-                                           Foreground="Gray"/>
-                                <TextBlock Text="{Binding Target}"
-                                           FontSize="12"
-                                           Foreground="Gray"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Center"
-                        Margin="5">
-                    <Button Content="{Binding [menu.pause]}"
-                            Command="{Binding PauseBackupCommand}"
-                            Background="#f4a261"
-                            Foreground="White"
-                            Padding="10"
-                            Width="200"
-                            BorderThickness="0"
-                            Margin="5"/>
+                                <Separator Margin="10"/>
 
-                    <Button Content="{Binding [menu.resume]}"
-                            Command="{Binding ResumeBackupCommand}"
-                            Background="#2a9d8f"
-                            Foreground="White"
-                            Padding="10"
-                            Width="200"
-                            BorderThickness="0"
-                            Margin="5"/>
+                                <TextBlock Text="{Binding [menu.list]}"
+                                           Foreground="Black"/>
+                                <ListBox ItemsSource="{Binding Backups}"
+                                         SelectedItem="{Binding SelectedBackup}"
+                                         Height="150"
+                                         Background="White"
+                                         BorderBrush="#6b7d7d"
+                                         BorderThickness="1">
+                                        <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                        <StackPanel>
+                                                                <TextBlock Text="{Binding Name}"
+                                                                           FontWeight="Bold"/>
+                                                                <TextBlock Text="{Binding Source}"
+                                                                           FontSize="12"
+                                                                           Foreground="Gray"/>
+                                                                <TextBlock Text="{Binding Target}"
+                                                                           FontSize="12"
+                                                                           Foreground="Gray"/>
+                                                        </StackPanel>
+                                                </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                </ListBox>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Center"
+                                            Margin="5">
+                                        <Button Content="{Binding [menu.pause]}"
+                                                Command="{Binding PauseBackupCommand}"
+                                                Background="#f4a261"
+                                                Foreground="White"
+                                                Padding="10"
+                                                Width="200"
+                                                BorderThickness="0"
+                                                Margin="5"/>
 
-                    <Button Content="{Binding [menu.stop]}"
-                            Command="{Binding StopBackupCommand}"
-                            Background="#e76f51"
-                            Foreground="White"
-                            Padding="10"
-                            Width="200"
-                            BorderThickness="0"
-                            Margin="5"/>
-                </StackPanel>
+                                        <Button Content="{Binding [menu.resume]}"
+                                                Command="{Binding ResumeBackupCommand}"
+                                                Background="#2a9d8f"
+                                                Foreground="White"
+                                                Padding="10"
+                                                Width="200"
+                                                BorderThickness="0"
+                                                Margin="5"/>
 
-                <Separator Margin="10"/>
+                                        <Button Content="{Binding [menu.stop]}"
+                                                Command="{Binding StopBackupCommand}"
+                                                Background="#e76f51"
+                                                Foreground="White"
+                                                Padding="10"
+                                                Width="200"
+                                                BorderThickness="0"
+                                                Margin="5"/>
+                                </StackPanel>
 
-                <TextBlock Text="Logs :"
-                           Foreground="Black"/>
-                <ListBox ItemsSource="{Binding Logs}"
-                         SelectedItem="{Binding SelectedLog}"
-                         Height="150"
-                         Background="White"
-                         BorderBrush="#6b7d7d"
-                         BorderThickness="1"/>
-            </StackPanel>
-        </Border>
-    </Grid>
+                                <Separator Margin="10"/>
+
+                                <TextBlock Text="Logs :"
+                                           Foreground="Black"/>
+                                <ListBox ItemsSource="{Binding Logs}"
+                                         SelectedItem="{Binding SelectedLog}"
+                                         Height="150"
+                                         Background="White"
+                                         BorderBrush="#6b7d7d"
+                                         BorderThickness="1"/>
+                        </StackPanel>
+                </Border>
+        </Grid>
 </Window>
