@@ -284,7 +284,7 @@ public class MainViewModel : ViewModelBase
     {
         if (!Backups.Any())
         {
-            MessageBox.Show("Aucun job de sauvegarde disponible.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show($"{_languageService.GetTranslation("backup.no_job")}", _languageService.GetTranslation("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -311,11 +311,11 @@ public class MainViewModel : ViewModelBase
         try
         {
             await _backupService.ExecuteJobsInParallel(Backups.ToList(), getEncryptionKeyCallback);
-            MessageBox.Show("Tous les jobs ont été exécutés avec succès.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show($"{_languageService.GetTranslation("backup.all_success")}", _languageService.GetTranslation("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Erreur lors de l'exécution des sauvegardes : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"{_languageService.GetTranslation("backup.error")} {ex.Message}", _languageService.GetTranslation("box.error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
