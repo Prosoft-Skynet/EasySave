@@ -60,6 +60,15 @@
                                         BorderThickness="0"
                                         Margin="5"/>
 
+                                <Button Content="{Binding [menu.all_execute]}"
+                                        Command="{Binding RunAllBackupsCommand}"
+                                        Background="#a6d8d4"
+                                        Foreground="White"
+                                        Padding="10"
+                                        Width="200"
+                                        BorderThickness="0"
+                                        Margin="5"/>
+
                                 <Button Content="{Binding [menu.restore]}"
                                         Command="{Binding RestoreBackupCommand}"
                                         Background="#a6d8d4"

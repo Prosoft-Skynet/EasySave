@@ -20,6 +20,11 @@
         "en": "Execute a backup"
     },
     {
+        "title": "menu.all_execute",
+        "fr": "Exécuter toutes les sauvegardes",
+        "en": "Execute all backups"
+    },
+    {
         "title": "menu.restore",
         "fr": "Restaurer une sauvegarde",
         "en": "Restore a backup"
@@ -358,6 +363,21 @@
         "title": "exception.forbidden_file_detected",
         "fr": "Sauvegarde annulée : Un fichier interdit a été détecté.",
         "en": "Backup cancelled: A forbidden file was detected."
+    },
+    {
+        "title": "backup.all_success",
+        "fr": "Tous les jobs ont été exécutés avec succès.",
+        "en": "All jobs have been executed successfully."
+    },
+    {
+        "title": "backup.error",
+        "fr": "Erreur lors de l'exécution des sauvegardes :",
+        "en": "Error executing backups:"
+    },
+    {
+        "title": "backup.no_job",
+        "fr": "Aucun job de sauvegarde disponible.",
+        "en": "No backup job available."
     }
-    
+
 ]

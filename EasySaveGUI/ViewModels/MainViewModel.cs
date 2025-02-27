@@ -28,8 +28,6 @@ public class MainViewModel : ViewModelBase
     private bool _isFullBackup = true;
     private bool _isBackupCancelled = false;
 
-
-
     public ObservableCollection<BackupJobModel> Backups { get; }
     public ObservableCollection<string> Logs { get; }
 
@@ -106,6 +104,7 @@ public class MainViewModel : ViewModelBase
     public ICommand AddBackupCommand { get; }
     public ICommand DeleteBackupCommand { get; }
     public ICommand RunBackupCommand { get; }
+    public ICommand RunAllBackupsCommand { get; }
     public ICommand RestoreBackupCommand { get; }
     public ICommand SelectSourceCommand { get; }
     public ICommand SelectDestinationCommand { get; }
@@ -138,6 +137,7 @@ public class MainViewModel : ViewModelBase
         AddBackupCommand = new RelayCommand(AddBackup);
         DeleteBackupCommand = new RelayCommand(DeleteBackup);
         RunBackupCommand = new RelayCommand(RunBackup);
+        RunAllBackupsCommand = new RelayCommand(() => Task.Run(() => RunAllBackups()));
         RestoreBackupCommand = new RelayCommand(RestoreBackup);
         SelectSourceCommand = new RelayCommand(SelectSource);
         SelectDestinationCommand = new RelayCommand(SelectDestination);
@@ -278,6 +278,45 @@ public class MainViewModel : ViewModelBase
         }
 
         LoadLogs();
+    }
+
+    private async Task RunAllBackups()
+    {
+        if (!Backups.Any())
+        {
+            MessageBox.Show($"{_languageService.GetTranslation("backup.no_job")}", _languageService.GetTranslation("box.error"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        Func<string, string> getEncryptionKeyCallback = (fileName) =>
+                {
+                    var extension = Path.GetExtension(fileName).ToLower();
+                    if (!_backupService.extensionsToEncrypt.Contains(extension)) return string.Empty;
+
+                    string encryptionKey = string.Empty;
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        do
+                        {
+                            encryptionKey = CustomInputDialog.ShowDialog(
+                                $"{_languageService.GetTranslation("menu.encrypt")} {fileName}",
+                                _languageService.GetTranslation("menu.encryption_key"));
+                        } while (string.IsNullOrEmpty(encryptionKey));
+                    });
+
+                    return encryptionKey;
+                };
+
+        try
+        {
+            await _backupService.ExecuteJobsInParallel(Backups.ToList(), getEncryptionKeyCallback);
+            MessageBox.Show($"{_languageService.GetTranslation("backup.all_success")}", _languageService.GetTranslation("box.success"), MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"{_languageService.GetTranslation("backup.error")} {ex.Message}", _languageService.GetTranslation("box.error"), MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     private async void RestoreBackup()
